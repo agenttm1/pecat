@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<title>Pečat!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Putovanje kroz birokraciju: karta države gore, šalter u sredini, obrazac na pultu dolje. Sve se odvija na jednom ekranu. */
+  --wall-hi:#dfe3d2; --wall-lo:#6e8672; --stripe:#3e5947;
+  --paper:#f6f3e7; --paper-edge:#cfc9b2; --ink:#1f252b; --ink-soft:#5b6168;
+  --stamp:#3b37a6; --alarm:#b3271d; --ok:#2e6b3f; --gold:#c99a2e; --led:#ff3d30; --led-bg:#170e0b;
+  --wood:#8a5a3a; --sea:#c6dbe0; --land:#dfe3d2;
+  --f-label:"Archivo Narrow","Arial Narrow",Arial,sans-serif;
+  --f-stamp:"Archivo Black","Arial Black",Impact,sans-serif;
+  --f-type:"IBM Plex Mono","Courier New",monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--f-label); color:var(--ink); font-size:17px; line-height:1.4; background:var(--wall-lo); min-height:100%; overflow-x:hidden}
+.app{max-width:520px; margin:0 auto; padding:10px 12px 28px; display:flex; flex-direction:column; gap:10px}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--stamp); outline-offset:2px}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
+
+/* zaglavlje */
+.top{display:flex; align-items:center; gap:8px}
+.brand{font-family:var(--f-stamp); font-size:22px; color:var(--stamp); background:var(--paper); border:3px solid var(--stamp); padding:0 9px 1px; border-radius:6px; transform:rotate(-3deg); line-height:1.25; margin-right:auto}
+.langs{display:flex; border:2px solid var(--ink); border-radius:4px; overflow:hidden; background:var(--paper)}
+.langs button{border:0; background:none; padding:6px 9px; font-weight:700; font-size:14px}
+.langs button+button{border-left:2px solid var(--ink)}
+.langs button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
+.icon-btn{width:36px; height:34px; border:2px solid var(--ink); border-radius:4px; background:var(--paper); display:grid; place-items:center; padding:0}
+.icon-btn svg{width:18px; height:18px}
+
+/* karta */
+.mapcard{position:relative; border:3px solid var(--ink); border-radius:8px; overflow:hidden; background:var(--sea); height:210px; transition:height .35s ease, opacity .25s, margin .35s}
+.mapcard svg{display:block; width:100%; height:100%}
+.mapcard .nb{fill:var(--land); stroke:#9aa79c; stroke-width:1.2}
+.mapcard .main{fill:var(--paper); stroke:var(--ink); stroke-width:2.2; stroke-linejoin:round}
+.mapcard .nb{vector-effect:non-scaling-stroke}
+.route-bg{fill:none; stroke:var(--ink-soft); stroke-width:3; stroke-dasharray:2 8; stroke-linecap:round; opacity:.55}
+.route-done{fill:none; stroke:var(--stamp); stroke-width:5; stroke-linecap:round; stroke-linejoin:round}
+.city circle{fill:#fff; stroke:var(--ink); stroke-width:2.5}
+.city.done circle{fill:var(--stamp); stroke:var(--stamp)}
+.city.miss circle{fill:var(--alarm); stroke:var(--alarm)}
+.city.here circle{fill:var(--gold); animation:pulse 1.2s infinite}
+@keyframes pulse{50%{r:13}}
+.city text{font-family:var(--f-label); font-weight:700; paint-order:stroke; stroke:var(--paper); stroke-width:4px; fill:var(--ink)}
+.city text.num{font-family:var(--f-stamp); fill:#fff; stroke:none; text-anchor:middle; dominant-baseline:central}
+.city.done text.num,.city.here text.num{fill:#fff}
+.city:not(.done):not(.here):not(.miss) text.num{fill:var(--ink)}
+.car{transition:none}
+#carbody .smoke circle{animation:smoke 1.2s infinite}
+@keyframes smoke{to{transform:translate(-6px,-10px); opacity:0}}
+#car.swap #carbody{animation:carswap .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes carswap{0%{transform:scale(.2) rotate(-20deg)}60%{transform:scale(1.4)}100%{transform:none}}
+.confirm{display:flex; flex-wrap:wrap; align-items:center; gap:8px; background:#fff8dc; border:2px solid var(--gold); padding:8px 10px; font-size:16px; animation:slidein .3s both}
+.confirm b{font-family:var(--f-type)}
+.confirm .btn{padding:7px 12px; font-size:15px}
+@keyframes slidein{from{transform:translateY(-8px); opacity:0}}
+.led{position:absolute; top:6px; left:6px; right:6px; display:flex; justify-content:space-between; gap:6px; pointer-events:none}
+.led span{background:var(--led-bg); color:var(--led); font-family:var(--f-type); font-weight:600; font-size:13px; padding:3px 8px; border-radius:4px; text-shadow:0 0 6px rgba(255,61,48,.6); font-variant-numeric:tabular-nums; border:2px solid #2b2420}
+.led b{font-weight:600}
+.led span.pop{animation:ledpop .5s}
+@keyframes ledpop{40%{color:#fff3a8; transform:scale(1.12)}}
+.toast{position:absolute; left:8px; right:8px; bottom:8px; background:var(--ink); color:var(--paper); font-family:var(--f-type); font-size:13px; padding:6px 10px; border-radius:4px; transform:translateY(140%); transition:transform .35s cubic-bezier(.2,1.2,.4,1); pointer-events:none}
+.toast.on{transform:none}
+body.typing .mapcard{height:0; opacity:0; margin-bottom:-10px; border-width:0}
+
+/* šalter */
+.scene{position:relative}
+.booth{position:relative; background:linear-gradient(#cfd6c4,#bfc8b4); border:3px solid var(--ink); border-bottom:0; border-radius:6px 6px 0 0; padding:26px 10px 0 56px; display:flex; gap:8px; align-items:flex-end; min-height:128px; overflow:hidden; transition:min-height .3s, padding .3s}
+.booth::before{content:""; position:absolute; inset:0; background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 38%,transparent 46%,transparent 62%,rgba(255,255,255,.22) 66%,transparent 70%); pointer-events:none; z-index:5}
+.sign{position:absolute; top:5px; left:8px; right:8px; display:flex; justify-content:space-between; gap:6px; z-index:6; pointer-events:none}
+.sign span{background:var(--ink); color:var(--paper); font-family:var(--f-type); font-size:11px; padding:2px 7px; letter-spacing:.06em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70%}
+.sign span+span{background:var(--alarm)}
+.clerk{width:104px; flex:none; position:relative; z-index:2; transition:width .3s}
+.clerk svg{display:block; width:100%; height:auto}
+.clerk .eyes{transform-origin:60px 56px; animation:blink 4.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.clerk .face{display:none}
+.clerk[data-mood="neutral"] .m-neutral,.clerk[data-mood="happy"] .m-happy,.clerk[data-mood="wow"] .m-wow,.clerk[data-mood="meh"] .m-meh,.clerk[data-mood="angry"] .m-angry,.clerk[data-mood="sleep"] .m-sleep,.clerk[data-mood="read"] .m-read{display:inline}
+.clerk[data-mood="sleep"] .eyes{animation:none; transform:scaleY(.12)}
+.clerk[data-mood="read"] .eyes{animation:readeyes .5s infinite alternate}
+@keyframes readeyes{from{transform:translate(-3px,3px)}to{transform:translate(3px,3px)}}
+.clerk.bounce svg{animation:cbounce .45s}
+@keyframes cbounce{30%{transform:translateY(-6px)}60%{transform:translateY(2px)}}
+.bubble{flex:1; align-self:center; background:#fff; border:2px solid var(--ink); border-radius:12px; padding:8px 10px; font-family:var(--f-type); font-size:14.5px; line-height:1.35; position:relative; margin-bottom:20px; min-height:52px; z-index:6}
+.bubble::before{content:""; position:absolute; left:-11px; bottom:14px; border:9px solid transparent; border-right-color:var(--ink); border-left:0}
+.bubble::after{content:""; position:absolute; left:-7px; bottom:16px; border:7px solid transparent; border-right-color:#fff; border-left:0}
+.bubble .caret{display:inline-block; width:7px; height:1em; background:var(--ink); vertical-align:-2px; margin-left:1px; animation:car .8s steps(1) infinite}
+@keyframes car{50%{opacity:0}}
+/* papir u rukama službenice i hrpa odbijenih */
+.inhand{position:absolute; left:104px; bottom:4px; width:56px; height:42px; background:var(--paper); border:1.5px solid var(--ink); border-radius:2px; z-index:3; transform:translateY(60px) rotate(-8deg); opacity:0; transition:transform .45s cubic-bezier(.3,1.3,.5,1), opacity .2s;
+  background-image:repeating-linear-gradient(transparent 0 7px,rgba(60,70,110,.35) 7px 8px); background-position:0 6px}
+.inhand.on{transform:translateY(0) rotate(-8deg); opacity:1; animation:readpaper .6s .45s infinite alternate}
+@keyframes readpaper{to{transform:translateY(-3px) rotate(-3deg)}}
+.inhand.toPile{animation:none; transform:translate(-92px,10px) rotate(-24deg) scale(.7); opacity:0; transition:transform .5s ease-in, opacity .5s .2s}
+.pile{position:absolute; left:6px; bottom:2px; width:46px; height:90px; z-index:1}
+.pile i{position:absolute; left:0; width:44px; height:10px; background:var(--paper); border:1.5px solid var(--ink); border-radius:1px}
+.pile i:last-child{animation:land .35s cubic-bezier(.2,1.5,.4,1)}
+@keyframes land{from{transform:translateY(-30px) rotate(-20deg); opacity:0}}
+.pile b{position:absolute; left:4px; font-family:var(--f-stamp); font-size:9px; color:var(--alarm)}
+.slot{position:relative; height:12px; background:var(--wood); border:3px solid var(--ink); border-top-width:2px; border-radius:0 0 4px 4px; margin-top:-10px; z-index:4}
+.slot::after{content:""; position:absolute; left:30%; right:30%; top:2px; height:4px; background:#2a170c; border-radius:2px}
+body.typing .booth{min-height:84px; padding-top:22px}
+body.typing .inhand{left:80px}
+body.typing .clerk{width:68px}
+body.typing .bubble{font-size:13px; min-height:0; margin-bottom:12px}
+
+/* pult: obrazac */
+.desk{position:relative; min-height:120px; margin-top:-4px; perspective:900px}
+.sheet{background:var(--paper); border:1px solid var(--paper-edge); box-shadow:0 12px 26px rgba(20,30,22,.3); padding:14px 14px 16px; position:relative; display:flex; flex-direction:column; gap:11px;
+  background-image:linear-gradient(transparent 31px,rgba(60,70,110,.08) 32px); background-size:100% 32px; transform-origin:50% 0}
+.sheet.eject{animation:eject .6s cubic-bezier(.2,1,.3,1) both}
+@keyframes eject{0%{transform:translateY(-110px) scale(.25,.1) rotate(-4deg); opacity:0}40%{opacity:1}70%{transform:translateY(8px) scale(1.02) rotate(.6deg)}100%{transform:none}}
+.sheet.take{animation:take .45s cubic-bezier(.6,0,.8,.4) both}
+@keyframes take{to{transform:translateY(-140px) scale(.3,.15) rotate(5deg); opacity:0}}
+.sheet.back{animation:back .5s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes back{from{transform:translateY(-120px) scale(.35) rotate(-6deg); opacity:0}}
+.sheet.yellow{border-top:6px solid var(--gold)}
+.form-no{margin:0; display:flex; justify-content:space-between; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); font-weight:700; border-bottom:2px solid var(--ink); padding-bottom:5px}
+h1,h2{font-family:var(--f-label); font-weight:700; margin:0; text-wrap:balance; line-height:1.12}
+h1{font-size:27px}
+h2{font-size:25px}
+.field{display:flex; gap:8px}
+.field input{flex:1; min-width:0; font-family:var(--f-type); font-size:18px; padding:11px; border:0; border-bottom:2px solid var(--ink); border-radius:0; background:rgba(255,255,255,.6); color:var(--ink)}
+.field input:focus{outline:none; background:#fff; box-shadow:inset 0 -3px 0 var(--stamp)}
+.btn{border:2px solid var(--ink); background:var(--ink); color:var(--paper); padding:11px 16px; font-weight:700; font-size:17px; border-radius:2px; box-shadow:3px 3px 0 rgba(0,0,0,.25); transition:transform .08s, box-shadow .08s}
+.btn:active{transform:translate(2px,2px); box-shadow:none}
+.btn.ghost{background:transparent; color:var(--ink)}
+.btn.stampy{background:var(--stamp); border-color:var(--stamp)}
+.btn:disabled{opacity:.5}
+.row{display:flex; gap:8px; flex-wrap:wrap}
+.row .btn{flex:1 1 auto}
+.timer{display:flex; align-items:center; gap:10px; font-family:var(--f-type); font-size:13px; color:var(--ink-soft)}
+.clock{width:26px; height:26px; flex:none}
+.timer .bar{flex:1; height:8px; border:1px solid var(--ink); background:#fff; overflow:hidden}
+.timer .bar i{display:block; height:100%; width:100%; background:var(--ink); transform-origin:left}
+.timer.low .bar i{background:var(--alarm)}
+.timer.low b{color:var(--alarm)}
+.timer.low .clock{animation:shake .5s infinite}
+.msg{margin:0; min-height:1.2em; color:var(--alarm); font-weight:700; font-size:14px}
+.msg:empty{display:none}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:1.5px solid var(--ink); padding:2px 8px; border-radius:20px; background:#fff}
+.chip.fire{background:var(--gold); border-color:#7a5a12; color:#2a1d02}
+.given{margin:0; font-family:var(--f-type); font-size:21px; font-weight:600; overflow-wrap:anywhere}
+.given.no{text-decoration:line-through; text-decoration-color:var(--alarm); text-decoration-thickness:3px; color:var(--ink-soft)}
+.qsmall{margin:0; font-size:14px; color:var(--ink-soft)}
+.stamp{position:absolute; right:14px; top:44px; font-family:var(--f-stamp); color:var(--stamp); border:4px double var(--stamp); border-radius:8px; padding:3px 12px 5px; font-size:24px; line-height:1.1; transform:rotate(-9deg); text-transform:uppercase; mix-blend-mode:multiply; opacity:.92; z-index:3; pointer-events:none}
+.stamp.bad{color:var(--alarm); border-color:var(--alarm); transform:rotate(6deg)}
+.stamp.gold{color:#8a6516; border-color:#8a6516}
+.stamp.hit{animation:thud .32s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes thud{from{transform:rotate(-18deg) scale(2.8); opacity:0}}
+.ans{display:flex; align-items:center; gap:10px; min-height:52px}
+.ans .given{flex:1}
+.ans .stamp{position:relative; right:auto; top:auto; flex:none; font-size:20px}
+.stamp.inline{position:relative; right:auto; top:auto; align-self:flex-start}
+.ink{position:absolute; width:7px; height:7px; border-radius:50%; background:var(--stamp); opacity:.7; pointer-events:none; animation:splat .6s ease-out forwards; z-index:4}
+.ink.bad{background:var(--alarm)}
+@keyframes splat{to{transform:translate(var(--dx),var(--dy)) scale(.4); opacity:0}}
+.meter{display:flex; flex-direction:column; gap:5px}
+.people{display:grid; grid-template-columns:repeat(20,1fr); gap:3px}
+.people i{aspect-ratio:.55; border-radius:40% 40% 2px 2px; background:#cbc6b2; transform:scaleY(.2); transform-origin:bottom; animation:grow .3s forwards}
+.people i.me{background:var(--stamp)}
+.people i.bad{background:#e3b7b2}
+@keyframes grow{to{transform:scaleY(1)}}
+.meter p{margin:0; font-size:14px; color:var(--ink-soft)}
+.meter p b{color:var(--ink)}
+.could{margin:0; font-size:14px; color:var(--ink-soft); background:#fff; border-left:4px solid var(--ok); padding:6px 10px}
+.could b{color:var(--ink); font-family:var(--f-type); font-weight:600}
+.gain{margin:0; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; font-size:14px; color:var(--ink-soft)}
+.gain b{font-family:var(--f-stamp); font-size:28px; color:var(--ink); font-variant-numeric:tabular-nums}
+.react{margin:0; font-family:var(--f-type); font-size:15px}
+.notice{margin:0; align-self:flex-start; font-family:var(--f-stamp); font-size:12px; letter-spacing:.12em; background:var(--gold); color:#2a1d02; padding:3px 10px; transform:rotate(-2deg)}
+
+/* start: automat */
+.machine{display:flex; gap:14px; align-items:center}
+.disp{width:112px; flex:none; position:relative}
+.disp .body{background:linear-gradient(#d6392b,#a6251a); border:3px solid var(--ink); border-radius:10px 10px 4px 4px; height:122px; position:relative; box-shadow:inset 0 -10px 0 rgba(0,0,0,.18)}
+.disp .scr{position:absolute; left:12px; right:12px; top:12px; height:34px; background:var(--led-bg); border-radius:3px; color:var(--led); font-family:var(--f-type); font-weight:600; font-size:21px; display:grid; place-items:center; text-shadow:0 0 6px rgba(255,61,48,.6)}
+.disp .dslot{position:absolute; left:20px; right:20px; bottom:30px; height:6px; background:#2a0e0a; border-radius:3px}
+.disp .push{position:absolute; left:50%; bottom:-14px; width:54px; height:54px; margin-left:-27px; border-radius:50%; background:radial-gradient(circle at 40% 35%,#ffe28a,var(--gold) 60%,#8a6516); border:3px solid var(--ink); font-family:var(--f-stamp); font-size:10px; color:#2a1d02; box-shadow:0 5px 0 #4a3608; z-index:2; animation:invite 1.6s infinite}
+@keyframes invite{50%{transform:scale(1.08)}}
+.disp .push.down{transform:translateY(4px); box-shadow:0 1px 0 #4a3608; animation:none}
+.ticket{position:absolute; left:22px; right:22px; top:80px; height:0; overflow:hidden; background:#fffdf3; border:1.5px dashed var(--ink-soft); border-top:0; font-family:var(--f-type); font-size:19px; font-weight:600; display:grid; place-items:center; transition:height .7s cubic-bezier(.3,1.3,.5,1); z-index:1}
+.ticket.out{height:52px}
+.rules{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; font-size:15px}
+.rules li{display:flex; gap:8px; align-items:flex-start}
+.rules b{font-family:var(--f-stamp); color:var(--stamp); font-size:13px; border:2px solid var(--stamp); border-radius:50%; width:22px; height:22px; flex:none; display:grid; place-items:center; transform:rotate(-8deg)}
+.best{margin:0; font-size:14px; color:var(--ink-soft)}
+.best b{color:var(--ink)}
+
+/* kraj */
+.decree h1{text-align:center; font-size:21px; letter-spacing:.16em; text-transform:uppercase}
+.decree .sub{margin:-6px 0 0; text-align:center; font-family:var(--f-type); font-size:12px; color:var(--ink-soft)}
+.slots{display:grid; grid-template-columns:repeat(4,1fr); gap:7px}
+.slots div{aspect-ratio:1; border:2px dashed var(--paper-edge); border-radius:50%; display:grid; place-items:center; text-align:center; font-family:var(--f-stamp); font-size:9px; line-height:1.1; padding:5px; color:var(--stamp)}
+.slots div span{opacity:0}
+.slots div.on{border:3px solid var(--stamp); animation:thud .3s cubic-bezier(.2,1.5,.4,1) both; transform:rotate(-8deg)}
+.slots div.on span,.slots div.x span{opacity:1}
+.slots div.on:nth-child(even){transform:rotate(7deg)}
+.slots div.x{border:3px solid var(--alarm); color:var(--alarm); animation:thud .3s both; transform:rotate(6deg)}
+.bigstamp{align-self:center; font-family:var(--f-stamp); border:5px double; border-radius:10px; padding:5px 18px 8px; font-size:clamp(24px,8vw,38px); white-space:nowrap; text-transform:uppercase; transform:rotate(-6deg); color:var(--alarm); border-color:var(--alarm); mix-blend-mode:multiply}
+.bigstamp.gold{color:#8a6516; border-color:#8a6516}
+.endmsg{margin:0; font-family:var(--f-type); font-size:15px; text-align:center}
+.score{margin:0; text-align:center; font-size:14px; color:var(--ink-soft)}
+.score b{font-family:var(--f-stamp); font-size:32px; color:var(--ink); display:block; line-height:1.1}
+details.sheetbox summary{cursor:pointer; font-weight:700}
+.tbl{width:100%; border-collapse:collapse; font-size:13px; margin-top:6px}
+.tbl td{padding:5px 4px; border-bottom:1px solid var(--paper-edge); vertical-align:top}
+.tbl td:first-child{width:12px; padding-right:0}
+.tbl td:nth-child(2){font-family:var(--f-type); overflow-wrap:anywhere}
+.tbl td:last-child{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:700}
+.tbl .q{display:block; font-family:var(--f-label); color:var(--ink-soft); font-size:12px}
+.dot{display:inline-block; width:10px; height:10px; border-radius:2px; margin-top:4px}
+.share{margin:0; white-space:pre-wrap; font-family:var(--f-type); font-size:13px; background:#fff; border:1px dashed var(--ink); padding:9px 11px; user-select:all}
+.note{margin:0; font-size:12px; color:#eef1e6; text-align:center}
+canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:50}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important}}
+@media (max-width:370px){h1{font-size:23px} h2{font-size:22px} .clerk{width:86px} .bubble{font-size:13px} .mapcard{height:180px}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">PEČAT!</div>
+    <div class="langs" role="group" aria-label="Verzija">
+      <button type="button" data-lang="hr">HR</button><button type="button" data-lang="ba">BiH</button><button type="button" data-lang="rs">SRB</button>
+    </div>
+    <button type="button" class="icon-btn" id="snd" aria-label="Zvuk"></button>
+  </header>
+
+  <section class="mapcard" id="mapcard" aria-label="Karta puta">
+    <svg id="map" preserveAspectRatio="xMidYMid slice"></svg>
+    <div class="led"><span>№ <b id="v-no">---</b></span><span><b id="v-ct">0/8</b></span><span><b id="v-pts">0</b> <small id="l-pts"></small></span></div>
+    <div class="toast" id="toast"></div>
+  </section>
+
+  <section class="scene" id="scene">
+    <div class="booth" id="booth">
+      <div class="sign"><span id="sign"></span><span id="sign2"></span></div>
+      <div class="pile" id="pile"></div>
+      <div class="clerk" id="clerk" data-mood="neutral">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <ellipse cx="60" cy="20" rx="17" ry="13" fill="#5a3a2a"/>
+          <path d="M18 120 Q20 88 60 84 Q100 88 102 120 Z" fill="#5d7a8c"/>
+          <path d="M48 86 L60 100 L72 86" fill="#f6f3e7"/>
+          <rect x="52" y="74" width="16" height="14" fill="#e6bf9c"/>
+          <ellipse cx="60" cy="54" rx="29" ry="31" fill="#eccaa6"/>
+          <path d="M31 50 Q33 22 60 23 Q87 22 89 50 Q80 34 60 35 Q40 34 31 50 Z" fill="#5a3a2a"/>
+          <circle cx="31" cy="58" r="5" fill="#e6bf9c"/><circle cx="89" cy="58" r="5" fill="#e6bf9c"/>
+          <g class="eyes"><ellipse cx="49" cy="56" rx="3" ry="3.6" fill="#1f252b"/><ellipse cx="71" cy="56" rx="3" ry="3.6" fill="#1f252b"/></g>
+          <g fill="none" stroke="#1f252b" stroke-width="2"><circle cx="49" cy="56" r="9"/><circle cx="71" cy="56" r="9"/><path d="M58 56 L62 56"/><path d="M40 54 L32 52"/><path d="M80 54 L88 52"/></g>
+          <g fill="none" stroke="#1f252b" stroke-width="2.4" stroke-linecap="round">
+            <g class="face m-neutral"><path d="M42 43 L55 43"/><path d="M65 43 L78 43"/><path d="M52 73 L68 73"/></g>
+            <g class="face m-happy"><path d="M42 42 Q48 38 55 42"/><path d="M65 42 Q72 38 78 42"/><path d="M50 70 Q60 80 70 70"/></g>
+            <g class="face m-wow"><path d="M42 39 Q48 34 55 39"/><path d="M65 39 Q72 34 78 39"/><ellipse cx="60" cy="74" rx="5" ry="6" fill="#7a2a24" stroke="none"/></g>
+            <g class="face m-meh"><path d="M42 44 L55 42"/><path d="M65 42 L78 44"/><path d="M51 74 Q60 70 69 74"/></g>
+            <g class="face m-angry"><path d="M42 40 L55 46"/><path d="M65 46 L78 40"/><path d="M50 76 Q60 68 70 76"/></g>
+            <g class="face m-sleep"><path d="M42 45 L55 45"/><path d="M65 45 L78 45"/><path d="M54 73 L66 73"/><text x="84" y="34" font-size="12" font-family="Archivo Black" fill="#1f252b" stroke="none">z z</text></g>
+            <g class="face m-read"><path d="M42 41 L55 44"/><path d="M65 44 L78 41"/><path d="M54 74 Q60 72 66 74"/></g>
+          </g>
+          <rect x="92" y="96" width="14" height="16" rx="2" fill="#f6f3e7" stroke="#1f252b" stroke-width="2"/><path d="M106 100 Q112 104 106 108" fill="none" stroke="#1f252b" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="inhand" id="inhand"></div>
+      <div class="bubble" id="bubble" aria-live="polite"></div>
+    </div>
+    <div class="slot"></div>
+    <div class="desk" id="desk"></div>
+  </section>
+  <p class="note" id="note"></p>
+</div>
+<canvas id="fx"></canvas>
+
+<script src="engine.js"></script>
+<script src="data_hr.js"></script>
+<script src="data_ba.js"></script>
+<script src="data_rs.js"></script>
+<script src="data_fore.js"></script>
+<script src="maps.js"></script>
+<script src="cars.js"></script>
+<script src="wiki.js"></script>
+<script>
+(function(){
+var E=window.PECAT_ENGINE, DATA=window.PECAT, MAPS=window.PECAT_MAPS, LIMIT=30, N=8;
+var END_IX=[0,1,1,2,2,3,3,4,5];
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var L={
+hr:{flag:'🇭🇷',
+ counters:['Portirnica','Pisarnica','Šalter 3','Šalter 5','Pošta','Javni bilježnik','Ured za ured','Šef odsjeka'],
+ short:['PORT','PIS','Š3','Š5','POŠTA','BILJ','UZU','ŠEF'],
+ t:{no:'VAŠ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'ŠALTER RADI 8–10',form:'Obrazac P-8',
+  title:'Skupi 8 pečata prije nego ti kažu „Dođite sutra.”',
+  rules:['Svaki broj dobiva 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi sjeti tvog odgovora, to više bodova nosi.','Krivo ili prekasno: fali vam papir, 0 bodova.'],
+  push:'PRITISNI',hello:'Dobar dan. Uzmite broj. Ne, ne taj automat. Šalim se, taj.',called:function(n){return 'Broj '+n+'! Izvolite.';},
+  best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rješenje',
+  nonsense:'To nije riječ, to je mačka hodala po tipkovnici.',notice:'OBAVIJEST',evNext:'Natrag u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vrijeme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši barem dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primjerak je dovoljan.',
+  sRare:'Rijetko',sMid:'Prolazi',sCommon:'Svi to pišu',sWrong:'Fali papir',sTime:'Pauza',sFresh:'Sumnjivo',
+  share:function(p){return 'Tako piše oko <b>'+p+' %</b> ljudi.';},fresh:'Nema ga na popisu. Službenica <b>nije sigurna</b>, ali pušta.',listed:function(n){return 'Na popisu je <b>'+n+'</b> točnih odgovora.';},noAns:'bez odgovora',
+  gain:'bodova',toNext:function(n,c){return 'Do „'+c+'” fali još '+n;},at:'Stigli ste do',start:'Čekaonica',nextC:'sljedeći',
+  streak:function(n){return 'Niz rijetkih ×'+n;},
+  byeWin:'Izvolite rješenje. I zatvorite vrata.',byeLose:'Sljedeći! Ne, ne vi. Vi dođite sutra.',decree:'Rješenje',decreeSub:function(n){return 'Klasa: P-8 · Ur. broj: '+n;},win:'PEČAT!',lose:'Dođite sutra',
+  reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
+  copy:'Kopiraj rezultat',copied:'Kopirano! Zalijepi gdje hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
+  note:'Rijetkost se računa iz pregleda članaka na Wikipediji (2025.) i procjene. Kad igra dobije igrače, računat će se iz pravih odgovora.'},
+ react:{rare:['Ovo još nitko nije napisao. Sumnjivo, ali prolazi.','Šefica je kimnula. Ne pitajte zašto.','Preskočili ste pola reda. Pravite se da nitko nije vidio.','Ovo ide ravno u arhivu. Onu dobru.'],
+  mid:['Prolazi. Sjednite tamo.','Može. Ali polako.','Pečat još ne, ali gledala vas je ljubaznije.'],
+  common:['To su svi napisali. Uzmite novi broj.','Ne budite kao svi. Mi smo već svi.','Taj obrazac imamo u 400 primjeraka.'],
+  wrong:['Fali vam papir!','To nije kod nas, to je na drugom katu.','Ovo nije u našoj nadležnosti.','Fali vam još jedna preslika.'],
+  time:['Radno vrijeme je završilo.','Pauza za marendu.','Kolegica je otišla na kavu. Sa svima.']},
+ end:['Portir vas nije pustio. Nemate razlog dolaska.','Popunili ste obrazac. Krivim kemijskim.','Uplata se obavlja u pošti. Pošta je zatvorena.','Fali vam ovjera. Bilježnik je na godišnjem.','Bili ste tako blizu. Šef je otišao 5 minuta ranije.','Rješenje stiže poštom za 60 dana.']},
+ba:{flag:'🇧🇦',
+ counters:['Portir','Općina','Šalter 2','Kanton','CIPS','Pošta','Ovjera','Šef'],
+ short:['PORT','OPĆ','Š2','KANT','CIPS','POŠTA','OVJ','ŠEF'],
+ t:{no:'TVOJ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'PAUZA ZA KAHVU 9–11',form:'Obrazac P-8',
+  title:'Skupi 8 pečata prije nego ti kažu „Dođi sutra.”',
+  rules:['Svaki broj dobije 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje raje sjeti tvog odgovora, to više bodova nosi.','Pogrešno ili prekasno: fali ti papir, 0 bodova.'],
+  push:'PRITISNI',hello:'Dobar dan. Uzmi broj, sjedi, popij kahvu. Ne žuri.',called:function(n){return 'Broj '+n+'! Hajde, bujrum.';},
+  best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rješenje',
+  nonsense:'To nije riječ, to je mačka hodala po tastaturi.',notice:'OBAVJEŠTENJE',evNext:'Nazad u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vrijeme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši barem dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primjerak je dosta.',
+  sRare:'Rijetko',sMid:'Prolazi',sCommon:'Svi to pišu',sWrong:'Fali papir',sTime:'Pauza',sFresh:'Sumnjivo',
+  share:function(p){return 'Tako piše oko <b>'+p+' %</b> raje.';},fresh:'Nema ga na spisku. Službenica <b>nije sigurna</b>, ali pušta.',listed:function(n){return 'Na spisku je <b>'+n+'</b> tačnih odgovora.';},noAns:'bez odgovora',
+  gain:'bodova',toNext:function(n,c){return 'Do „'+c+'” fali još '+n;},at:'Stigao si do',start:'Čekaonica',nextC:'sljedeći',
+  streak:function(n){return 'Niz rijetkih ×'+n;},
+  byeWin:'Evo ti rješenje. Zatvori vrata za sobom.',byeLose:'Sljedeći! Ti dođi sutra, bujrum.',decree:'Rješenje',decreeSub:function(n){return 'Broj predmeta: '+n+' · kanton nadležan';},win:'PEČAT!',lose:'Dođi sutra',
+  reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
+  copy:'Kopiraj rezultat',copied:'Kopirano! Zalijepi gdje hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
+  note:'Rijetkost se računa iz pregleda članaka na Wikipediji (2025.) i procjene. Kad igra dobije igrače, računat će se iz pravih odgovora.'},
+ react:{rare:['Ovo niko nije napisao. Imaš li ti vezu?','Šef kaže: ovaj je naš.','Preskočio si pola reda, raja ćuti.'],
+  mid:['Može. Sjedi, popij kahvu.','Prolazi, ali nemoj se žuriti.'],
+  common:['To je napisala cijela čaršija.','Uzmi novi broj, haman ti je 200.','Tako kaže svako. I komšija.'],
+  wrong:['Fali ti papir!','To nije kod nas, to je kanton.','To je drugi entitet, drugi šalter.','Fali ti ovjerena kopija.'],
+  time:['Pauza za kahvu.','Kolegica je otišla po burek.','Sistem je pao. Opet.']},
+ end:['Portir te nije pustio. Kaže da te ne zna.','Obrazac popunjen. Pogrešan obrazac.','Nije to kod nas, to je kanton. Kanton kaže: nije kod nas.','Taksa uplaćena. Na pogrešan račun.','Šef je otišao na džumu. Dođi sutra.','Ne zaboravi kahvu za kolegice.']},
+rs:{flag:'🇷🇸',
+ counters:['Portir','Opština','Šalter 4','Pisarnica','Pošta','Javni beležnik','Kancelarija za kancelarije','Šef'],
+ short:['PORT','OPŠ','Š4','PIS','POŠTA','BEL','KZK','ŠEF'],
+ t:{no:'VAŠ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'RADIMO DO 13H',form:'Obrazac P-8',
+  title:'Skupi 8 pečata pre nego što ti kažu „Dođite sutra.”',
+  rules:['Svaki broj dobija 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi seti tvog odgovora, to više bodova nosi.','Pogrešno ili prekasno: fali vam papir, 0 bodova.'],
+  push:'PRITISNI',hello:'Dobar dan. Uzmite broj. Sistem radi. Za sada.',called:function(n){return 'Broj '+n+'! Izvolite.';},
+  best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rešenje',
+  nonsense:'To nije reč, to je mačka hodala po tastaturi.',notice:'OBAVEŠTENJE',evNext:'Nazad u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vreme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši bar dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primerak je dovoljan.',
+  sRare:'Retko',sMid:'Prolazi',sCommon:'Svi to pišu',sWrong:'Fali papir',sTime:'Pauza',sFresh:'Sumnjivo',
+  share:function(p){return 'Tako piše oko <b>'+p+' %</b> ljudi.';},fresh:'Nema ga na spisku. Službenica <b>nije sigurna</b>, ali pušta.',listed:function(n){return 'Na spisku je <b>'+n+'</b> tačnih odgovora.';},noAns:'bez odgovora',
+  gain:'bodova',toNext:function(n,c){return 'Do „'+c+'” fali još '+n;},at:'Stigli ste do',start:'Čekaonica',nextC:'sledeći',
+  streak:function(n){return 'Niz retkih ×'+n;},
+  byeWin:'Izvolite rešenje. Zatvorite vrata.',byeLose:'Sledeći! Ne vi, vi dođite sutra.',decree:'Rešenje',decreeSub:function(n){return 'Broj predmeta: '+n+' · 60 radnih dana';},win:'PEČAT!',lose:'Dođite sutra',
+  reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
+  copy:'Kopiraj rezultat',copied:'Kopirano! Nalepi gde hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
+  note:'Retkost se računa iz pregleda članaka na Vikipediji (2025.) i procene. Kad igra dobije igrače, računaće se iz pravih odgovora.'},
+ react:{rare:['Ovo niko nije napisao. Imaš li ti nekog ovde?','Šef kaže: pustite ga.','Preskočio si pola reda. Niko nije video, ni ja.'],
+  mid:['Može. Sedite tamo.','Prolazi, ali bez guranja.'],
+  common:['To je napisala cela opština.','Uzmite novi broj.','Tako kažu svi. I ovaj iza vas.'],
+  wrong:['Fali vam papir!','To nije ovde, to je u zgradi preko puta.','Fali vam fotokopija.','Uplatnica je pogrešno popunjena.'],
+  time:['Pauza.','Koleginica je otišla na kafu.','Sistem je pao.']},
+ end:['Portir vas nije pustio. Nemate zakazano.','Popunili ste zahtev. Pogrešnom hemijskom.','Šalter radi do 13h. Sada je 12:59.','Fali overa. Beležnik je na slavi.','Sistem je pao baš kod vas.','Rešenje stiže za 60 radnih dana.']}
+};
+
+
+/* ---------- događaji u redu ---------- */
+function ev(id,title,line,mood,choices){return {id:id,title:title,line:line,mood:mood,choices:choices};}
+function ch(label){return {label:label,out:[].slice.call(arguments,1)};}
+function o(p,line,mood,eff){return {p:p,line:line,mood:mood,eff:eff||{}};}
+var EVENTS={
+hr:[
+ ev('baba','Baka preko reda!','Ja samo nešto pitam, sine, samo nešto pitam!','wow',[
+   ch('Pusti je',o(1,'Baka je pitala 14 stvari. Sljedeće pitanje imaš 20 sekundi.','meh',{time:20})),
+   ch('Ne puštam!',o(.5,'Baka te opalila torbom. −20 bodova i malo ponosa.','wow',{pts:-20}),o(.5,'Baka se povukla. Cijeli red ti plješće: +15.','happy',{pts:15}))]),
+ ev('veza','Kum radi na šalteru 5','Psst. Kum kaže da te može ubaciti preko reda.','happy',[
+   ch('Nazovi kuma',o(1,'Kum je sredio. Sljedeći odgovor vrijedi duplo.','happy',{mult:2})),
+   ch('Neću, pošten sam',o(1,'Pošten? Na šalteru? Službenica je toliko šokirana da ti daje +25.','wow',{pts:25}))]),
+ ev('pecat','A di je pečat?','A di je pečat? Radnici Niša nemaju pečat!','angry',[
+   ch('Traži pečat po zgradi',o(1,'Našao si ga kod portira u ladici. Hodanje te koštalo −15.','meh',{pts:-15})),
+   ch('Nacrtaj ga kemijskom',o(.5,'Nitko nije primijetio. Majstor! +30.','happy',{pts:30}),o(.5,'Šef je primijetio. Krivotvorina! −30.','angry',{pts:-30}))]),
+ ev('struja','Nestalo struje!','Sistem je pao. Opet. Čekamo da se digne.','sleep',[
+   ch('Čekaj u mraku',o(1,'Struja se vratila, službenica se odmorila. Sljedeće pitanje imaš 45 sekundi.','happy',{time:45}))]),
+ ev('kava','Kolegice idu na kavu','Mi idemo na kavu. Vratit ćemo se. Možda.','meh',[
+   ch('Daj im Bajaderu',o(1,'Bajadera otvara sva vrata. Sljedeći odgovor ×1,5 (bombonijera je koštala −10).','happy',{pts:-10,mult:1.5})),
+   ch('Čekaj strpljivo',o(1,'Vratile su se nakon 40 minuta. Sljedeće pitanje imaš 20 sekundi.','sleep',{time:20}))]),
+ ev('propuh','PROPUH!','Tko je otvorio prozor?! Dobit ću upalu!','angry',[
+   ch('Zatvori prozor',o(1,'Spasio si službenicu od upale. To se pamti: +20.','happy',{pts:20})),
+   ch('Ostavi, vruće je',o(1,'Umotala se u šal i bijesno te gleda. Sljedeće pitanje imaš 20 sekundi.','angry',{time:20}))]),
+ ev('potvrda','Fali vam potvrda','Treba vam još potvrda da nemate potvrdu.','meh',[
+   ch('Trči po potvrdu',o(1,'Donio si je. Treba ovjera. Ovjerio si. Treba preslika. −10, ali ideš dalje.','meh',{pts:-10})),
+   ch('Reci da ti je kum šef',o(.5,'Upalilo je! Nitko ne želi problem sa šefom. +25.','happy',{pts:25}),o(.5,'Šef nema kuma. −25.','angry',{pts:-25}))])
+],
+ba:[
+ ev('baba','Nana preko reda!','Ja samo nešto pitam, sine, samo nešto pitam!','wow',[
+   ch('Pusti je',o(1,'Nana je pitala 14 stvari. Sljedeće pitanje imaš 20 sekundi.','meh',{time:20})),
+   ch('Ne puštam!',o(.5,'Nana te opalila kesom. −20 bodova i malo obraza.','wow',{pts:-20}),o(.5,'Nana se povukla. Cijela raja ti plješće: +15.','happy',{pts:15}))]),
+ ev('veza','Jaran radi na šalteru 5','Psst. Jaran kaže da te može ubaciti preko reda.','happy',[
+   ch('Nazovi jarana',o(1,'Jaran je sredio. Sljedeći odgovor vrijedi duplo.','happy',{mult:2})),
+   ch('Neću, pošten sam',o(1,'Pošten? Na šalteru? Službenica je toliko šokirana da ti daje +25.','wow',{pts:25}))]),
+ ev('pecat','A gdje je pečat?','A gdje je pečat? Radnici Niša nemaju pečat!','angry',[
+   ch('Traži pečat po zgradi',o(1,'Našao si ga kod portira u ladici. Hodanje te koštalo −15.','meh',{pts:-15})),
+   ch('Nacrtaj ga hemijskom',o(.5,'Niko nije primijetio. Majstor! +30.','happy',{pts:30}),o(.5,'Šef je primijetio. Falsifikat! −30.','angry',{pts:-30}))]),
+ ev('struja','Nestalo struje!','Sistem je pao. Opet. Čekamo da se digne.','sleep',[
+   ch('Čekaj u mraku',o(1,'Struja se vratila, službenica se odmorila. Sljedeće pitanje imaš 45 sekundi.','happy',{time:45}))]),
+ ev('kava','Kolegice idu na kahvu','Mi idemo na kahvu. Vratićemo se. Možda.','meh',[
+   ch('Daj im bombonijeru',o(1,'Bombonijera otvara sva vrata. Sljedeći odgovor ×1,5 (koštala je −10).','happy',{pts:-10,mult:1.5})),
+   ch('Čekaj strpljivo',o(1,'Vratile su se nakon 40 minuta. Sljedeće pitanje imaš 20 sekundi.','sleep',{time:20}))]),
+ ev('propuh','PROMAHA!','Ko je otvorio prozor?! Dobiću upalu!','angry',[
+   ch('Zatvori prozor',o(1,'Spasio si službenicu od upale. To se pamti: +20.','happy',{pts:20})),
+   ch('Ostavi, vruće je',o(1,'Umotala se u šal i bijesno te gleda. Sljedeće pitanje imaš 20 sekundi.','angry',{time:20}))]),
+ ev('potvrda','Nije to kod nas','Nije to kod nas, to je kanton. Kanton kaže: nije kod nas.','meh',[
+   ch('Idi u kanton',o(1,'Bio si u kantonu. Vratili su te ovdje. −10, ali ideš dalje.','meh',{pts:-10})),
+   ch('Reci da ti je jaran šef',o(.5,'Upalilo je! Niko neće belaj sa šefom. +25.','happy',{pts:25}),o(.5,'Šef nema jarana. −25.','angry',{pts:-25}))])
+],
+rs:[
+ ev('baba','Baba preko reda!','Ja samo nešto da pitam, sine, samo nešto da pitam!','wow',[
+   ch('Pusti je',o(1,'Baba je pitala 14 stvari. Sledeće pitanje imaš 20 sekundi.','meh',{time:20})),
+   ch('Ne puštam!',o(.5,'Baba te opalila cegerom. −20 bodova i malo ponosa.','wow',{pts:-20}),o(.5,'Baba se povukla. Ceo red ti aplaudira: +15.','happy',{pts:15}))]),
+ ev('veza','Kum radi na šalteru 5','Psst. Kum kaže da može da te ubaci preko reda.','happy',[
+   ch('Pozovi kuma',o(1,'Kum je sredio. Sledeći odgovor vredi duplo.','happy',{mult:2})),
+   ch('Neću, pošten sam',o(1,'Pošten? Na šalteru? Službenica je toliko šokirana da ti daje +25.','wow',{pts:25}))]),
+ ev('pecat','A gde je pečat?','A gde je pečat? Radnici Niša nemaju pečat!','angry',[
+   ch('Traži pečat po zgradi',o(1,'Našao si ga kod portira u fioci. Hodanje te koštalo −15.','meh',{pts:-15})),
+   ch('Nacrtaj ga hemijskom',o(.5,'Niko nije primetio. Majstor! +30.','happy',{pts:30}),o(.5,'Šef je primetio. Falsifikat! −30.','angry',{pts:-30}))]),
+ ev('struja','Nestalo struje!','Sistem je pao. Opet. Čekamo da se digne.','sleep',[
+   ch('Čekaj u mraku',o(1,'Struja se vratila, službenica se odmorila. Sledeće pitanje imaš 45 sekundi.','happy',{time:45}))]),
+ ev('kava','Koleginice idu na kafu','Mi idemo na kafu. Vratićemo se. Možda.','meh',[
+   ch('Daj im bombonjeru',o(1,'Bombonjera otvara sva vrata. Sledeći odgovor ×1,5 (koštala je −10).','happy',{pts:-10,mult:1.5})),
+   ch('Čekaj strpljivo',o(1,'Vratile su se posle 40 minuta. Sledeće pitanje imaš 20 sekundi.','sleep',{time:20}))]),
+ ev('propuh','PROMAJA!','Ko je otvorio prozor?! Dobiću upalu!','angry',[
+   ch('Zatvori prozor',o(1,'Spasio si službenicu od upale. To se pamti: +20.','happy',{pts:20})),
+   ch('Ostavi, vruće je',o(1,'Umotala se u šal i besno te gleda. Sledeće pitanje imaš 20 sekundi.','angry',{time:20}))]),
+ ev('potvrda','Fali vam potvrda','Treba vam još potvrda da nemate potvrdu.','meh',[
+   ch('Trči po potvrdu',o(1,'Doneo si je. Treba overa. Overio si. Treba fotokopija. −10, ali ideš dalje.','meh',{pts:-10})),
+   ch('Reci da ti je kum šef',o(.5,'Upalilo je! Niko neće problem sa šefom. +25.','happy',{pts:25}),o(.5,'Šef nema kuma. −25.','angry',{pts:-25}))])
+]};
+var NAG={hr:["Je l' ćemo danas?",'Iza vas je red do Karlovca.','Polako, polako. Imamo cijeli dan. Vi nemate.'],
+ ba:['Hoćemo li danas, jarane?','Red je do Baščaršije.','Polahko, ali ne baš toliko.'],
+ rs:["Je l' ćemo danas?",'Red je do Slavije.','Polako, ali ne baš toliko.']};
+var MORE={
+ hr:{rare:['E, to je odgovor. Kao da ste rođeni u ovom uredu.','Ovo ću ispričati kolegicama na kavi.'],common:['To bi i moja svekrva napisala.','Svi ste isti. Kao obrasci.'],wrong:['A di je pečat?','Ovo je za drugi šalter. Koji ne radi.','Niste ponijeli domovnicu?']},
+ ba:{rare:['E, ovo je odgovor! Kao da si rođen u ovoj općini.','Ovo ću ispričati kolegicama na kahvi.'],common:['To bi i moja jetrva napisala.','Svi ste isti, k\'o obrasci.'],wrong:['A gdje je pečat?','Ovo je za drugi šalter. Koji ne radi.','Nisi ponio CIPS potvrdu?']},
+ rs:{rare:['E, ovo je odgovor! Kao da ste rođeni u ovoj opštini.','Ovo ću da ispričam koleginicama na kafi.'],common:['To bi i moja svekrva napisala.','Svi ste isti, k\'o obrasci.'],wrong:['A gde je pečat?','Ovo je za drugi šalter. Koji ne radi.','Niste poneli izvod?']}};
+
+
+var ROUTE={
+hr:[
+ {c:'Zagreb',o:'Portirnica ministarstva',q:'Zagreb, Ministarstvo. Portir kaže: „Kod koga idete?”'},
+ {c:'Varaždin',o:'Arhiva',q:'Arhiva je u Varaždinu. Naravno. Gdje bi drugdje bila.'},
+ {c:'Osijek',o:'Matični ured',q:'Rodni list izdaju samo u Osijeku. Vlak vozi 5 sati.'},
+ {c:'Vukovar',o:'Ured za preslike',q:'Preslika se ovjerava u Vukovaru. U prizemlju. Lift ne radi.'},
+ {c:'Karlovac',o:'Porezna',q:'Kolona na Lučkom. Porezna u Karlovcu radi do 12.'},
+ {c:'Gospić',o:'Ovjera',q:'Ovjera u Gospiću. Bura na Velebitu, zatvoreno za kamp kućice.'},
+ {c:'Split',o:'Županijski ured',q:'Šef je u Splitu. Na marendi. Polako.'},
+ {c:'Dubrovnik',o:'Šef odsjeka',q:'Pečat je u Dubrovniku. Sat vremena na Pelješkom mostu zbog turista.'}],
+ba:[
+ {c:'Sarajevo',o:'Općina Centar',q:'Sarajevo, općina. Portir kaže: „A kome ćeš ti?”'},
+ {c:'Zenica',o:'Kanton',q:'Nije to kod nas, to je kanton. Idi u Zenicu.'},
+ {c:'Tuzla',o:'Matični ured',q:'Rodni list je u Tuzli. Kombi ide u 6 ujutro.'},
+ {c:'Banja Luka',o:'Drugi entitet',q:'Treba ti potvrda iz drugog entiteta. Banja Luka, sretno.'},
+ {c:'Bihać',o:'CIPS',q:'CIPS radi samo u Bihaću. Utorkom. Kad nije praznik.'},
+ {c:'Livno',o:'Kanton 10',q:'Kanton 10 ima svoj obrazac. I svoj sir. Idi u Livno.'},
+ {c:'Mostar',o:'Ovjera',q:'Ovjera u Mostaru. Preko Starog mosta, pa lijevo.'},
+ {c:'Neum',o:'Šef',q:'Šef je u Neumu. Jedini šalter na moru. Na plaži je.'}],
+rs:[
+ {c:'Novi Sad',o:'Opština',q:'Novi Sad, opština. Portir pita: „Kod koga ste?”'},
+ {c:'Subotica',o:'Arhiva',q:'Arhiva je u Subotici. Faks ne radi od 1998.'},
+ {c:'Beograd',o:'Pisarnica',q:'Pisarnica u Beogradu. Gužva na Gazeli dva sata.'},
+ {c:'Kragujevac',o:'Pošta',q:'Uplatnica se plaća u Kragujevcu. Pošta radi do 13h.'},
+ {c:'Kraljevo',o:'Matična služba',q:'Izvod iz Kraljeva. Vozom četiri sata, ako ide.'},
+ {c:'Užice',o:'Overa',q:'Overa u Užicu. Usput uzmi kajmak za šalter.'},
+ {c:'Niš',o:'Pečatoteka',q:'Pečat je u Nišu. Ali radnici Niša nemaju pečat!'},
+ {c:'Beograd',o:'Ministarstvo',q:'Nazad u Beograd. Ministarstvo radi do 13h. Sad je 12:58.'}]
+};
+var EXTRA={
+hr:{didYou:'Misliš li',yes:'Da, potvrdi',fix:'Ispravit ću',toGo:'do sljedećeg',reading:['Hmm… da vidimo…','Čekajte, čitam. Polako.','Hmmm. Gdje su mi naočale…'],lateRead:'Vrijeme je isteklo. Prazan obrazac?',arrive:'Stigli ste do šefa. Ruka mu je već na pečatu.'},
+ba:{didYou:'Misliš li',yes:'Da, potvrdi',fix:'Ispraviću',toGo:'do sljedećeg',reading:['Hmm… da vidimo…','Čekaj, čitam. Polahko.','Hmmm. Gdje su mi naočale…'],lateRead:'Vrijeme isteklo. Prazan obrazac?',arrive:'Stigao si do šefa. Ruka mu je već na pečatu.'},
+rs:{didYou:'Misliš li',yes:'Da, potvrdi',fix:'Ispraviću',toGo:'do sledećeg',reading:['Hmm… da vidimo…','Čekajte, čitam. Polako.','Hmmm. Gde su mi naočare…'],lateRead:'Vreme je isteklo. Prazan zahtev?',arrive:'Stigli ste do šefa. Ruka mu je već na pečatu.'}};
+['hr','ba','rs'].forEach(function(l){ for(var k in EXTRA[l]) L[l].t[k]=EXTRA[l][k]; });
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function wait(ms){return new Promise(function(r){setTimeout(r,RM?Math.min(ms,30):ms);});}
+
+/* ---------- zvuk ---------- */
+var AC=null, soundOn=store('pecat:sound')!==false;
+function ac(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
+function tone(f,d,type,vol,slide){ if(!soundOn)return; var c=ac(); if(!c)return; var o=c.createOscillator(),g=c.createGain(),t=c.currentTime;
+  o.type=type||'sine'; o.frequency.setValueAtTime(f,t); if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);
+  g.gain.setValueAtTime(vol||.2,t); g.gain.exponentialRampToValueAtTime(.001,t+d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d); }
+function noise(d,vol,freq,type){ if(!soundOn)return; var c=ac(); if(!c)return; var n=Math.floor(c.sampleRate*d), b=c.createBuffer(1,n,c.sampleRate), x=b.getChannelData(0);
+  for(var i=0;i<n;i++)x[i]=(Math.random()*2-1)*Math.pow(1-i/n,3); var s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
+  f.type=type||'lowpass'; f.frequency.value=freq||900; g.gain.value=vol||.6; s.buffer=b; s.connect(f); f.connect(g); g.connect(c.destination); s.start(); }
+var SFX={
+  stamp:function(){noise(.18,.9,700); tone(90,.18,'sine',.5,45);},
+  ding:function(){tone(880,.5,'triangle',.18); setTimeout(function(){tone(660,.6,'triangle',.16);},180);},
+  bad:function(){tone(150,.35,'sawtooth',.12,90);},
+  tick:function(){tone(1500,.04,'square',.05);},
+  key:function(){tone(500+Math.random()*300,.025,'square',.015);},
+  win:function(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){tone(f,.35,'triangle',.18);},i*120);});},
+  paper:function(){noise(.25,.35,2500,'highpass');},
+  ticket:function(){noise(.5,.15,3000);},
+  car:function(){tone(70,.9,'sawtooth',.05,110);},
+  whoosh:function(){noise(.6,.5,1200,'bandpass');}
+};
+function sndIcon(){ $('snd').innerHTML=soundOn?'<svg viewBox="0 0 24 24" fill="none" stroke="#1f252b" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#1f252b"/><path d="M16 8q3 4 0 8M19 5q6 7 0 14"/></svg>'
+  :'<svg viewBox="0 0 24 24" fill="none" stroke="#1f252b" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#1f252b"/><path d="M16 9l6 6M22 9l-6 6"/></svg>';
+  $('snd').setAttribute('aria-pressed',soundOn?'true':'false'); }
+
+/* ---------- efekti ---------- */
+var fx=$('fx'), fctx=fx.getContext('2d'), parts=[], fxRun=false;
+function fxStart(){ if(!fxRun){fxRun=true; requestAnimationFrame(step);} }
+function confetti(){ if(RM)return; fx.width=innerWidth; fx.height=innerHeight;
+  var cols=['#3b37a6','#f6f3e7','#c99a2e','#b3271d','#2e6b3f'];
+  for(var i=0;i<150;i++)parts.push({k:'c',x:Math.random()*fx.width,y:-20-Math.random()*fx.height*.6,w:8+Math.random()*10,h:5+Math.random()*7,vx:-1+Math.random()*2,vy:2+Math.random()*3,r:Math.random()*6,vr:-.2+Math.random()*.4,c:pick(cols)});
+  fxStart(); }
+// papiri u facu: listovi lete iz šaltera prema ekranu i rastu
+function papersInFace(n,from){ if(RM)return; fx.width=innerWidth; fx.height=innerHeight;
+  for(var i=0;i<n;i++)parts.push({k:'p',t:-i*5,x:from.x,y:from.y,tx:Math.random()*fx.width,ty:Math.random()*fx.height*.9,r:Math.random()*2-1,vr:(Math.random()-.5)*.08,life:0});
+  fxStart(); }
+function drawSheet(p){ var s=p.s, w=110*s, h=140*s;
+  fctx.save(); fctx.translate(p.x,p.y); fctx.rotate(p.r); fctx.globalAlpha=Math.max(0,Math.min(1,p.a));
+  fctx.fillStyle='#f6f3e7'; fctx.strokeStyle='#1f252b'; fctx.lineWidth=Math.max(1,2*s); fctx.fillRect(-w/2,-h/2,w,h); fctx.strokeRect(-w/2,-h/2,w,h);
+  fctx.strokeStyle='rgba(60,70,110,.35)'; fctx.lineWidth=Math.max(.5,s); for(var k=1;k<8;k++){fctx.beginPath(); fctx.moveTo(-w/2+8*s,-h/2+k*h/8); fctx.lineTo(w/2-8*s,-h/2+k*h/8); fctx.stroke();}
+  fctx.strokeStyle='#b3271d'; fctx.lineWidth=3*s; fctx.beginPath(); fctx.ellipse(w*.12,-h*.05,w*.28,h*.12,-.3,0,7); fctx.stroke();
+  fctx.restore(); }
+function step(){ fctx.clearRect(0,0,fx.width,fx.height);
+  parts=parts.filter(function(p){ return p.k==='c'? p.y<fx.height+30 : p.life<120; });
+  parts.forEach(function(p){
+    if(p.k==='c'){p.x+=p.vx+Math.sin(p.y/40); p.y+=p.vy; p.r+=p.vr; fctx.save(); fctx.translate(p.x,p.y); fctx.rotate(p.r); fctx.fillStyle=p.c; fctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); fctx.restore();}
+    else { p.t++; if(p.t<0)return; p.life++; var k=Math.min(1,p.life/40), e=1-Math.pow(1-k,3);
+      p.x=p.x+(p.tx-p.x)*.12; p.y=p.y+(p.ty-p.y)*.12+(p.life>70?(p.life-70)*1.2:0); p.r+=p.vr;
+      p.s=.25+e*3.2; p.a=p.life<70?1:1-(p.life-70)/50; drawSheet(p); }
+  });
+  if(parts.length)requestAnimationFrame(step); else {fxRun=false; fctx.clearRect(0,0,fx.width,fx.height);} }
+function inkSplat(el,bad){ if(RM||!el)return; var host=el.parentNode, r=el.getBoundingClientRect(), hr=host.getBoundingClientRect();
+  for(var i=0;i<10;i++){var d=document.createElement('span'); d.className='ink'+(bad?' bad':''); var a=Math.random()*Math.PI*2, dist=30+Math.random()*50;
+    d.style.left=(r.left-hr.left+r.width/2)+'px'; d.style.top=(r.top-hr.top+r.height/2)+'px'; d.style.setProperty('--dx',Math.cos(a)*dist+'px'); d.style.setProperty('--dy',Math.sin(a)*dist+'px');
+    host.appendChild(d); setTimeout(function(n){n.remove();}.bind(null,d),700);} }
+function shake(el){ if(RM||!el)return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+function anim(el,cls){ return new Promise(function(res){ if(!el){res();return;} el.classList.remove('eject','take','back'); void el.offsetWidth; el.classList.add(cls);
+  if(RM){res();return;} var done=false; el.addEventListener('animationend',function f(){ if(done)return; done=true; el.removeEventListener('animationend',f); res(); }); setTimeout(function(){ if(!done){done=true;res();} },900); }); }
+function countTo(el,to){ var from=+el.dataset.v||0; el.dataset.v=to; if(from===to||RM){el.textContent=to;return;}
+  var t0=performance.now(), dur=600, box=el.parentNode; box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
+  (function f(t){var k=Math.min(1,(t-t0)/dur), v=Math.round(from+(to-from)*(1-Math.pow(1-k,3))); el.textContent=v; if(k<1)requestAnimationFrame(f);})(t0); }
+
+/* ---------- službenica ---------- */
+var typeTimer=null;
+function say(text,mood){
+  var b=$('bubble'), c=$('clerk');
+  if(mood){c.dataset.mood=mood; c.classList.remove('bounce'); void c.offsetWidth; c.classList.add('bounce');}
+  clearInterval(typeTimer);
+  if(RM){b.textContent='„'+text+'”';return;}
+  var full='„'+text+'”', i=0; b.innerHTML='<span></span><i class="caret"></i>'; var sp=b.firstChild;
+  typeTimer=setInterval(function(){ i++; sp.textContent=full.slice(0,i); if(i%4===0)SFX.key(); if(i>=full.length){clearInterval(typeTimer); setTimeout(function(){var cr=b.querySelector('.caret'); if(cr)cr.remove();},700);} },20);
+}
+function pileDraw(n,animate){ var h=''; for(var i=0;i<Math.min(n,12);i++) h+='<i style="bottom:'+(i*5)+'px;transform:rotate('+((i*37%11)-5)+'deg)"></i>'; if(n) h+='<b style="bottom:'+(Math.min(n,12)*5+12)+'px">'+n+'×</b>'; $('pile').innerHTML=h; if(!animate){var l=$('pile').querySelector('i:last-of-type'); if(l)l.style.animation='none';} }
+
+/* ---------- karta ---------- */
+var camera={x:0,y:0,w:100,h:100}, camAnim=null, carPos=null, carDir=1;
+function mapData(){ return MAPS[S.lang]; }
+function cityPts(){ return mapData().cities.map(function(c){return {n:c[0],x:c[1],y:c[2]};}); }
+function buildMap(){
+  var m=mapData(), P=cityPts(), svg=$('map');
+  var routeAll='M'+P.map(function(p){return p.x+','+p.y;}).join('L');
+  var h='<path class="nb" d="'+m.nb+'"/><path class="main" d="'+m.main+'"/>'+
+    '<path class="route-bg" d="'+routeAll+'"/><path class="route-done" id="rdone" d=""/>';
+  P.forEach(function(p,i){
+    var lx=p.x+14, anchor='start'; if(p.x>m.box[0]+m.box[2]*.72){lx=p.x-14; anchor='end';}
+    h+='<g class="city" id="city'+i+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="10"/><text class="num" x="'+p.x+'" y="'+(p.y+.5)+'" font-size="11">'+(i+1)+'</text>'+
+       '<text x="'+lx+'" y="'+(p.y+5)+'" font-size="15" text-anchor="'+anchor+'">'+esc(p.n)+'</text></g>';
+  });
+  h+='<g id="car"><ellipse cx="0" cy="4" rx="26" ry="5" fill="rgba(0,0,0,.18)"/><g id="carflip"><g id="carbody"></g></g></g>';
+  svg.innerHTML=h;
+  carPos=null; drawCar();
+}
+function setView(cx,cy,w,instant){
+  var mc=$('mapcard'), ar=(mc.clientWidth||360)/(mc.clientHeight||200);
+  var h=w/ar, target={x:cx-w/2,y:cy-h/2,w:w,h:h};
+  if(instant||RM){camera=target; applyCam(); return;}
+  var from={x:camera.x,y:camera.y,w:camera.w,h:camera.h}, t0=performance.now(), dur=1100;
+  cancelAnimationFrame(camAnim);
+  (function f(t){ var k=Math.min(1,(t-t0)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    camera={x:from.x+(target.x-from.x)*e,y:from.y+(target.y-from.y)*e,w:from.w+(target.w-from.w)*e,h:from.h+(target.h-from.h)*e}; applyCam();
+    if(k<1)camAnim=requestAnimationFrame(f); })(t0);
+}
+function applyCam(){ var svg=$('map'); svg.setAttribute('viewBox',camera.x+' '+camera.y+' '+camera.w+' '+camera.h);
+  var mc=$('mapcard'), k=camera.w/((mc&&mc.clientWidth)||360), fs=14*k, rr=10*k;
+  Array.prototype.forEach.call(svg.querySelectorAll('.city'),function(g){ var c=g.querySelector('circle'), tx=g.querySelectorAll('text'); c.setAttribute('r',rr);
+    tx[0].setAttribute('font-size',11*k); var cx=+c.getAttribute('cx'), lab=tx[1]; lab.setAttribute('font-size',fs); lab.style.display=k>1.05?'none':''; lab.setAttribute('x',cx+(lab.getAttribute('text-anchor')==='end'?-1:1)*(rr+4*k)); });
+  var car=$('car'); if(car&&carPos) car.setAttribute('transform','translate('+carPos.x+','+(carPos.y-rr*1.2)+') scale('+(k*1.1)+')');
+  var fl=$('carflip'); if(fl) fl.setAttribute('transform',carDir<0?'scale(-1,1)':'');
+  var rd=$('rdone'); if(rd) rd.style.strokeWidth=5*k; var rb=svg.querySelector('.route-bg'); if(rb){rb.style.strokeWidth=3*k; rb.style.strokeDasharray=(2*k)+' '+(8*k);}
+  svg.querySelectorAll('.main').forEach(function(m){m.style.strokeWidth=2.2*k;}); }
+function overview(instant){ var b=mapData().box; setView(b[0]+b[2]/2,b[1]+b[3]/2+b[3]*.02,Math.max(b[2],b[3]*((($('mapcard').clientWidth||360)/($('mapcard').clientHeight||200))))*1.04,instant); }
+function placeCar(x,y){ carPos={x:x,y:y}; applyCam(); }
+function mapState(reached,miss){
+  var P=cityPts(); if(!$('city0'))buildMap();
+  P.forEach(function(p,i){ var g=$('city'+i); g.setAttribute('class','city'+(i<reached?' done':'')+(i===reached&&miss&&S.phase==='end'?' miss':'')+(i===Math.min(reached,7)&&S.phase!=='start'&&S.phase!=='end'?' here':'')); });
+  var d=reached>0?'M'+P.slice(0,Math.min(reached,7)+1).map(function(p){return p.x+','+p.y;}).join('L'):'';
+  $('rdone').setAttribute('d',reached>=8?'M'+P.map(function(p){return p.x+','+p.y;}).join('L'):d);
+}
+// vožnja do sljedećeg grada: auto ide po ruti, kamera prati
+function travel(fromI,toI,quip){
+  return new Promise(function(res){
+    var P=cityPts(), a=P[fromI], b=P[toI]; carDir=b.x<a.x?-1:1;
+    showToast(quip);
+    if(RM){placeCar(b.x,b.y); setView(b.x,b.y,340,true); res(); return;}
+    SFX.car();
+    var t0=performance.now(), dur=1500, w=340;
+    (function f(t){ var k=Math.min(1,(t-t0)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2, x=a.x+(b.x-a.x)*e, y=a.y+(b.y-a.y)*e;
+      placeCar(x,y); var mc=$('mapcard'), ar=(mc.clientWidth||360)/(mc.clientHeight||200); var ww=w+Math.hypot(b.x-a.x,b.y-a.y)*.8*Math.sin(Math.PI*k);
+      camera={x:x-ww/2,y:y-ww/ar/2,w:ww,h:ww/ar}; applyCam();
+      if(k<1)requestAnimationFrame(f); else setTimeout(res,350); })(t0);
+  });
+}
+async function moveCar(){ var tgt=Math.min(E.reached(total()),7); if(S.carAt===undefined)S.carAt=0; if(tgt>S.carAt){ var from=S.carAt; S.carAt=tgt; await travel(from,tgt,E.reached(total())>=8?T().arrive:C()[tgt].q); } }
+var toastT=null;
+function showToast(t){ var el=$('toast'); if(!t){el.classList.remove('on');return;} el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){el.classList.remove('on');},3200); }
+
+
+/* ---------- auti: što bolje ide, to bolji auto ---------- */
+var CARNAME={hr:['Traktor','Fićo','Jugo','Golf dvojka','Passat karavan','BMW'],ba:['Traktor','Fićo','Jugo','Golf dvica','Passat karavan','Mercedes'],rs:['Traktor','Fića','Jugo','Stojadin','Passat karavan','BMW']};
+var CARMSG={hr:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crkao. Sad voziš: {b}.',chip:'Auto: {b}'},ba:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crk'+'o. Sad voziš: {b}.',chip:'Auto: {b}'},rs:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crkao. Sad voziš: {b}.',chip:'Auto: {b}'}};
+function carArt(tier){
+  var img=(window.PECAT_CAR_IMG||{})[tier];
+  if(img) return '<image href="'+img+'" x="-26" y="-26" width="52" height="30" preserveAspectRatio="xMidYMax meet"/>';
+  var W='<circle cx="CX" cy="2" r="R" fill="#1f252b"/><circle cx="CX" cy="2" r="r" fill="#c9c9c9"/>';
+  function wheel(cx,R,r){return W.replace(/CX/g,cx).replace('R"',R+'"').replace('r"',r+'"');}
+  var o='stroke="#1f252b" stroke-width="1.6" stroke-linejoin="round"';
+  switch(tier){
+   case 0: return '<g class="smoke"><circle cx="-8" cy="-24" r="3" fill="#888" opacity=".6"/><circle cx="-5" cy="-30" r="4" fill="#999" opacity=".45"/></g>'+
+     '<rect x="-9" y="-22" width="3" height="10" fill="#1f252b"/><path d="M-14 -2 L-14 -14 L2 -14 L4 -20 L14 -20 L16 -6 L22 -6 L22 -2 Z" fill="#c8321f" '+o+'/><rect x="5" y="-18" width="8" height="8" fill="#cfe6ee" '+o+'/>'+wheel(-6,10,4)+wheel(17,5,2);
+   case 1: return '<path d="M-17 0 L-17 -6 Q-15 -16 -4 -17 Q8 -17 12 -9 L17 -7 L17 0 Z" fill="#8fc3dd" '+o+'/><path d="M-11 -8 Q-9 -14 -3 -14 L5 -14 Q8 -13 9 -8 Z" fill="#e8f4f8" '+o+'/>'+wheel(-9,4.5,2)+wheel(10,4.5,2);
+   case 2: return '<path d="M-19 0 L-19 -8 L-12 -17 L8 -17 L13 -9 L19 -8 L19 0 Z" fill="#d23a2a" '+o+'/><path d="M-10 -9 L-7 -14 L6 -14 L9 -9 Z" fill="#e8f4f8" '+o+'/>'+wheel(-11,5,2)+wheel(11,5,2);
+   case 3: return '<path d="M-21 0 L-21 -9 L-15 -18 L9 -18 L14 -10 L21 -9 L21 0 Z" fill="#f3f1ea" '+o+'/><path d="M-14 -10 L-11 -15 L1 -15 L1 -10 Z M3 -10 L3 -15 L8 -15 L11 -10 Z" fill="#9bc6d6" '+o+'/><rect x="-21" y="-6" width="42" height="2.5" fill="#1f252b"/>'+wheel(-12,5,2.2)+wheel(12,5,2.2);
+   case 4: return '<rect x="-16" y="-25" width="22" height="6" rx="2" fill="#8a5a3a" '+o+'/><path d="M-25 0 L-25 -16 L8 -18 L16 -10 L25 -8 L25 0 Z" fill="#8f979c" '+o+'/><path d="M-22 -10 L-22 -15 L6 -15 L11 -10 Z" fill="#cfe6ee" '+o+'/>'+wheel(-14,5,2.2)+wheel(15,5,2.2);
+   default: return '<path d="M-26 0 L-26 -8 L-14 -10 L-6 -17 L8 -17 L14 -10 L26 -7 L26 0 Z" fill="#23365c" '+o+'/><path d="M-4 -11 L-1 -15 L7 -15 L11 -11 Z" fill="#9bc6d6" '+o+'/><path d="M22 -6 L26 -6" stroke="#ffd36b" stroke-width="2"/>'+wheel(-15,5.5,2.4)+wheel(16,5.5,2.4)+'<path d="M-36 -6 L-28 -6 M-38 -2 L-29 -2" stroke="#fff" stroke-width="1.5" class="speed"/>';
+  }
+}
+function carTier(){ var n=S.results.length; if(!n) return 1; var sum=total(); var avg=sum/n;
+  return avg<35?0:avg<55?1:avg<70?2:avg<82?3:avg<92?4:5; }
+function drawCar(){ var g=$('carbody'); if(g) g.innerHTML=carArt(S.car===undefined?1:S.car); }
+
+/* ---------- stanje ---------- */
+var S={lang:'hr',phase:'start',ids:[],idx:0,results:[],used:{},ticket:0,streak:0,bonus:[],mod:{},evAt:[],evSeen:[],ev:null,pile:0,car:1};
+var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
+['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
+
+function T(){return L[S.lang].t;}
+function C(){return ROUTE[S.lang];}
+function pool(){ var out=[]; DATA[S.lang].forEach(function(day,d){day.forEach(function(q,i){out.push({id:S.lang+'-'+(d+1)+'-'+(i+1),q:q});});}); return out; }
+function worldPool(){ return ((window.PECAT_WORLD||{})[S.lang]||[]).map(function(q,i){return {id:'w-'+S.lang+'-'+i,q:q};}); }
+function forePool(){ return (window.PECAT_FORE[S.lang]||[]).map(function(q,i){return {id:'f-'+S.lang+'-'+i,q:q};}); }
+function byId(id){ var p=id.split('-'); if(p[0]==='f') return window.PECAT_FORE[p[1]][+p[2]]; if(p[0]==='w') return window.PECAT_WORLD[p[1]][+p[2]]; return DATA[p[0]][+p[1]-1][+p[2]-1]; }
+function curQ(){ return byId(S.ids[S.idx]); }
+function drawQuestions(){
+  var all=pool(), seen=store('pecat:seen:'+S.lang)||[], fresh=all.filter(function(x){return seen.indexOf(x.id)<0;});
+  if(fresh.length<N){ seen=[]; fresh=all; }
+  var fp=forePool(), ff=fp.filter(function(x){return seen.indexOf(x.id)<0;}); if(ff.length<2) ff=fp;
+  var fore=shuffle(ff).slice(0,2).map(function(x){return x.id;});
+  var wp=worldPool(), wf=wp.filter(function(x){return seen.indexOf(x.id)<0;}); if(!wf.length) wf=wp;
+  if(wf.length && Math.random()<.6) fore.push(pick(wf).id);
+  var NR=N-fore.length;
+  var picked=[], usedHead={}, ADJ=/^(hrvatsk|bosansk|srpsk|domać|domac|poznat|tradicionaln|neš|nes)/i;
+  shuffle(fresh).forEach(function(x){ if(picked.length>=NR)return; var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); var head=(w[0]||'').toLowerCase(); if(usedHead[head])return; usedHead[head]=1; picked.push(x.id); });
+  shuffle(fresh).forEach(function(x){ if(picked.length<NR && picked.indexOf(x.id)<0) picked.push(x.id); });
+  picked=picked.concat(fore);
+  store('pecat:seen:'+S.lang, seen.concat(picked).slice(-72));
+  return shuffle(picked);
+}
+function total(){var t=S.results.reduce(function(a,r){return a+r.pts;},0)+S.bonus.reduce(function(a,b){return a+b.pts;},0); return Math.max(0,t);}
+function reached(){ return S.phase==='start'?0:E.reached(total()); }
+
+function chrome(){
+  var t=T(), r=reached();
+  document.documentElement.lang=S.lang==='rs'?'sr-Latn':(S.lang==='ba'?'bs':'hr');
+  Array.prototype.forEach.call(document.querySelectorAll('.langs button'),function(b){b.setAttribute('aria-pressed',b.dataset.lang===S.lang?'true':'false');});
+  $('l-pts').textContent=t.pts.toLowerCase();
+  $('v-no').textContent=S.ticket?S.ticket:'---';
+  $('v-ct').textContent=r+'/8';
+  countTo($('v-pts'),S.phase==='start'?0:total());
+  var cur=C()[Math.min(r,7)];
+  $('sign').textContent=(S.phase==='start')?t.sign:('► '+cur.c.toUpperCase()+' · '+cur.o.toUpperCase());
+  $('sign2').textContent=S.phase==='start'||S.phase==='end'?'':(r<8?(E.toNext(total())+' '+t.toGo):'');
+  $('sign2').style.display=$('sign2').textContent?'':'none';
+  mapState(r, false);
+  $('note').textContent=t.note;
+}
+
+function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
+function startTimer(){
+  stopTimer(); CUR=(S.mod&&S.mod.time)||LIMIT; deadline=Date.now()+CUR*1000; lastTick=CUR;
+  tick=setInterval(function(){
+    var left=Math.max(0,deadline-Date.now()), box=document.querySelector('.timer');
+    if(!box){stopTimer();return;}
+    box.querySelector('.bar i').style.transform='scaleX('+(left/(CUR*1000))+')';
+    box.querySelector('.hand').setAttribute('transform','rotate('+(360*(1-left/(CUR*1000)))+' 13 13)');
+    var s=Math.ceil(left/1000); box.querySelector('b').textContent=s;
+    if(s<=5 && s<lastTick && s>0){SFX.tick();}
+    if(s===16 && lastTick>16) say(pick(NAG[S.lang]),'meh');
+    if(s===6 && lastTick>6) say(pick(L[S.lang].react.time),'sleep');
+    lastTick=s; box.classList.toggle('low',left<8000);
+    if(left<=0){stopTimer(); submit(($('answer')||{}).value||'',true);}
+  },100);
+}
+
+/* tipkovnica: kad se otvori, karta se skupi, a obrazac ostane u vidu */
+function keepInView(){ var d=$('desk'); if(!d)return; var vv=window.visualViewport, vh=vv?vv.height:innerHeight;
+  var r=$('scene').getBoundingClientRect(); var target=window.scrollY+r.top-8; var fr=d.getBoundingClientRect();
+  if(fr.bottom-r.top+16>vh) target=window.scrollY+fr.bottom-vh+16;
+  window.scrollTo({top:Math.max(0,target),behavior:RM?'auto':'smooth'}); }
+document.addEventListener('focusin',function(e){ if(e.target&&e.target.id==='answer'){ document.body.classList.add('typing'); setTimeout(keepInView,320);} });
+document.addEventListener('focusout',function(e){ if(e.target&&e.target.id==='answer'){ setTimeout(function(){ if(document.activeElement&&document.activeElement.id==='answer')return; document.body.classList.remove('typing'); },150);} });
+if(window.visualViewport) visualViewport.addEventListener('resize',function(){ if(document.body.classList.contains('typing')) keepInView(); });
+
+/* ---------- ekrani ---------- */
+function desk(html,cls){ $('desk').innerHTML='<div class="sheet '+(cls||'')+'" id="sheet">'+html+'</div>'; return $('sheet'); }
+
+function viewStart(){
+  var t=T(), st=store('pecat:stats:'+S.lang)||{best:0,games:0};
+  document.body.classList.remove('typing'); pileDraw(0); S.pile=0;
+  buildMap(); mapState(0,false); var P=cityPts(); placeCar(P[0].x,P[0].y); overview(true);
+  $('clerk').dataset.mood='neutral'; say(t.hello);
+  var sh=desk('<p class="form-no"><span>'+esc(t.form)+'</span><span>'+L[S.lang].flag+'</span></p>'+
+   '<h1>'+esc(t.title)+'</h1>'+
+   '<div class="machine"><div class="disp"><div class="body"><div class="scr" id="scr">---</div><div class="dslot"></div></div><div class="ticket" id="tk"></div><button type="button" class="push" id="b-go">'+esc(t.push)+'</button></div>'+
+   '<ol class="rules">'+t.rules.map(function(r,i){return '<li><b>'+(i+1)+'</b><span>'+esc(r)+'</span></li>';}).join('')+'</ol></div>'+
+   (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+'/800</b> · '+st.games+' '+esc(t.games)+'</p>':''),'eject');
+  var scr=$('scr'), roll=setInterval(function(){ scr.textContent=100+Math.floor(Math.random()*900); },RM?99999:120);
+  $('b-go').onclick=function(){
+    var btn=this; if(btn.disabled)return; btn.disabled=true; btn.classList.add('down'); clearInterval(roll);
+    ac(); SFX.ticket();
+    S.ticket=100+Math.floor(Math.random()*900); scr.textContent=S.ticket;
+    var tk=$('tk'); tk.textContent='№ '+S.ticket; tk.classList.add('out');
+    setTimeout(function(){ SFX.ding(); say(t.called(S.ticket),'happy'); },500);
+    setTimeout(function(){
+      S.ids=drawQuestions(); S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
+      S.evAt=shuffle([1,2,3,4,5,6]).slice(0,2+(Math.random()<.5?1:0)); S.carAt=0; S.car=1; drawCar(); S.phase='q';
+      var P=cityPts(); setView(P[0].x,P[0].y,340); showToast(C()[0].q); render();
+    }, RM?200:1500);
+  };
+}
+
+function viewQ(){
+  var t=T(), q=curQ();
+  say(q.f,'neutral'); SFX.paper();
+  var chips=(S.streak>=2?'<span class="chip fire">'+esc(t.streak(S.streak))+'</span>':'')+(S.mod.mult?'<span class="chip fire">'+esc(t.multChip(S.mod.mult))+'</span>':'')+(S.mod.time?'<span class="chip">'+esc(t.timeChip(S.mod.time))+'</span>':'');
+  desk('<form id="f" autocomplete="off" style="display:contents">'+
+   '<p class="form-no"><span>'+esc(t.field)+' '+(S.idx+1)+'/8</span><span>№ '+S.ticket+'</span></p>'+
+   (chips?'<div class="chips">'+chips+'</div>':'')+
+   '<h2>'+esc(q.q)+'</h2>'+
+   '<div class="field"><input id="answer" name="answer" type="text" enterkeyhint="send" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="60" placeholder="'+esc(t.ph)+'" aria-label="'+esc(t.ph)+'"><button class="btn stampy" type="submit" id="b-send">'+esc(t.send)+'</button></div>'+
+   '<div class="timer"><svg class="clock" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="#fff" stroke="#1f252b" stroke-width="2"/><path class="hand" d="M13 13 L13 4" stroke="#b3271d" stroke-width="2.2" stroke-linecap="round"/><circle cx="13" cy="13" r="2" fill="#1f252b"/></svg><span class="bar"><i></i></span><b>'+((S.mod&&S.mod.time)||LIMIT)+'</b>s</div>'+
+   '<p class="msg" id="msg" role="status"></p></form>','eject');
+  $('f').onsubmit=function(ev){ ev.preventDefault(); submit($('answer').value,false); };
+  setTimeout(function(){ var a=$('answer'); if(a){ try{a.focus({preventScroll:true});}catch(e){a.focus();} } },RM?0:450);
+  startTimer();
+}
+
+function submit(v,timeUp){
+  if(busy)return; var t=T(), q=curQ(), r;
+  if(timeUp){ var c0=$('cf'); r={ok:false,reason:'time'}; if(c0) c0.remove(); }
+  else { r=E.check(q,v,S.used);
+    if(!r.ok && (r.reason==='short'||r.reason==='banned'||r.reason==='dup'||r.reason==='nonsense')){ $('msg').textContent=t[r.reason]; shake($('sheet')); SFX.bad(); $('answer').focus(); return; } }
+  if(r.ok && r.fuzzy && !timeUp){ askConfirm(q,r,v); return; }
+  go(q,r,v);
+}
+function go(q,r,v){
+  busy=true; stopTimer(); var cf=$('cf'); if(cf) cf.remove();
+  var inp=$('answer'); if(inp){inp.blur(); inp.readOnly=true;} document.body.classList.remove('typing');
+  review(q,r,v);
+}
+function askConfirm(q,r,v){
+  var t=T(), old=$('cf'); if(old) old.remove();
+  var box=document.createElement('div'); box.className='confirm'; box.id='cf';
+  box.innerHTML='<span>'+esc(t.didYou)+' <b>'+esc(r.text)+'</b>?</span><button type="button" class="btn stampy" id="cf-yes">'+esc(t.yes)+'</button><button type="button" class="btn ghost" id="cf-no">'+esc(t.fix)+'</button>';
+  $('msg').parentNode.insertBefore(box,$('msg')); SFX.ding(); say(t.didYou+' '+r.text+'?','meh');
+  $('cf-yes').onclick=function(){ go(q,r,v); };
+  $('cf-no').onclick=function(){ box.remove(); var a=$('answer'); a.focus(); a.select(); };
+  $('answer').addEventListener('input',function f(){ var c=$('cf'); if(c)c.remove(); $('answer').removeEventListener('input',f); });
+}
+
+// službenica uzme papir, pregleda ga, pa ga ili pečatira ili baci na hrpu
+async function review(q,r,input){
+  var t=T(), rec;
+  if(r.ok){S.used[r.id]=1; rec={ok:true,text:r.text,pct:r.pct,pts:E.points(r.pct),fresh:!!r.fresh}; if(S.mod.mult){rec.pts=Math.round(rec.pts*S.mod.mult); rec.mult=S.mod.mult;}}
+  else rec={ok:false,text:String(input||'').trim(),pct:null,pts:0,time:r.reason==='time'};
+  rec.q=q.q; rec.n=q._list?q._list.length:0; rec.open=!!q.o;
+  if(!rec.ok && !q.o && q._list && q._list.length){ var L0=q._list, ex=[L0[Math.floor(Math.random()*Math.min(3,L0.length))].text]; rec.ex=ex.concat(shuffle(L0.slice(3)).slice(0,2).map(function(x){return x.text;})); }
+  var R=L[S.lang].react, kind=!rec.ok?(rec.time?'time':'wrong'):(rec.fresh?'mid':(rec.pct<6?'rare':(rec.pct<20?'mid':'common')));
+  rec.kind=kind; rec.line=pick(R[kind]);
+  S.mod={};
+  SFX.paper();
+  await anim($('sheet'),'take');
+  $('desk').innerHTML='';
+  $('inhand').className='inhand on';
+  say(rec.time?t.lateRead:pick(t.reading),'read');
+  await wait(rec.time?700:1300);
+  var before=E.reached(total());
+  S.results.push(rec);
+  S.streak=rec.ok&&rec.pct<6?S.streak+1:0;
+  rec.passed=E.reached(total())>before;
+  var nt=carTier(); if(nt!==S.car){ rec.car={a:S.car,b:nt}; S.car=nt; }
+  if(rec.ok){ $('inhand').className='inhand'; }
+  else { $('inhand').className='inhand on toPile'; await wait(380); S.pile++; pileDraw(S.pile,true); SFX.paper(); $('inhand').className='inhand'; }
+  busy=false; S.phase='fb'; render();
+}
+
+function viewFb(){
+  var t=T(), rec=S.results[S.idx], last=S.idx===N-1, tot=total(), r=E.reached(tot);
+  var kind=rec.kind||(!rec.ok?(rec.time?'time':'wrong'):(rec.pct<6?'rare':(rec.pct<20?'mid':'common')));
+  var label={rare:t.sRare,mid:t.sMid,common:t.sCommon,wrong:t.sWrong,time:t.sTime}[kind];
+  if(rec.ok&&rec.fresh)label=t.sFresh;
+  var mood={rare:'wow',mid:'happy',common:'meh',wrong:'angry',time:'sleep'}[kind];
+  say(rec.line,mood);
+  var sub=rec.ok?(rec.fresh?t.fresh:t.share(String(rec.pct).replace('.',','))):(!rec.open&&rec.n?t.listed(rec.n):'');
+  var me=rec.ok?Math.max(1,Math.round(rec.pct/5)):0, ppl='';
+  for(var i=0;i<20;i++) ppl+='<i class="'+(i<me?'me':(rec.ok?'':'bad'))+'" style="animation-delay:'+(i*25)+'ms"></i>';
+  var sh=desk(
+   '<p class="form-no"><span>'+esc(t.field)+' '+(S.idx+1)+'/8</span><span>№ '+S.ticket+'</span></p>'+
+   '<p class="qsmall">'+esc(rec.q)+'</p>'+
+   '<div class="ans"><p class="given'+(rec.ok?'':' no')+'">'+esc(rec.text||t.noAns)+'</p><div class="stamp'+(rec.ok?(kind==='rare'?' gold':''):' bad')+'" id="st" style="visibility:hidden">'+esc(label)+'</div></div>'+
+   '<div class="meter"><div class="people" aria-hidden="true">'+ppl+'</div>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+
+   (rec.ex?'<p class="could">'+esc(t.could)+' <b>'+rec.ex.map(esc).join('</b> · <b>')+'</b></p>':'')+
+   '<p class="gain"><b id="gn">+0</b>'+(rec.mult?'<span class="chip fire">×'+String(rec.mult).replace('.',',')+'</span>':'')+esc(t.gain)+'</p>'+
+   (rec.car?'<div class="chips"><span class="chip'+(rec.car.b>rec.car.a?' fire':'')+'">'+esc(CARMSG[S.lang].chip.replace('{b}',CARNAME[S.lang][rec.car.b]))+'</span></div>':'')+
+   '<button type="button" class="btn" id="b-next">'+esc(last?t.finish:t.next)+' →</button>', rec.ok?'back':'eject');
+  if(rec.car){ setTimeout(function(){ var M=CARMSG[S.lang], nm=CARNAME[S.lang]; showToast((rec.car.b>rec.car.a?M.up:M.down).replace('{a}',nm[rec.car.a]).replace('{b}',nm[rec.car.b])); drawCar(); var c=$('car'); if(c){c.classList.remove('swap'); void c.getBoundingClientRect(); c.classList.add('swap');} (rec.car.b>rec.car.a?SFX.win:SFX.bad)(); },900); }
+  setTimeout(function(){
+    var st=$('st'); if(!st)return; st.style.visibility='visible'; st.classList.add('hit');
+    SFX.stamp(); if(rec.ok){ if(kind==='rare')setTimeout(SFX.ding,120);} else setTimeout(SFX.bad,80);
+    inkSplat(st,!rec.ok); shake($('sheet')); if(!rec.ok)shake($('booth'));
+    chrome();
+  },RM?0:520);
+  var g=$('gn');
+  if(RM) g.textContent='+'+rec.pts;
+  else setTimeout(function(){ var t0=performance.now(); (function f(n){var k=Math.min(1,(n-t0)/600); g.textContent='+'+Math.round(rec.pts*(1-Math.pow(1-k,3))); if(k<1)requestAnimationFrame(f);})(t0); },700);
+  $('b-next').onclick=async function(){
+    if(busy)return; busy=true; await moveCar(); busy=false;
+    if(last){S.phase='end'; save();}
+    else if(S.evAt.indexOf(S.idx)>=0 && !S.ev){ startEvent(); }
+    else {S.idx++;S.phase='q';}
+    render();
+  };
+}
+
+function startEvent(){
+  var list=EVENTS[S.lang].filter(function(e){return S.evSeen.indexOf(e.id)<0;});
+  if(!list.length){S.idx++; S.phase='q'; return;}
+  var e=pick(list); S.evSeen.push(e.id); S.ev={id:e.id,out:null}; S.phase='ev';
+}
+function evById(id){ return EVENTS[S.lang].filter(function(e){return e.id===id;})[0]; }
+function viewEv(){
+  var t=T(), e=evById(S.ev.id);
+  if(!S.ev.out){
+    say(e.line,e.mood); SFX.bad(); shake($('booth'));
+    desk('<p class="notice">'+esc(t.notice)+'</p><h2>'+esc(e.title)+'</h2>'+
+      '<div class="row">'+e.choices.map(function(c,i){return '<button type="button" class="btn'+(i?' ghost':' stampy')+'" data-c="'+i+'">'+esc(c.label)+'</button>';}).join('')+'</div>','yellow eject');
+    Array.prototype.forEach.call(document.querySelectorAll('#sheet [data-c]'),function(b){ b.onclick=function(){
+      var c=e.choices[+b.dataset.c], x=Math.random(), acc=0, out=c.out[c.out.length-1];
+      for(var i=0;i<c.out.length;i++){acc+=c.out[i].p; if(x<acc){out=c.out[i];break;}}
+      S.ev.out={label:c.label,line:out.line,mood:out.mood,eff:out.eff};
+      if(out.eff.pts) S.bonus.push({label:e.title,pts:out.eff.pts});
+      S.mod={mult:out.eff.mult||0,time:out.eff.time||0};
+      render();
+    };});
+  } else {
+    var o2=S.ev.out, p=o2.eff.pts||0, RR=L[S.lang].react;
+    say(pick(p<0?RR.wrong:RR.mid),o2.mood);
+    desk('<p class="notice">'+esc(t.notice)+'</p><h2>'+esc(e.title)+'</h2>'+
+      '<p class="given">'+esc(o2.label)+'</p>'+
+      '<div class="stamp hit'+(p<0?' bad':(p>0||o2.eff.mult?' gold':''))+'" id="st">'+(p?(p>0?'+':'−')+Math.abs(p):(o2.eff.mult?'×'+String(o2.eff.mult).replace('.',','):'⏱ '+o2.eff.time+' s'))+'</div>'+
+      '<p class="react">'+esc(o2.line)+'</p>'+
+      '<button type="button" class="btn" id="b-next">'+esc(t.evNext)+' →</button>','yellow');
+    setTimeout(function(){ SFX.stamp(); if(p>0||o2.eff.mult) setTimeout(SFX.ding,120); else if(p<0) setTimeout(SFX.bad,80); inkSplat($('st'),p<0); },60);
+    $('b-next').onclick=async function(){ if(busy)return; busy=true; await moveCar(); busy=false; S.ev=null; S.idx++; S.phase='q'; render(); };
+  }
+}
+
+function save(){ var k='pecat:stats:'+S.lang, st=store(k)||{best:0,games:0}; st.games++; st.best=Math.max(st.best,total()); store(k,st); }
+function marks(){return S.results.map(function(x){return !x.ok?'🟥':(x.pct<10?'🟩':'🟨');}).join('');}
+function shareText(){
+  var t=T(), r=E.reached(total()), stop=r?C()[r-1].c:'';
+  return 'Pečat! '+L[S.lang].flag+' № '+S.ticket+'\n'+t.reached(stop,r)+' · '+total()+'/800\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+'\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
+}
+
+async function viewEnd(){
+  var t=T(), tot=total(), r=E.reached(tot), win=r>=8;
+  $('desk').innerHTML=''; mapState(r,!win);
+  if(win){ say(t.byeWin,'happy'); }
+  else {
+    // službenica uzme hrpu i baci ti je u facu
+    $('clerk').dataset.mood='angry'; say(t.byeLose,'angry'); await wait(900);
+    var b=$('booth').getBoundingClientRect();
+    SFX.whoosh(); papersInFace(Math.max(8,S.pile*3+6),{x:b.left+40,y:b.top+b.height-20}); pileDraw(0); shake($('app'));
+    await wait(1500);
+  }
+  var slots=''; for(var i=0;i<N;i++) slots+='<div><span>'+esc(C()[i].c)+'</span></div>';
+  var rows=S.results.map(function(x){ var col=!x.ok?'var(--alarm)':(x.pct<10?'var(--ok)':'var(--gold)');
+    return '<tr><td><span class="dot" style="background:'+col+'"></span></td><td><span class="q">'+esc(x.q)+'</span>'+esc(x.text||t.noAns)+'</td><td>'+x.pts+'</td></tr>'; }).join('')+
+    S.bonus.map(function(b){return '<tr><td><span class="dot" style="background:var(--stamp)"></span></td><td><span class="q">'+esc(t.bonusRow)+'</span>'+esc(b.label)+'</td><td>'+(b.pts>0?'+':'−')+Math.abs(b.pts)+'</td></tr>';}).join('');
+  desk('<div class="decree" style="display:contents"><h1>'+esc(t.decree)+'</h1><p class="sub">'+esc(t.decreeSub(S.ticket))+'</p>'+
+   '<div class="slots" id="slots">'+slots+'</div>'+
+   '<p class="score"><b id="sc">0</b>/800</p>'+
+   '<div class="bigstamp'+(win?' gold':'')+'" id="bigst" style="visibility:hidden">'+esc(win?t.win:t.lose)+'</div>'+
+   '<p class="endmsg">„'+esc(L[S.lang].end[END_IX[r]])+'”</p>'+
+   '<pre class="share" id="share">'+esc(shareText())+'</pre>'+
+   '<p class="msg" id="msg" role="status" style="color:var(--ok)"></p>'+
+   '<div class="row"><button type="button" class="btn stampy" id="b-copy">'+esc(t.copy)+'</button><button type="button" class="btn ghost" id="b-again">'+esc(t.again)+'</button></div>'+
+   '<details class="sheetbox"><summary>'+esc(t.answers)+'</summary><table class="tbl">'+rows+'</table></details></div>','eject');
+  overview(false);
+  var cells=document.querySelectorAll('#slots div'), d=RM?0:220;
+  for(var j=0;j<N;j++)(function(j){ setTimeout(function(){ if(j<r){cells[j].classList.add('on'); SFX.stamp();} else if(j===r){cells[j].classList.add('x'); SFX.bad();} }, 500+j*d); })(j);
+  var sc=$('sc'); sc.dataset.v=0; setTimeout(function(){ countTo(sc,tot); },500);
+  setTimeout(function(){ var bs=$('bigst'); if(!bs)return; bs.style.visibility='visible'; bs.style.animation='thud .32s cubic-bezier(.2,1.5,.4,1) both'; SFX.stamp(); inkSplat(bs,!win); shake($('sheet'));
+    if(r>=7){ confetti(); SFX.win(); } },500+Math.min(N,r+1)*d+200);
+  $('b-copy').onclick=function(){ var done=function(ok){$('msg').textContent=ok?t.copied:t.copyFail; if(ok)SFX.ding();};
+    try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
+  $('b-again').onclick=function(){S.phase='start'; S.ticket=0; S.results=[]; S.used={}; S.bonus=[]; render();};
+}
+
+function render(){
+  stopTimer();
+  if(S.phase!=='start' && !S.ids.length) S.phase='start';
+  if(S.phase==='fb' && !S.results[S.idx]) S.phase='q';
+  if(S.phase==='ev' && !S.ev) S.phase='q';
+  chrome();
+  ({start:viewStart,q:viewQ,fb:viewFb,ev:viewEv,end:viewEnd})[S.phase]();
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('.langs button'),function(b){
+  b.onclick=function(){ if(S.lang===b.dataset.lang||busy) return; S.lang=b.dataset.lang; store('pecat:lang',S.lang); S.phase='start'; S.ticket=0; S.results=[]; S.used={}; S.ids=[]; S.bonus=[]; buildMap(); render(); };
+});
+$('snd').onclick=function(){ soundOn=!soundOn; store('pecat:sound',soundOn); sndIcon(); if(soundOn){ac(); SFX.ding();} };
+document.addEventListener('keydown',function(e){ if(e.key==='Enter' && (S.phase==='fb'||S.phase==='ev') && document.activeElement && document.activeElement.id!=='b-next'){ var b=$('b-next'); if(b){e.preventDefault(); b.click();} } });
+window.addEventListener('resize',function(){ if(S.phase==='start'||S.phase==='end') overview(true); else { var P=cityPts(), p=P[Math.min(reached(),7)]; setView(p.x,p.y,340,true); } });
+
+function attachViews(){ var V=window.PECAT_VIEWS||{}; for(var id in V){ try{ var q=byId(id); if(q && !q._idx) q.views=V[id]; }catch(e){} } }
+function start(snap){
+  attachViews();
+  var saved=store('pecat:lang'); if(saved && L[saved]) S.lang=saved;
+  if(snap && snap.lang && L[snap.lang] && snap.ids){ for(var k in snap) S[k]=snap[k]; if(S.phase==='end'){} }
+  sndIcon(); buildMap(); render();
+  if(S.phase!=='start'&&S.phase!=='end'){ var P=cityPts(), p=P[Math.min(reached(),7)]; placeCar(p.x,p.y); setView(p.x,p.y,340,true); pileDraw(S.pile||0); }
+}
+var hot=window.claude&&window.claude.hot;
+if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carAt:S.carAt,car:S.car};});
+if(hot&&hot.ready) hot.ready(start); else start((hot&&hot.data)||{});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "pecat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pečat! – igra o balkanskoj birokraciji (HR/BiH/SRB)",
+  "scripts": {
+    "dev": "npx serve public",
+    "test": "node tools/test.js && node tools/common.js",
+    "wiki": "cd tools && python3 fetch_wiki_top.py && python3 match_wiki.py"
+  }
+}
