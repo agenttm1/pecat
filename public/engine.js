@@ -96,6 +96,14 @@
     return best;
   }
 
+  // Prava rijetkost: q.live = {n: broj igrača, c: {id: koliko ih je to reklo}}.
+  // Što je više igrača, to se više vjeruje njima, a manje procjeni.
+  function live(q, id, est) {
+    var L = q.live; if (!L || !L.n || L.n < 15) return { pct: est };
+    var lp = 100 * (L.c && L.c[id] || 0) / L.n, w = Math.min(0.85, L.n / 250), p = (1 - w) * est + w * lp;
+    return { pct: p >= 10 ? Math.round(p) : Math.max(0.1, Math.round(p * 10) / 10), live: L.n };
+  }
+
   // used = objekt s već predanim ključevima u ovoj igri
   function check(q, input, used) {
     build(q);
@@ -105,10 +113,11 @@
     var hit = find(q, key);
     var id = hit ? 'a:' + norm(hit.text, q.raw) : 'o:' + key;
     if (used && used[id]) return { ok: false, reason: 'dup' };
-    if (hit) return { ok: true, id: id, text: hit.text, pct: hit.pct, fuzzy: !q._idx[key] };
+    if (hit) { var h = live(q, id, hit.pct); return { ok: true, id: id, text: hit.text, pct: h.pct, live: h.live, fuzzy: !q._idx[key] }; }
     if (q.o) {
       if (nonsense(input)) return { ok: false, reason: 'nonsense' };
-      return { ok: true, id: id, text: String(input).trim(), pct: 70, fresh: true };
+      var f = live(q, id, 70);
+      return { ok: true, id: id, text: String(input).trim(), pct: f.pct, live: f.live, fresh: !f.live };
     }
     return { ok: false, reason: 'wrong' };
   }

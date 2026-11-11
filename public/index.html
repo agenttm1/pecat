@@ -212,6 +212,24 @@ h2{font-size:25px}
 .slots div.x{border:3px solid var(--alarm); color:var(--alarm); animation:thud .3s both; transform:rotate(6deg)}
 .bigstamp{align-self:center; font-family:var(--f-stamp); border:5px double; border-radius:10px; padding:5px 18px 8px; font-size:clamp(24px,8vw,38px); white-space:nowrap; text-transform:uppercase; transform:rotate(-6deg); color:var(--alarm); border-color:var(--alarm); mix-blend-mode:multiply}
 .bigstamp.gold{color:#8a6516; border-color:#8a6516}
+.modes{display:flex; flex-direction:column; gap:8px; width:100%; max-width:340px}
+.mode{display:flex; flex-direction:column; align-items:center; gap:1px; border:3px solid var(--stamp); color:var(--stamp); background:#fff; padding:9px 12px; border-radius:4px; box-shadow:3px 3px 0 rgba(59,55,166,.25)}
+.mode b{font-family:var(--f-stamp); font-size:18px; letter-spacing:.02em}
+.mode small{font-size:13px; color:var(--ink-soft)}
+.mode.done{border-style:dashed}
+.mode:active{transform:translate(2px,2px); box-shadow:none}
+.hardsw{display:flex; gap:10px; align-items:center; text-align:left; border:2px solid var(--ink); background:var(--paper); padding:8px 10px; cursor:pointer}
+.hardsw input{width:22px; height:22px; accent-color:var(--alarm); flex:none}
+.hardsw span{display:flex; flex-direction:column}
+.hardsw small{font-size:12.5px; color:var(--ink-soft); line-height:1.25}
+.hardsw:has(input:checked){border-color:var(--alarm); background:#fbe9e6}
+.staz{margin:0; font-size:14px; color:var(--ink-soft)}
+.staz.up{color:var(--ok); font-size:16px; text-align:center}
+.medal{display:inline-grid; place-items:center; min-width:26px; height:26px; border-radius:50%; background:var(--gold); color:#fff; font-family:var(--f-stamp); font-size:11px; border:2px dashed #fff; box-shadow:0 0 0 2px var(--gold); vertical-align:middle}
+.chal{display:flex; flex-direction:column; gap:6px; align-items:center; border:3px double var(--alarm); background:#fff; padding:10px 12px; max-width:340px}
+.chal small{color:var(--ink-soft)}
+.chalres{margin:0; text-align:center; font-weight:700; font-size:17px; padding:8px; border:2px solid}
+.chalres.win{color:var(--ok)} .chalres.lose{color:var(--alarm)} .chalres.tie{color:var(--stamp)}
 .shbox{display:flex; flex-direction:column; gap:8px; align-items:center}
 .shbox img{width:100%; max-width:360px; height:auto; display:block; box-shadow:0 6px 18px rgba(0,0,0,.25); border-radius:3px; animation:shpop .4s ease both}
 .shph{width:100%; max-width:360px; aspect-ratio:4/5; background:repeating-linear-gradient(45deg,#ece7d5 0 10px,#f3efe0 10px 20px); border-radius:3px}
@@ -552,9 +570,13 @@ rs:{backward:'nazad',didYou:'Misliš li',yes:'Da, potvrdi',fix:'Ispraviću',toGo
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function pick(a,r){return a[Math.floor((r||Math.random)()*a.length)];}
+// zrnati generator: isti broj = ista pitanja i isti događaji (dnevni broj, izazov)
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function hashStr(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+var EVR=Math.random;
 function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}}
-function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function shuffle(a,r){r=r||Math.random;a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function wait(ms){return new Promise(function(r){setTimeout(r,RM?Math.min(ms,30):ms);});}
 
 /* ---------- zvuk ---------- */
@@ -718,7 +740,10 @@ function showToast(t){ var el=$('toast'); if(!t){el.classList.remove('on');retur
 /* ---------- auti: što bolje ide, to bolji auto ---------- */
 var CARNAME={hr:['Traktor','Fićo','Jugo','Golf dvojka','Passat karavan','BMW'],ba:['Traktor','Fićo','Jugo','Golf dvica','Passat karavan','Mercedes'],rs:['Traktor','Fića','Jugo','Stojadin','Passat karavan','BMW']};
 var CARMSG={hr:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crkao. Sad voziš: {b}.',chip:'Auto: {b}'},ba:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crk'+'o. Sad voziš: {b}.',chip:'Auto: {b}'},rs:{up:'Prodao si {a}, kupio {b}!',down:'{a} je crkao. Sad voziš: {b}.',chip:'Auto: {b}'}};
-function carArt(tier){
+var BADGE={1:[11,-5],2:[14,-4.5],3:[16,-4],4:[19,-4],5:[20,-3.5]};
+function badge(tier){ var b=BADGE[tier]; if(!b) return ''; return '<g class="badge"><circle cx="'+b[0]+'" cy="'+b[1]+'" r="1.9" fill="#e9e6da" stroke="#1f252b" stroke-width=".55"/><rect x="'+(b[0]-.75)+'" y="'+(b[1]-1.05)+'" width="1.5" height="1.1" rx=".3" fill="#3b37a6"/><rect x="'+(b[0]-1.1)+'" y="'+(b[1]+.2)+'" width="2.2" height=".7" fill="#3b37a6"/></g>'; }
+function carArt(tier){ return carArt0(tier)+((window.PECAT_CAR_IMG||{})[tier]?'':badge(tier)); }
+function carArt0(tier){
   var img=(window.PECAT_CAR_IMG||{})[tier];
   if(img) return '<image href="'+img+'" x="-26" y="-26" width="52" height="30" preserveAspectRatio="xMidYMax meet"/>';
   var W='<circle cx="CX" cy="2" r="R" fill="#1f252b"/><circle cx="CX" cy="2" r="r" fill="#c9c9c9"/>';
@@ -743,28 +768,62 @@ var S={lang:'hr',phase:'start',ids:[],idx:0,results:[],used:{},ticket:0,streak:0
 var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
 ['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
 
+var XT={
+ hr:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+   stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Tjedan bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
+   live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
+   chal:'Izazovi prijatelja',chalCopied:'Poveznica izazova kopirana!',chalTitle:function(n,c,p){return (n||'Netko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi tko stiže dalje.',chalGo:'Prihvati izazov',
+   chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Birokracija ne zna pobjednika.';},
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
+ ba:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+   stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Sedmica bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
+   live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
+   chal:'Izazovi raju',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
+   chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođi sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Ni kanton ne zna ko je pobijedio.';},
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
+ rs:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne računa se)';},
+   hard:'Šef odseka',hardSub:'15 sekundi, bez praštanja za greške u kucanju, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
+   stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Nedelja bez bolovanja',30:'Mesec dana u službi',100:'Zaslužni službenik'},
+   live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odseka ne priznaje greške u kucanju. Mislio/la si: <b>'+w+'</b>';},
+   chal:'Izazovi prijatelja',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
+   chalWin:function(n,a,b){return 'Pobedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Nerešeno, '+a+' bodova. Ni šalter ne zna ko je pobedio.';},
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje sa istim pitanjima?';}}};
+function X(){return XT[S.lang];}
+// dan po zagrebačkom vremenu; dnevni broj #1 = 1. 11. 2026.
+function zgDate(d){ try{ return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Zagreb',year:'numeric',month:'2-digit',day:'2-digit'}).format(d||new Date()); }catch(e){ return (d||new Date()).toISOString().slice(0,10); } }
+function dayNo(){ return Math.round((Date.parse(zgDate()+'T00:00:00Z')-Date.parse('2026-11-01T00:00:00Z'))/86400000)+1; }
+function staz(){ var s0=store('pecat:staz')||{n:0,last:'',best:0}; var y=zgDate(new Date(Date.now()-86400000)); if(s0.last!==zgDate()&&s0.last!==y) s0.n=0; return s0; }
+function stazBump(){ var s0=staz(), today=zgDate(); if(s0.last===today) return null; s0.n=(s0.n||0)+1; s0.last=today; s0.best=Math.max(s0.best||0,s0.n); store('pecat:staz',s0); return s0.n; }
+function b64u(o){ return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function unb64u(s){ try{ return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))))); }catch(e){ return null; } }
+var CHAL=(function(){ try{ var p=new URLSearchParams(location.search).get('izazov'); var c=p&&unb64u(p); if(c&&c.l&&Array.isArray(c.i)&&c.i.length===8) return c; }catch(e){} return null; })();
 function hook(n){ var H=window.PECAT_HOOKS; if(H&&H[n]) try{ H[n].apply(null,[].slice.call(arguments,1)); }catch(e){ console.warn(e); } }
 function T(){return L[S.lang].t;}
 function C(){return ROUTE[S.lang];}
 function pool(){ var out=[]; DATA[S.lang].forEach(function(day,d){day.forEach(function(q,i){out.push({id:S.lang+'-'+(d+1)+'-'+(i+1),q:q});});}); return out; }
 function worldPool(){ return ((window.PECAT_WORLD||{})[S.lang]||[]).map(function(q,i){return {id:'w-'+S.lang+'-'+i,q:q};}); }
 function forePool(){ return (window.PECAT_FORE[S.lang]||[]).map(function(q,i){return {id:'f-'+S.lang+'-'+i,q:q};}); }
-function byId(id){ var p=id.split('-'); if(p[0]==='f') return window.PECAT_FORE[p[1]][+p[2]]; if(p[0]==='w') return window.PECAT_WORLD[p[1]][+p[2]]; return DATA[p[0]][+p[1]-1][+p[2]-1]; }
+function userPool(){ return ((window.PECAT_USERQ||{})[S.lang]||[]).map(function(q,i){return {id:'u-'+S.lang+'-'+i,q:q};}); }
+function byId(id){ var p=id.split('-'); if(p[0]==='u') return ((window.PECAT_USERQ||{})[p[1]]||[])[+p[2]]||{q:'…',a:'',o:1}; if(p[0]==='f') return window.PECAT_FORE[p[1]][+p[2]]; if(p[0]==='w') return window.PECAT_WORLD[p[1]][+p[2]]; return DATA[p[0]][+p[1]-1][+p[2]-1]; }
+window.PECAT_Q=function(id){ try{ return byId(id); }catch(e){ return null; } };
 function curQ(){ return byId(S.ids[S.idx]); }
-function drawQuestions(){
-  var all=pool(), seen=store('pecat:seen:'+S.lang)||[], fresh=all.filter(function(x){return seen.indexOf(x.id)<0;});
+function drawQuestions(rng){
+  var R=rng||Math.random, daily=!!rng;
+  var all=daily?pool():pool().concat(userPool()), seen=daily?[]:(store('pecat:seen:'+S.lang)||[]), fresh=all.filter(function(x){return seen.indexOf(x.id)<0;});
   if(fresh.length<N){ seen=[]; fresh=all; }
   var fp=forePool(), ff=fp.filter(function(x){return seen.indexOf(x.id)<0;}); if(ff.length<2) ff=fp;
-  var fore=shuffle(ff).slice(0,2).map(function(x){return x.id;});
+  var fore=shuffle(ff,R).slice(0,2).map(function(x){return x.id;});
   var wp=worldPool(), wf=wp.filter(function(x){return seen.indexOf(x.id)<0;}); if(!wf.length) wf=wp;
-  if(wf.length && Math.random()<.6) fore.push(pick(wf).id);
+  if(wf.length && R()<.6) fore.push(pick(wf,R).id);
   var NR=N-fore.length;
   var picked=[], usedHead={}, ADJ=/^(hrvatsk|bosansk|srpsk|domać|domac|poznat|tradicionaln|neš|nes)/i;
-  shuffle(fresh).forEach(function(x){ if(picked.length>=NR)return; var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); var head=(w[0]||'').toLowerCase(); if(usedHead[head])return; usedHead[head]=1; picked.push(x.id); });
-  shuffle(fresh).forEach(function(x){ if(picked.length<NR && picked.indexOf(x.id)<0) picked.push(x.id); });
+  shuffle(fresh,R).forEach(function(x){ if(picked.length>=NR)return; var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); var head=(w[0]||'').toLowerCase(); if(usedHead[head])return; usedHead[head]=1; picked.push(x.id); });
+  shuffle(fresh,R).forEach(function(x){ if(picked.length<NR && picked.indexOf(x.id)<0) picked.push(x.id); });
   picked=picked.concat(fore);
-  store('pecat:seen:'+S.lang, seen.concat(picked).slice(-72));
-  return shuffle(picked);
+  if(!daily) store('pecat:seen:'+S.lang, seen.concat(picked).slice(-72));
+  return shuffle(picked,R);
 }
 function total(){var t=S.results.reduce(function(a,r){return a+r.pts;},0)+S.bonus.reduce(function(a,b){return a+b.pts;},0); return Math.max(0,t);}
 function reached(){ return S.phase==='start'?0:E.reached(total()); }
@@ -788,7 +847,7 @@ function chrome(){
 
 function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
 function startTimer(){
-  stopTimer(); CUR=(S.mod&&S.mod.time)||LIMIT; deadline=Date.now()+CUR*1000; lastTick=CUR;
+  stopTimer(); CUR=(S.mod&&S.mod.time)||(S.hard?15:LIMIT); deadline=Date.now()+CUR*1000; lastTick=CUR;
   tick=setInterval(function(){
     var left=Math.max(0,deadline-Date.now()), box=document.querySelector('.timer');
     if(!box){stopTimer();return;}
@@ -837,42 +896,61 @@ function viewStart(){
   var t=T(), m=MEMO[S.lang], st=store('pecat:stats:'+S.lang)||{best:0,games:0};
   document.body.classList.remove('typing'); pileDraw(0); S.pile=0;
   buildMap(); mapState(0,false); S.carDist=0; placeCarAt(0); overview(true);
-  var P=cityPts(), tiers='';
+  var P=cityPts(), tiers='', x=X(), day=dayNo(), dd=store('pecat:daily:'+S.lang+':'+day);
   for(var i=0;i<6;i++) tiers+='<li><span class="ring r'+i+'"><svg viewBox="-34 -34 68 52">'+carArt(i)+'</svg></span><b>'+esc(CARNAME[S.lang][i])+'</b></li>';
   $('hero').innerHTML=
    '<div class="sign-stamp">PEČAT!</div>'+
    '<p class="route-line">'+esc(P[0].n)+' → '+esc(P[7].n)+' · '+kmOf(RT.len)+' km · 8 '+esc(t.ct.toLowerCase())+'a</p>'+
    '<p class="hero-desc">'+esc(m.desc)+'</p>'+
+   (CHAL&&CHAL.l===S.lang?'<div class="chal"><b>'+esc(x.chalTitle(CHAL.n,CHAL.c,CHAL.p))+'</b><small>'+esc(x.chalSub)+(CHAL.h?' · '+esc(x.hard):'')+'</small><button type="button" class="btn stampy" id="b-chal">'+esc(x.chalGo)+'</button></div>':'')+
    '<ul class="tiers">'+tiers+'</ul>'+
    '<div class="scale"><i></i><span>'+esc(m.common)+'</span><span>'+esc(m.rare)+' →</span></div>'+
    '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go" id="b-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(m.go)+'</button></div>'+
+   '<div class="modes">'+
+     '<button type="button" class="mode'+(dd?' done':'')+'" id="b-daily"><b>'+esc(x.dailyN(day))+'</b><small>'+esc(dd?x.done(dd.score):x.dailySub)+'</small></button>'+
+     '<label class="hardsw"><input type="checkbox" id="hard"'+(store('pecat:hard')?' checked':'')+'><span><b>'+esc(x.hard)+'</b><small>'+esc(x.hardSub)+'</small></span></label>'+
+     '<p class="staz">'+stazLine()+'</p>'+
+   '</div>'+
    '<div class="acct" id="acct"></div>'+
    '<details class="rules-box"><summary>'+esc(m.rules)+'</summary><ol class="rules">'+t.rules.map(function(r,i){return '<li><b>'+(i+1)+'</b><span>'+esc(r)+'</span></li>';}).join('')+'</ol></details>'+
    (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+'/800</b> · '+st.games+' '+esc(t.games)+'</p>':'');
   hook('hero',$('acct'),S.lang);
-  $('b-go').onclick=function(){
-    var btn=this; if(btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); hook('start',S.lang);
-    var tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
-    S.ticket=100+Math.floor(Math.random()*900);
-    var roll=setInterval(function(){ scr.textContent=100+Math.floor(Math.random()*900); if(++n>8){ clearInterval(roll); scr.textContent=S.ticket; SFX.ding(); } },RM?1:70);
-    setTimeout(function(){
-      S.ids=drawQuestions(); S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
-      S.voted=0; S.evAt=shuffle([1,2,3,4,5,6]).slice(0,2+(Math.random()<.5?1:0)); S.carDist=0; S.car=1; drawCar(); S.phase='q';
-      render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
-    }, RM?200:1500);
-  };
+  $('b-go').onclick=function(){ startGame('free',this); };
+  $('b-daily').onclick=function(){ startGame('daily',$('b-go')); };
+  $('hard').onchange=function(){ store('pecat:hard',this.checked); SFX.paper(); };
+  if($('b-chal')) $('b-chal').onclick=function(){ startGame('chal',$('b-go')); };
+}
+function stazLine(){ var z=staz(), x=X(), M=[7,30,100], h=z.n?'<b>'+esc(x.staz(z.n))+'</b>':esc(x.stazNone);
+  M.forEach(function(m){ if((z.best||0)>=m) h+=' <span class="medal" title="'+esc(x.medal[m])+'">'+m+'</span>'; }); return h; }
+function startGame(mode,btn){
+  if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket();
+  var t=T(), tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
+  S.mode=mode; S.day=dayNo(); S.hard=mode==='chal'?!!CHAL.h:!!($('hard')&&$('hard').checked);
+  if(mode==='daily') S.seed=hashStr(S.lang+'|'+S.day); else if(mode==='chal') S.seed=CHAL.s>>>0; else S.seed=(Math.random()*4294967296)>>>0;
+  hook('start',S.lang,{hard:S.hard,mode:mode});
+  S.ticket=mode==='daily'?S.day:100+Math.floor(Math.random()*900);
+  var roll=setInterval(function(){ scr.textContent=100+Math.floor(Math.random()*900); if(++n>8){ clearInterval(roll); scr.textContent=S.ticket; SFX.ding(); } },RM?1:70);
+  setTimeout(function(){
+    var qr=mulberry(S.seed); EVR=mulberry(S.seed^0x5bd1e995);
+    S.ids=mode==='chal'?CHAL.i.slice():drawQuestions(mode==='daily'?qr:null);
+    S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
+    S.voted=0; S.ended=0; S.evAt=mode==='chal'&&Array.isArray(CHAL.e)?CHAL.e.slice():shuffle([1,2,3,4,5,6],qr).slice(0,2+(qr()<.5?1:0));
+    S.carDist=0; S.car=1; drawCar(); S.phase='q';
+    hook('questions',S.lang,S.ids);
+    render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
+  }, RM?200:1500);
 }
 
 function viewQ(){
   var t=T(), q=curQ();
   say(q.f,'neutral'); SFX.paper();
-  var chips=(S.streak>=2?'<span class="chip fire">'+esc(t.streak(S.streak))+'</span>':'')+(S.mod.mult?'<span class="chip fire">'+esc(t.multChip(S.mod.mult))+'</span>':'')+(S.mod.time?'<span class="chip">'+esc(t.timeChip(S.mod.time))+'</span>':'');
+  var chips=(S.hard?'<span class="chip fire">'+esc(X().hard)+'</span>':'')+(S.mode==='daily'?'<span class="chip">'+esc(X().dailyN(S.day))+'</span>':'')+(S.streak>=2?'<span class="chip fire">'+esc(t.streak(S.streak))+'</span>':'')+(S.mod.mult?'<span class="chip fire">'+esc(t.multChip(S.mod.mult))+'</span>':'')+(S.mod.time?'<span class="chip">'+esc(t.timeChip(S.mod.time))+'</span>':'');
   desk('<form id="f" autocomplete="off" style="display:contents">'+
    '<p class="form-no"><span>'+esc(t.field)+' '+(S.idx+1)+'/8</span><span>№ '+S.ticket+'</span></p>'+
    (chips?'<div class="chips">'+chips+'</div>':'')+
    '<h2>'+esc(q.q)+'</h2>'+
    '<div class="field"><input id="answer" name="answer" type="text" enterkeyhint="send" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="60" placeholder="'+esc(t.ph)+'" aria-label="'+esc(t.ph)+'"><button class="btn stampy" type="submit" id="b-send">'+esc(t.send)+'</button></div>'+
-   '<div class="timer"><svg class="clock" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="#fff" stroke="#1f252b" stroke-width="2"/><path class="hand" d="M13 13 L13 4" stroke="#b3271d" stroke-width="2.2" stroke-linecap="round"/><circle cx="13" cy="13" r="2" fill="#1f252b"/></svg><span class="bar"><i></i></span><b>'+((S.mod&&S.mod.time)||LIMIT)+'</b>s</div>'+
+   '<div class="timer"><svg class="clock" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="#fff" stroke="#1f252b" stroke-width="2"/><path class="hand" d="M13 13 L13 4" stroke="#b3271d" stroke-width="2.2" stroke-linecap="round"/><circle cx="13" cy="13" r="2" fill="#1f252b"/></svg><span class="bar"><i></i></span><b>'+((S.mod&&S.mod.time)||(S.hard?15:LIMIT))+'</b>s</div>'+
    '<p class="msg" id="msg" role="status"></p></form>','eject');
   $('f').onsubmit=function(ev){ ev.preventDefault(); submit($('answer').value,false); };
   setTimeout(function(){ var a=$('answer'); if(a){ try{a.focus({preventScroll:true});}catch(e){a.focus();} } },RM?0:450);
@@ -884,6 +962,7 @@ function submit(v,timeUp){
   if(timeUp){ var c0=$('cf'); r={ok:false,reason:'time'}; if(c0) c0.remove(); }
   else { r=E.check(q,v,S.used);
     if(!r.ok && (r.reason==='short'||r.reason==='banned'||r.reason==='dup'||r.reason==='nonsense')){ $('msg').textContent=t[r.reason]; shake($('sheet')); SFX.bad(); $('answer').focus(); return; } }
+  if(r.ok && r.fuzzy && !timeUp && S.hard){ r={ok:false,reason:'wrong',typo:r.text}; }
   if(r.ok && r.fuzzy && !timeUp){ askConfirm(q,r,v); return; }
   go(q,r,v);
 }
@@ -907,7 +986,7 @@ async function review(q,r,input){
   var t=T(), rec;
   if(r.ok){S.used[r.id]=1; rec={ok:true,text:r.text,pct:r.pct,pts:E.points(r.pct),fresh:!!r.fresh}; if(S.mod.mult){rec.pts=Math.round(rec.pts*S.mod.mult); rec.mult=S.mod.mult;}}
   else rec={ok:false,text:String(input||'').trim(),pct:null,pts:0,time:r.reason==='time'};
-  rec.q=q.q; rec.n=q._list?q._list.length:0; rec.open=!!q.o;
+  rec.q=q.q; rec.n=q._list?q._list.length:0; rec.open=!!q.o; rec.qid=S.ids[S.idx]; rec.aid=r.ok?r.id:'x'; rec.live=r.live||0; rec.base=r.ok?E.points(r.pct):0; if(r.typo) rec.typo=r.typo;
   if(!rec.ok && !q.o && q._list && q._list.length){ var L0=q._list, ex=[L0[Math.floor(Math.random()*Math.min(3,L0.length))].text]; rec.ex=ex.concat(shuffle(L0.slice(3)).slice(0,2).map(function(x){return x.text;})); }
   var R=L[S.lang].react, kind=!rec.ok?(rec.time?'time':'wrong'):(rec.fresh?'mid':(rec.pct<6?'rare':(rec.pct<20?'mid':'common')));
   rec.kind=kind; rec.line=pick(R[kind]);
@@ -936,7 +1015,7 @@ function viewFb(){
   if(rec.ok&&rec.fresh)label=t.sFresh;
   var mood={rare:'wow',mid:'happy',common:'meh',wrong:'angry',time:'sleep'}[kind];
   say(rec.line,mood);
-  var sub=rec.ok?(rec.fresh?t.fresh:t.share(String(rec.pct).replace('.',','))):(!rec.open&&rec.n?t.listed(rec.n):'');
+  var sub=rec.ok?(rec.fresh?t.fresh:(rec.live?X().live(String(rec.pct).replace('.',','),rec.live):t.share(String(rec.pct).replace('.',',')))):(rec.typo?X().typo(rec.typo):(!rec.open&&rec.n?t.listed(rec.n):''));
   var me=rec.ok?Math.max(1,Math.round(rec.pct/5)):0, ppl='';
   for(var i=0;i<20;i++) ppl+='<i class="'+(i<me?'me':(rec.ok?'':'bad'))+'" style="animation-delay:'+(i*25)+'ms"></i>';
   var sh=desk(
@@ -970,7 +1049,7 @@ function viewFb(){
 function startEvent(){
   var list=EVENTS[S.lang].filter(function(e){return S.evSeen.indexOf(e.id)<0;});
   if(!list.length){S.idx++; S.phase='q'; return;}
-  var e=pick(list); S.evSeen.push(e.id); S.ev={id:e.id,out:null}; S.phase='ev';
+  var e=pick(list,EVR); S.evSeen.push(e.id); S.ev={id:e.id,out:null}; S.phase='ev';
 }
 function evById(id){ return EVENTS[S.lang].filter(function(e){return e.id===id;})[0]; }
 function viewEv(){
@@ -980,7 +1059,7 @@ function viewEv(){
     desk('<p class="notice">'+esc(t.notice)+'</p><h2>'+esc(e.title)+'</h2>'+
       '<div class="row">'+e.choices.map(function(c,i){return '<button type="button" class="btn'+(i?' ghost':' stampy')+'" data-c="'+i+'">'+esc(c.label)+'</button>';}).join('')+'</div>','yellow eject');
     Array.prototype.forEach.call(document.querySelectorAll('#sheet [data-c]'),function(b){ b.onclick=function(){
-      var c=e.choices[+b.dataset.c], x=Math.random(), acc=0, out=c.out[c.out.length-1];
+      var c=e.choices[+b.dataset.c], x=EVR(), acc=0, out=c.out[c.out.length-1];
       for(var i=0;i<c.out.length;i++){acc+=c.out[i].p; if(x<acc){out=c.out[i];break;}}
       S.ev.out={label:c.label,line:out.line,mood:out.mood,eff:out.eff};
       if(out.eff.pts) S.bonus.push({label:e.title,pts:out.eff.pts});
@@ -1002,9 +1081,10 @@ function viewEv(){
 
 function save(){ var k='pecat:stats:'+S.lang, st=store(k)||{best:0,games:0}; st.games++; st.best=Math.max(st.best,total()); store(k,st); }
 function marks(){return S.results.map(function(x){return !x.ok?'🟥':(x.pct<10?'🟩':'🟨');}).join('');}
+function modeLabel(){ return S.mode==='daily'?X().dailyN(S.day):(S.mode==='chal'?'⚔ Izazov':'№ '+S.ticket); }
 function shareText(){
   var t=T(), r=E.reached(total()), stop=r?C()[r-1].c:'';
-  return 'Pečat! '+L[S.lang].flag+' № '+S.ticket+'\n'+t.reached(stop,r)+' · '+total()+'/800\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
+  return 'Pečat! '+L[S.lang].flag+' '+modeLabel()+(S.hard?' · '+X().hard:'')+'\n'+t.reached(stop,r)+' · '+total()+'/800\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
 }
 
 
@@ -1037,7 +1117,7 @@ async function makeShareImage(){
   x.font='700 23px '+FL; x.fillText(m.l2,200,164);
   x.font='400 21px '+FL; x.fillStyle='#5b6168'; x.fillText(m.l3,200,193);
   x.textAlign='right'; x.font='500 22px '+FT; x.fillStyle='#1f252b';
-  x.fillText('№ '+(S.ticket||'—'),W-100,132); x.fillStyle='#5b6168'; x.fillText(todayStr(),W-100,164);
+  x.fillText(modeLabel(),W-100,132); if(S.hard){ x.fillStyle='#b3271d'; x.fillText(X().hard,W-100,196); x.fillStyle='#1f252b'; } x.fillStyle='#5b6168'; x.fillText(todayStr(),W-100,164);
   x.strokeStyle='#1f252b'; x.lineWidth=3; x.beginPath(); x.moveTo(96,226); x.lineTo(W-96,226); x.stroke();
   x.lineWidth=1; x.beginPath(); x.moveTo(96,233); x.lineTo(W-96,233); x.stroke();
   // naslov
@@ -1105,6 +1185,10 @@ async function viewEnd(){
     SFX.whoosh(); papersInFace(Math.max(8,S.pile*3+6),{x:b.left+40,y:b.top+b.height-20}); pileDraw(0); shake($('app'));
     await wait(1500);
   }
+  var x0=X(), chalRes=null, stazUp=null;
+  if(S.mode==='chal'&&CHAL){ chalRes=tot>CHAL.p?{k:'win',txt:x0.chalWin(CHAL.n,tot,CHAL.p)}:(tot<CHAL.p?{k:'lose',txt:x0.chalLose(CHAL.n,tot,CHAL.p)}:{k:'tie',txt:x0.chalTie(tot)}); }
+  if(S.mode==='daily'&&!S.ended){ var dk='pecat:daily:'+S.lang+':'+S.day; if(!store(dk)){ store(dk,{score:tot,r:r,m:marks()}); stazUp=stazBump(); } }
+  S.ended=1;
   var slots=''; for(var i=0;i<N;i++) slots+='<div><span>'+esc(C()[i].c)+'</span></div>';
   var rows=S.results.map(function(x){ var col=!x.ok?'var(--alarm)':(x.pct<10?'var(--ok)':'var(--gold)');
     return '<tr><td><span class="dot" style="background:'+col+'"></span></td><td><span class="q">'+esc(x.q)+'</span>'+esc(x.text||t.noAns)+'</td><td>'+x.pts+'</td></tr>'; }).join('')+
@@ -1115,10 +1199,12 @@ async function viewEnd(){
    '<div class="bigstamp'+(win?' gold':'')+'" id="bigst" style="visibility:hidden">'+esc(win?t.win:t.lose)+'</div>'+
    '<p class="endmsg">„'+esc(L[S.lang].end[END_IX[r]])+'”</p>'+
    '<div class="shbox" id="shbox"><div class="shph"></div></div>'+
+   (chalRes?'<p class="chalres '+chalRes.k+'">'+esc(chalRes.txt)+'</p>':'')+
+   (stazUp?'<p class="staz up">'+esc(X().stazUp(stazUp))+(X().medal[stazUp]?' <span class="medal">'+stazUp+'</span> '+esc(X().medal[stazUp]):'')+'</p>':'')+
    '<div class="vote" id="vote"></div>'+
    '<pre class="share" id="share">'+esc(shareText())+'</pre>'+
    '<p class="msg" id="msg" role="status" style="color:var(--ok)"></p>'+
-   '<div class="row"><button type="button" class="btn stampy" id="b-copy">'+esc(t.copy)+'</button><button type="button" class="btn ghost" id="b-again">'+esc(t.again)+'</button></div>'+
+   '<div class="row"><button type="button" class="btn stampy" id="b-copy">'+esc(t.copy)+'</button><button type="button" class="btn" id="b-chal2">⚔ '+esc(x0.chal)+'</button><button type="button" class="btn ghost" id="b-again">'+esc(t.again)+'</button></div>'+
    '<details class="sheetbox"><summary>'+esc(t.answers)+'</summary><table class="tbl">'+rows+'</table></details></div>','eject');
   overview(false);
   var cells=document.querySelectorAll('#slots div'), d=RM?0:220;
@@ -1129,8 +1215,16 @@ async function viewEnd(){
   $('b-copy').onclick=function(){ var done=function(ok){$('msg').textContent=ok?t.copied:t.copyFail; if(ok)SFX.ding();};
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
   setTimeout(showShareImage,RM?0:600);
-  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r},$('vote')); }
-  $('b-again').onclick=function(){S.phase='start'; S.ticket=0; S.results=[]; S.used={}; S.bonus=[]; render();};
+  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,
+    answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q]; })},$('vote')); }
+  $('b-chal2').onclick=function(){
+    var me=(window.PECAT_ME&&window.PECAT_ME())||'', stop=r?C()[r-1].c:'—';
+    var url=location.origin+location.pathname+'?izazov='+b64u({l:S.lang,i:S.ids,e:S.evAt,s:S.seed,p:tot,r:r,c:stop,n:me,h:S.hard?1:0});
+    var txt=x0.chalShare(stop,tot);
+    if(navigator.share) navigator.share({title:'Pečat!',text:txt,url:url}).catch(function(){});
+    else { try{ navigator.clipboard.writeText(txt+' '+url).then(function(){ $('msg').textContent=x0.chalCopied; SFX.ding(); }); }catch(e){ $('msg').textContent=url; } }
+  };
+  $('b-again').onclick=function(){S.phase='start'; S.ticket=0; S.results=[]; S.used={}; S.bonus=[]; S.ended=0; if(S.mode==='chal'){ CHAL=null; try{ history.replaceState(null,'',location.pathname+location.search.replace(/[?&]izazov=[^&]*/,'').replace(/^&/,'?')); }catch(e){} } render();};
 }
 
 function render(){
@@ -1158,7 +1252,7 @@ function start(snap){
   if(S.phase!=='start'){ placeCarAt(S.carDist||0); if(S.phase!=='end') followCar(300,true); pileDraw(S.pile||0); }
 }
 var hot=window.claude&&window.claude.hot;
-if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car};});
+if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car,mode:S.mode,seed:S.seed,hard:S.hard,day:S.day,ended:S.ended,voted:S.voted};});
 if(hot&&hot.ready) hot.ready(start); else start((hot&&hot.data)||{});
 })();
 </script>
