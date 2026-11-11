@@ -212,6 +212,10 @@ h2{font-size:25px}
 .slots div.x{border:3px solid var(--alarm); color:var(--alarm); animation:thud .3s both; transform:rotate(6deg)}
 .bigstamp{align-self:center; font-family:var(--f-stamp); border:5px double; border-radius:10px; padding:5px 18px 8px; font-size:clamp(24px,8vw,38px); white-space:nowrap; text-transform:uppercase; transform:rotate(-6deg); color:var(--alarm); border-color:var(--alarm); mix-blend-mode:multiply}
 .bigstamp.gold{color:#8a6516; border-color:#8a6516}
+.shbox{display:flex; flex-direction:column; gap:8px; align-items:center}
+.shbox img{width:100%; max-width:360px; height:auto; display:block; box-shadow:0 6px 18px rgba(0,0,0,.25); border-radius:3px; animation:shpop .4s ease both}
+.shph{width:100%; max-width:360px; aspect-ratio:4/5; background:repeating-linear-gradient(45deg,#ece7d5 0 10px,#f3efe0 10px 20px); border-radius:3px}
+@keyframes shpop{from{transform:scale(.92) rotate(-2deg);opacity:0}to{transform:none;opacity:1}}
 .endmsg{margin:0; font-family:var(--f-type); font-size:15px; text-align:center}
 .score{margin:0; text-align:center; font-size:14px; color:var(--ink-soft)}
 .score b{font-family:var(--f-stamp); font-size:32px; color:var(--ink); display:block; line-height:1.1}
@@ -344,6 +348,7 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 </div>
 <canvas id="fx"></canvas>
 
+<script src="online.js"></script>
 <script src="engine.js"></script>
 <script src="data_hr.js"></script>
 <script src="data_ba.js"></script>
@@ -738,6 +743,7 @@ var S={lang:'hr',phase:'start',ids:[],idx:0,results:[],used:{},ticket:0,streak:0
 var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
 ['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
 
+function hook(n){ var H=window.PECAT_HOOKS; if(H&&H[n]) try{ H[n].apply(null,[].slice.call(arguments,1)); }catch(e){ console.warn(e); } }
 function T(){return L[S.lang].t;}
 function C(){return ROUTE[S.lang];}
 function pool(){ var out=[]; DATA[S.lang].forEach(function(day,d){day.forEach(function(q,i){out.push({id:S.lang+'-'+(d+1)+'-'+(i+1),q:q});});}); return out; }
@@ -840,16 +846,18 @@ function viewStart(){
    '<ul class="tiers">'+tiers+'</ul>'+
    '<div class="scale"><i></i><span>'+esc(m.common)+'</span><span>'+esc(m.rare)+' →</span></div>'+
    '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go" id="b-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(m.go)+'</button></div>'+
+   '<div class="acct" id="acct"></div>'+
    '<details class="rules-box"><summary>'+esc(m.rules)+'</summary><ol class="rules">'+t.rules.map(function(r,i){return '<li><b>'+(i+1)+'</b><span>'+esc(r)+'</span></li>';}).join('')+'</ol></details>'+
    (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+'/800</b> · '+st.games+' '+esc(t.games)+'</p>':'');
+  hook('hero',$('acct'),S.lang);
   $('b-go').onclick=function(){
-    var btn=this; if(btn.disabled)return; btn.disabled=true; ac(); SFX.ticket();
+    var btn=this; if(btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); hook('start',S.lang);
     var tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
     S.ticket=100+Math.floor(Math.random()*900);
     var roll=setInterval(function(){ scr.textContent=100+Math.floor(Math.random()*900); if(++n>8){ clearInterval(roll); scr.textContent=S.ticket; SFX.ding(); } },RM?1:70);
     setTimeout(function(){
       S.ids=drawQuestions(); S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
-      S.evAt=shuffle([1,2,3,4,5,6]).slice(0,2+(Math.random()<.5?1:0)); S.carDist=0; S.car=1; drawCar(); S.phase='q';
+      S.voted=0; S.evAt=shuffle([1,2,3,4,5,6]).slice(0,2+(Math.random()<.5?1:0)); S.carDist=0; S.car=1; drawCar(); S.phase='q';
       render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
     }, RM?200:1500);
   };
@@ -999,6 +1007,93 @@ function shareText(){
   return 'Pečat! '+L[S.lang].flag+' № '+S.ticket+'\n'+t.reached(stop,r)+' · '+total()+'/800\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
 }
 
+
+/* ---------- slika za dijeljenje: isti predložak, mijenjaju se auto, stanica, pečat i tekst ---------- */
+var SHARE={
+ hr:{btn:'Podijeli sliku',save:'Spremi sliku',hint:'Ako se ne spremi: drži prst na slici pa „Spremi”.',stop:'Stigao/la do',none:'Portir me nije pustio',sal:'šaltera',cta:'Koliko daleko ćeš ti?',
+   car:['Polako, ali kroz birokraciju.','Dao je sve od sebe.','Ne vozi brzo, ali ima pečat.','Klasik se ne kvari.','Tata je ponosan.','Žmigavac nije uključen.']},
+ ba:{btn:'Podijeli sliku',save:'Spasi sliku',hint:'Ako se ne spasi: drži prst na slici pa „Spasi”.',stop:'Stigao/la do',none:'Portir me nije pustio',sal:'šaltera',cta:'Dokle ćeš ti stići?',
+   car:['Polako, ali kroz sva tri nivoa vlasti.','Dao je sve od sebe.','Ne vozi brzo, ali ima pečat.','Dizel ne staje.','Babo je ponosan.','Ko te šta pita.']},
+ rs:{btn:'Podeli sliku',save:'Sačuvaj sliku',hint:'Ako se ne sačuva: drži prst na slici pa „Sačuvaj”.',stop:'Stigao/la do',none:'Portir me nije pustio',sal:'šaltera',cta:'Dokle ćeš ti stići?',
+   car:['Polako, ali kroz birokratiju.','Dao je sve od sebe.','Ne vozi brzo, ali ima pečat.','Ne pali, al’ gura se.','Ćale je ponosan.','Migavac nije uključen.']}};
+function siteName(){ var h=location.hostname||''; return (/^(localhost|127\.|$)/.test(h)||/claude|anthropic|usercontent/.test(h))?'Pečat! · igra s pečatom':h.replace(/^www\./,''); }
+function svgImg(svg){ return new Promise(function(res){ var i=new Image(); i.onload=function(){res(i);}; i.onerror=function(){res(null);};
+  i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); }); }
+function wrapLines(x,text,maxW){ var w=text.split(' '), out=[], line=''; w.forEach(function(word){ var t=line?line+' '+word:word; if(x.measureText(t).width>maxW&&line){out.push(line); line=word;} else line=t; }); if(line)out.push(line); return out; }
+async function makeShareImage(){
+  var W=1080,H=1350, cv=document.createElement('canvas'); cv.width=W; cv.height=H; var x=cv.getContext('2d');
+  try{ await Promise.all(['900 40px "Archivo Black"','700 40px "Archivo Narrow"','400 40px "Archivo Narrow"','500 30px "IBM Plex Mono"'].map(function(f){return document.fonts.load(f);})); }catch(e){}
+  var lang=S.lang, m=MEMO[lang], sh=SHARE[lang], t=T(), tot=total(), r=E.reached(tot), win=r>=8, tier=S.car===undefined?1:S.car;
+  var FS='"Archivo Black","Arial Black",Impact,sans-serif', FL='"Archivo Narrow","Arial Narrow",Arial,sans-serif', FT='"IBM Plex Mono","Courier New",monospace';
+  // stol i papir
+  x.fillStyle='#3e5947'; x.fillRect(0,0,W,H);
+  x.save(); x.shadowColor='rgba(0,0,0,.35)'; x.shadowBlur=40; x.shadowOffsetY=14; x.fillStyle='#f6f3e7'; x.fillRect(54,54,W-108,H-108); x.restore();
+  x.strokeStyle='#cfc9b2'; x.lineWidth=2; x.strokeRect(70,70,W-140,H-140);
+  // memorandum
+  var cr=await svgImg(crest(lang).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="120" height="140" '));
+  if(cr) x.drawImage(cr,96,96,90,105);
+  x.fillStyle='#1f252b'; x.textBaseline='alphabetic'; x.textAlign='left';
+  x.font='700 30px '+FL; x.fillText(m.l1,200,132);
+  x.font='700 23px '+FL; x.fillText(m.l2,200,164);
+  x.font='400 21px '+FL; x.fillStyle='#5b6168'; x.fillText(m.l3,200,193);
+  x.textAlign='right'; x.font='500 22px '+FT; x.fillStyle='#1f252b';
+  x.fillText('№ '+(S.ticket||'—'),W-100,132); x.fillStyle='#5b6168'; x.fillText(todayStr(),W-100,164);
+  x.strokeStyle='#1f252b'; x.lineWidth=3; x.beginPath(); x.moveTo(96,226); x.lineTo(W-96,226); x.stroke();
+  x.lineWidth=1; x.beginPath(); x.moveTo(96,233); x.lineTo(W-96,233); x.stroke();
+  // naslov
+  x.textAlign='center'; x.fillStyle='#1f252b'; x.font='900 64px '+FS; x.fillText(t.decree.toUpperCase().split('').join(String.fromCharCode(8202)),W/2,320);
+  // cesta i auto
+  var gy=690; x.fillStyle='#dfe3d2'; x.fillRect(96,360,W-192,gy-360+40);
+  x.fillStyle='#8a8f86'; x.fillRect(96,gy,W-192,58); x.strokeStyle='#f6f3e7'; x.lineWidth=6; x.setLineDash([40,30]); x.beginPath(); x.moveTo(110,gy+29); x.lineTo(W-110,gy+29); x.stroke(); x.setLineDash([]);
+  // putokaz sa stanicom (lijevo)
+  var stop=r?C()[r-1].c:'—', sx=200;
+  x.font='700 36px '+FL; var sw=Math.max(190,x.measureText(stop).width+56);
+  x.fillStyle='#5b4632'; x.fillRect(sx-5,470,10,gy-470);
+  x.fillStyle='#2e6b3f'; x.strokeStyle='#f6f3e7'; x.lineWidth=5; x.beginPath(); x.rect(Math.max(104,sx-sw/2),400,sw,76); x.fill(); x.stroke();
+  x.fillStyle='#f6f3e7'; x.textAlign='center'; x.fillText(stop,Math.max(104,sx-sw/2)+sw/2,451);
+  // auto (7 px po jedinici; kotači stoje na cesti)
+  var car=await svgImg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-40 -32 70 40" width="490" height="280">'+carArt(tier)+'</svg>');
+  if(car) x.drawImage(car,290,gy+8-276,490,280);
+  // pečat (gore desno, preko neba)
+  x.save(); x.translate(W-300,500); x.rotate(-0.2);
+  var stx=(win?t.win:t.lose).toUpperCase(), col=win?'#3b37a6':'#b3271d', fs=win?84:60; x.font='900 '+fs+'px '+FS;
+  while(x.measureText(stx).width>360&&fs>30){ fs-=2; x.font='900 '+fs+'px '+FS; }
+  var tw=x.measureText(stx).width+60, th=fs+54;
+  x.globalAlpha=.88; x.strokeStyle=col; x.lineWidth=9; x.strokeRect(-tw/2,-th/2,tw,th); x.lineWidth=3; x.strokeRect(-tw/2+14,-th/2+14,tw-28,th-28);
+  x.fillStyle=col; x.textAlign='center'; x.textBaseline='middle'; x.fillText(stx,0,4); x.restore(); x.textBaseline='alphabetic';
+  // auto + šala
+  x.textAlign='center'; x.fillStyle='#1f252b'; x.font='900 40px '+FS; x.fillText(CARNAME[lang][tier],W/2,808);
+  x.font='400 28px '+FL; x.fillStyle='#5b6168'; x.fillText(sh.car[tier],W/2,846);
+  // rezultat
+  x.fillStyle='#1f252b'; x.font='700 50px '+FL; x.fillText(r?(sh.stop+': '+stop):sh.none,W/2,922);
+  x.font='500 32px '+FT; x.fillStyle='#3b37a6'; x.fillText(r+'/8 '+sh.sal+'  ·  '+kmOf(distFor(tot))+' km  ·  '+tot+'/800',W/2,972);
+  // kvadratići
+  var n=S.results.length, bw=60, gap=14, bx=W/2-(n*bw+(n-1)*gap)/2;
+  S.results.forEach(function(q,i){ x.fillStyle=!q.ok?'#b3271d':(q.pct<10?'#2e6b3f':'#c99a2e'); x.fillRect(bx+i*(bw+gap),1002,bw,bw); });
+  // citat
+  x.fillStyle='#1f252b'; x.font='500 28px '+FT; var ql=wrapLines(x,'„'+L[lang].end[END_IX[r]]+'”',W-240);
+  ql.slice(0,2).forEach(function(l,i){ x.fillText(l,W/2,1126+i*38); });
+  // podnožje
+  x.strokeStyle='#1f252b'; x.lineWidth=1; x.beginPath(); x.moveTo(96,1215); x.lineTo(W-96,1215); x.stroke();
+  x.textAlign='left'; x.fillStyle='#1f252b'; x.font='700 34px '+FL; x.fillText(sh.cta,100,1262);
+  x.textAlign='right'; x.font='500 26px '+FT; x.fillStyle='#3b37a6'; x.fillText(siteName(),W-100,1260);
+  return cv;
+}
+function canvasBlob(cv){ return new Promise(function(res){ try{ cv.toBlob(function(b){res(b);},'image/png'); }catch(e){res(null);} }); }
+async function showShareImage(){
+  var box=$('shbox'); if(!box) return; var sh=SHARE[S.lang];
+  var cv=await makeShareImage(); if(!$('shbox')) return;
+  var url; try{ url=cv.toDataURL('image/png'); }catch(e){ return; }
+  box.innerHTML='<img id="shimg" src="'+url+'" alt="'+esc(shareText().replace(/\n/g,' · '))+'">'+
+    '<div class="row"><button type="button" class="btn stampy" id="b-img">'+esc(sh.btn)+'</button></div><p class="msg" id="shmsg" role="status"></p>';
+  $('b-img').onclick=async function(){
+    var blob=await canvasBlob(cv), file=null; try{ file=blob&&new File([blob],'pecat-'+S.ticket+'.png',{type:'image/png'}); }catch(e){}
+    try{ if(file&&navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],text:shareText()}); SFX.ding(); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
+    try{ var a=document.createElement('a'); a.href=url; a.download='pecat-'+S.ticket+'.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+    $('shmsg').textContent=sh.hint;
+  };
+}
+
 async function viewEnd(){
   var t=T(), tot=total(), r=E.reached(tot), win=r>=8;
   $('desk').innerHTML=''; mapState(r,!win);
@@ -1019,6 +1114,8 @@ async function viewEnd(){
    '<p class="score"><b id="sc">0</b>/800</p>'+
    '<div class="bigstamp'+(win?' gold':'')+'" id="bigst" style="visibility:hidden">'+esc(win?t.win:t.lose)+'</div>'+
    '<p class="endmsg">„'+esc(L[S.lang].end[END_IX[r]])+'”</p>'+
+   '<div class="shbox" id="shbox"><div class="shph"></div></div>'+
+   '<div class="vote" id="vote"></div>'+
    '<pre class="share" id="share">'+esc(shareText())+'</pre>'+
    '<p class="msg" id="msg" role="status" style="color:var(--ok)"></p>'+
    '<div class="row"><button type="button" class="btn stampy" id="b-copy">'+esc(t.copy)+'</button><button type="button" class="btn ghost" id="b-again">'+esc(t.again)+'</button></div>'+
@@ -1031,6 +1128,8 @@ async function viewEnd(){
     if(r>=7){ confetti(); SFX.win(); } },500+Math.min(N,r+1)*d+200);
   $('b-copy').onclick=function(){ var done=function(ok){$('msg').textContent=ok?t.copied:t.copyFail; if(ok)SFX.ding();};
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
+  setTimeout(showShareImage,RM?0:600);
+  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r},$('vote')); }
   $('b-again').onclick=function(){S.phase='start'; S.ticket=0; S.results=[]; S.used={}; S.bonus=[]; render();};
 }
 

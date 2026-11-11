@@ -4,8 +4,11 @@
   "private": true,
   "description": "Pečat! – igra o balkanskoj birokraciji (HR/BiH/SRB)",
   "scripts": {
-    "dev": "npx serve public",
-    "test": "node tools/test.js && node tools/common.js",
+    "dev": "node tools/dev.js",
+    "test": "node tools/test.js && node tools/common.js && node tools/api_test.js",
     "wiki": "cd tools && python3 fetch_wiki_top.py && python3 match_wiki.py"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
