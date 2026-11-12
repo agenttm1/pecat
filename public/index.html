@@ -769,22 +769,22 @@ var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
 ['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
 
 var XT={
- hr:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
-   hard:'Šef odsjeka',hardSub:'15 sekundi, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+ hr:{noPaper:['Toga nemamo među papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Pogledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Tjedan bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
    chal:'Izazovi prijatelja',chalCopied:'Poveznica izazova kopirana!',chalTitle:function(n,c,p){return (n||'Netko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi tko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Birokracija ne zna pobjednika.';},
    suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
- ba:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
-   hard:'Šef odsjeka',hardSub:'15 sekundi, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+ ba:{noPaper:['Toga nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Gledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Sedmica bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
    chal:'Izazovi raju',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođi sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Ni kanton ne zna ko je pobijedio.';},
    suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
- rs:{daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne računa se)';},
-   hard:'Šef odseka',hardSub:'15 sekundi, bez praštanja za greške u kucanju, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
+ rs:{noPaper:['To nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Koleginica kaže da to nije u registru.','Gledala sam i u fioci. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne računa se)';},
+   hard:'Šef odseka',hardSub:'15 sekundi, jedan pokušaj, bez praštanja za greške u kucanju, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Nedelja bez bolovanja',30:'Mesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odseka ne priznaje greške u kucanju. Mislio/la si: <b>'+w+'</b>';},
    chal:'Izazovi prijatelja',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
@@ -964,6 +964,14 @@ function submit(v,timeUp){
     if(!r.ok && (r.reason==='short'||r.reason==='banned'||r.reason==='dup'||r.reason==='nonsense')){ $('msg').textContent=t[r.reason]; shake($('sheet')); SFX.bad(); $('answer').focus(); return; } }
   if(r.ok && r.fuzzy && !timeUp && S.hard){ r={ok:false,reason:'wrong',typo:r.text}; }
   if(r.ok && r.fuzzy && !timeUp){ askConfirm(q,r,v); return; }
+  // nema ga u papirima: još dva pokušaja (Šef odsjeka ne daje)
+  if(!r.ok && r.reason==='wrong' && !timeUp && !r.typo){
+    if(S.missAt!==S.idx){ S.missAt=S.idx; S.miss=[]; }
+    S.miss.push(String(v).trim().slice(0,40));
+    if(!S.hard && S.miss.length<3){ var x=X(), left=3-S.miss.length;
+      $('msg').innerHTML='<b>'+esc(pick(x.noPaper))+'</b> '+esc(x.triesLeft(left)); shake($('sheet')); SFX.bad();
+      say(pick(x.noPaperSay),'meh'); $('answer').value=''; $('answer').focus(); return; }
+  }
   go(q,r,v);
 }
 function go(q,r,v){
@@ -986,7 +994,7 @@ async function review(q,r,input){
   var t=T(), rec;
   if(r.ok){S.used[r.id]=1; rec={ok:true,text:r.text,pct:r.pct,pts:E.points(r.pct),fresh:!!r.fresh}; if(S.mod.mult){rec.pts=Math.round(rec.pts*S.mod.mult); rec.mult=S.mod.mult;}}
   else rec={ok:false,text:String(input||'').trim(),pct:null,pts:0,time:r.reason==='time'};
-  rec.q=q.q; rec.n=q._list?q._list.length:0; rec.open=!!q.o; rec.qid=S.ids[S.idx]; rec.aid=r.ok?r.id:'x'; rec.live=r.live||0; rec.base=r.ok?E.points(r.pct):0; if(r.typo) rec.typo=r.typo;
+  rec.q=q.q; rec.n=q._list?q._list.length:0; rec.open=!!q.o; rec.qid=S.ids[S.idx]; rec.miss=S.missAt===S.idx?S.miss.slice():[]; rec.aid=r.ok?r.id:'x'; rec.live=r.live||0; rec.base=r.ok?E.points(r.pct):0; if(r.typo) rec.typo=r.typo;
   if(!rec.ok && !q.o && q._list && q._list.length){ var L0=q._list, ex=[L0[Math.floor(Math.random()*Math.min(3,L0.length))].text]; rec.ex=ex.concat(shuffle(L0.slice(3)).slice(0,2).map(function(x){return x.text;})); }
   var R=L[S.lang].react, kind=!rec.ok?(rec.time?'time':'wrong'):(rec.fresh?'mid':(rec.pct<6?'rare':(rec.pct<20?'mid':'common')));
   rec.kind=kind; rec.line=pick(R[kind]);
@@ -1216,7 +1224,7 @@ async function viewEnd(){
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
   setTimeout(showShareImage,RM?0:600);
   if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,
-    answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q]; })},$('vote')); }
+    answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q,x.miss||[]]; })},$('vote')); }
   $('b-chal2').onclick=function(){
     var me=(window.PECAT_ME&&window.PECAT_ME())||'', stop=r?C()[r-1].c:'—';
     var url=location.origin+location.pathname+'?izazov='+b64u({l:S.lang,i:S.ids,e:S.evAt,s:S.seed,p:tot,r:r,c:stop,n:me,h:S.hard?1:0});

@@ -20,6 +20,9 @@ small{color:#5b6168} label{font-size:13px;font-weight:700} .msg{color:#2e6b3f}
 <div class="row"><input id="key" type="password" placeholder="ADMIN_KEY" style="flex:1"><select id="lang" style="width:auto"><option value="hr">HR</option><option value="ba">BiH</option><option value="rs">SRB</option></select><button id="load">Učitaj</button></div>
 <p class="msg" id="msg"></p>
 <div id="list"></div>
+<h2 style="font-size:19px">Odgovori kojih nema u papirima</h2>
+<p><small>Što su igrači upisali, a igra nije priznala. Ako je točno, dodaj ga u podatke pitanja i označi kao riješeno.</small></p>
+<div id="miss"></div>
 <script>
 var $=function(i){return document.getElementById(i);};
 try{ $('key').value=sessionStorage.getItem('pk')||''; }catch(e){}
@@ -41,7 +44,14 @@ function load(){
     });
   }).catch(function(e){ $('msg').textContent='Greška: '+e.message; $('list').innerHTML=''; });
 }
-$('load').onclick=load; $('lang').onchange=load;
+function loadMiss(){ var l=$('lang').value;
+  api('admin/missing?lang='+l).then(function(j){
+    $('miss').innerHTML=j.missing.map(function(m){ return '<div class="card" style="flex-direction:row;align-items:center;gap:10px"><div style="flex:1"><small>'+esc(m.q)+' · '+esc(m.qid)+'</small><div><b>'+esc(m.a)+'</b> · '+m.n+'×</div></div><button class="g" data-k="'+esc(m.key)+'">Riješeno</button></div>'; }).join('')||'<p>Nema ničega.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll('#miss [data-k]'),function(b){ b.onclick=function(){ api('admin/missing/done',{lang:l,key:b.dataset.k}).then(loadMiss); }; });
+  }).catch(function(){ $('miss').innerHTML=''; });
+}
+var load0=load; load=function(){ load0(); loadMiss(); };
+$('load').onclick=load; $('lang').onchange=function(){ load(); };
 </script>
 </body>
 </html>
