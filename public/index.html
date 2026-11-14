@@ -371,6 +371,24 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 .weekoff{margin:10px 0 4px;padding:8px 12px;border:2px dashed #1f252b;border-radius:6px;background:#fff8dd;text-align:left}
 .weekoff b{display:block;font-family:"Archivo Black",sans-serif;font-size:13px;letter-spacing:.04em;color:#b3271d}
 .weekoff small{display:block;font-size:12px;line-height:1.35;color:#3b3a36;margin-top:2px}
+.kart{position:fixed;inset:0;z-index:60;background:rgba(20,24,28,.55);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+.kart.on{display:flex}
+.kbox{background:#f3efe1;border:3px solid #1f252b;border-radius:8px;box-shadow:6px 6px 0 #1f252b;max-width:520px;width:100%;padding:16px 16px 18px;color:#1f252b}
+.khead{display:flex;align-items:center;justify-content:space-between}.khead h2{margin:0;font-family:"Archivo Black",sans-serif;font-size:24px}
+.kx{border:2px solid #1f252b;background:#fff;border-radius:6px;width:36px;height:36px;font-size:18px;cursor:pointer}
+.kintro{font-size:14px;line-height:1.4;margin:8px 0 4px}.kstat{font-family:"IBM Plex Mono",monospace;font-size:12px;color:#5b6168;margin:0 0 10px}
+.kempty{font-size:14px;padding:10px;border:2px dashed #b9b29c;border-radius:6px}
+.kdraw{display:grid;gap:8px;margin-bottom:12px}
+.kd{background:#e3dcc6;border:2px solid #1f252b;border-radius:6px}
+.kd.gold{background:#f6dc85}.kd[disabled]{opacity:.55}.kd[disabled] summary{pointer-events:none}
+.kd summary{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-weight:700;list-style:none}
+.kd summary::-webkit-details-marker{display:none}
+.kd summary .kl{flex:1}.kn{font-family:"IBM Plex Mono",monospace;font-size:13px}
+.kseal{font-family:"Archivo Black",sans-serif;font-size:10px;color:#8a5a00;border:2px solid #8a5a00;border-radius:4px;padding:1px 5px;transform:rotate(-6deg)}
+.kd ul{list-style:none;margin:0;padding:0 10px 10px;display:grid;gap:6px}
+.kd li{background:#fbfaf4;border:1px solid #b9b29c;border-radius:4px;padding:7px 9px;display:grid;gap:2px}
+.kd li small{font-size:12px;color:#5b6168}.kd li b{font-size:16px}.kd li i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#2e6b3f}
+.chip.card{background:#f6dc85;border-color:#8a5a00;color:#5a3a00}
 </style>
 </head>
 <body>
@@ -1050,6 +1068,7 @@ function viewStart(){
    '<div class="modes">'+
      (dd?'<button type="button" class="mode done" id="b-daily"><b>'+esc(x.dailyN(day))+'</b><small>'+esc(x.done(dd.score))+'</small></button>'
         :'<button type="button" class="mode" id="b-free"><b>'+esc(x.free)+'</b><small>'+esc(x.freeSub)+'</small></button>')+
+     '<button type="button" class="mode kbtn" id="b-kart"><b>🗂 '+esc(KT[S.lang].btn)+'</b><small>'+esc(KT[S.lang].sub(kCards().length))+'</small></button>'+
      '<label class="hardsw"><input type="checkbox" id="hard"'+(store('pecat:hard')?' checked':'')+'><span><b>'+esc(x.hard)+'</b><small>'+esc(x.hardSub)+'</small></span></label>'+
      '<p class="staz">'+stazLine()+'</p>'+
    '</div>'+
@@ -1060,6 +1079,7 @@ function viewStart(){
   $('b-go').onclick=function(){ startGame(dd?'free':'daily',this); };
   if($('b-daily')) $('b-daily').onclick=function(){ startGame('daily',$('b-go')); };
   if($('b-free')) $('b-free').onclick=function(){ startGame('free',$('b-go')); };
+  if($('b-kart')) $('b-kart').onclick=kOpen;
   $('hard').onchange=function(){ store('pecat:hard',this.checked); SFX.paper(); };
   if($('b-chal')) $('b-chal').onclick=function(){ startGame('chal',$('b-go')); };
 }
@@ -1152,6 +1172,7 @@ async function review(q,r,input){
   await wait(rec.time?700:1300);
   var before=E.reached(total()), d0=distFor(total());
   S.results.push(rec);
+  rec.card=kAdd(rec);
   rec.km=kmOf(distFor(total())-d0);
   S.streak=rec.ok&&rec.pct<6?S.streak+1:0;
   rec.passed=E.reached(total())>before;
@@ -1161,6 +1182,75 @@ async function review(q,r,input){
   busy=false; S.phase='fb'; render();
 }
 
+
+/* ---------- Kartoteka: album rijetkih odgovora (ispod 5 %) ---------- */
+var KT={hr:{title:'Kartoteka',btn:'Kartoteka',sub:function(n){return n?n+(n%10===1&&n%100!==11?' karton':(n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?' kartona':' kartona'))+' u ladici':'Ladica je još prazna';},
+   intro:'Svaki odgovor koji je dalo manje od 5 % ljudi dobije svoj karton. Pet različitih pitanja u istoj ladici donosi zlatni pečat.',
+   empty:'Nema kartona. Daj odgovor koji je dalo manje od 5 % ljudi pa se vrati.',chip:'+ karton u kartoteci',close:'Zatvori',share:'Podijeli kartoteku',gold:'ZLATNI PEČAT',seals:function(a,b){return 'Zlatnih pečata: '+a+'/'+b;},
+   cat:{zdr:'Zdravstvo',kat:'Katastar',mup:'MUP',por:'Porezna',mat:'Matični ured',tur:'Turizam',kul:'Kultura',spo:'Sport',ost:'Razno'}},
+ ba:{title:'Kartoteka',btn:'Kartoteka',sub:function(n){return n?n+(n%10===1&&n%100!==11?' karton':' kartona')+' u ladici':'Ladica je još prazna';},
+   intro:'Svaki odgovor koji je dalo manje od 5 % ljudi dobije svoj karton. Pet različitih pitanja u istoj ladici donosi zlatni pečat.',
+   empty:'Nema kartona. Daj odgovor koji je dalo manje od 5 % ljudi pa se vrati.',chip:'+ karton u kartoteci',close:'Zatvori',share:'Podijeli kartoteku',gold:'ZLATNI PEČAT',seals:function(a,b){return 'Zlatnih pečata: '+a+'/'+b;},
+   cat:{zdr:'Zdravstvo',kat:'Katastar',mup:'MUP',por:'Porezna',mat:'Matični ured',tur:'Turizam',kul:'Kultura',spo:'Sport',ost:'Razno'}},
+ rs:{title:'Kartoteka',btn:'Kartoteka',sub:function(n){return n?n+(n%10===1&&n%100!==11?' karton':' kartona')+' u fioci':'Fioka je još prazna';},
+   intro:'Svaki odgovor koji je dalo manje od 5 % ljudi dobije svoj karton. Pet različitih pitanja u istoj fioci donosi zlatni pečat.',
+   empty:'Nema kartona. Daj odgovor koji je dalo manje od 5 % ljudi pa se vrati.',chip:'+ karton u kartoteci',close:'Zatvori',share:'Podeli kartoteku',gold:'ZLATNI PEČAT',seals:function(a,b){return 'Zlatnih pečata: '+a+'/'+b;},
+   cat:{zdr:'Zdravstvo',kat:'Katastar',mup:'MUP',por:'Poreska',mat:'Matična služba',tur:'Turizam',kul:'Kultura',spo:'Sport',ost:'Razno'}}};
+var KCATS=['zdr','kat','mup','por','mat','tur','kul','spo','ost'];
+function kCat(q){ var T0=window.PECAT_THEMES; if(T0) for(var i=0;i<T0.list.length;i++) if(T0.match(T0.list[i],q)) return T0.list[i].k; return 'ost'; }
+function kCards(){ return (store('pecat:kartoteka:'+S.lang)||[]); }
+function kAdd(rec){
+  if(!rec.ok||rec.fresh||!(rec.pct<5)||!rec.qid) return false;
+  var all=kCards(), q=byId(rec.qid)||{q:rec.q}, old=null;
+  for(var i=0;i<all.length;i++) if(all[i].qid===rec.qid) old=all[i];
+  if(old&&old.pct<=rec.pct) return false;
+  var card={qid:rec.qid,q:rec.q,a:rec.text,pct:rec.pct,d:zgDate(),cat:kCat(q)};
+  if(old) all[all.indexOf(old)]=card; else all.push(card);
+  store('pecat:kartoteka:'+S.lang,all.slice(-400)); return !old;
+}
+function kGroups(){ var g={}; KCATS.forEach(function(k){g[k]=[];}); kCards().forEach(function(c){ (g[c.cat]||g.ost).push(c); }); KCATS.forEach(function(k){ g[k].sort(function(a,b){return a.pct-b.pct;}); }); return g; }
+function pctS(p){ return String(Math.round(p*10)/10).replace('.',','); }
+function kOpen(){
+  var k=KT[S.lang], g=kGroups(), all=kCards(), gold=KCATS.filter(function(c){return g[c].length>=5;}).length;
+  var el=$('kart'); if(!el){ el=document.createElement('div'); el.id='kart'; el.className='kart'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); document.body.appendChild(el); }
+  var h='<div class="kbox"><div class="khead"><h2>🗂 '+esc(k.title)+'</h2><button type="button" class="kx" id="k-x" aria-label="'+esc(k.close)+'">✕</button></div>'+
+    '<p class="kintro">'+esc(k.intro)+'</p><p class="kstat">'+esc(k.sub(all.length))+' · '+esc(k.seals(gold,KCATS.length))+'</p>';
+  if(!all.length) h+='<p class="kempty">'+esc(k.empty)+'</p>';
+  h+='<div class="kdraw">'+KCATS.map(function(c){ var L0=g[c], n=L0.length, done=n>=5;
+    return '<details class="kd'+(done?' gold':'')+'"'+(n?'':' disabled')+'><summary><span class="kl">'+esc(k.cat[c])+'</span><span class="kn">'+Math.min(n,5)+'/5'+(n>5?' (+'+(n-5)+')':'')+'</span>'+(done?'<span class="kseal">'+esc(k.gold)+'</span>':'')+'</summary>'+
+      (n?'<ul>'+L0.map(function(x){return '<li><small>'+esc(x.q)+'</small><b>„'+esc(x.a)+'”</b><i>'+pctS(x.pct)+' % · '+esc(x.d.split('-').reverse().join('. '))+'.</i></li>';}).join('')+'</ul>':'')+'</details>'; }).join('')+'</div>';
+  if(all.length) h+='<button type="button" class="btn" id="k-sh">'+esc(k.share)+'</button><img id="k-img" alt="" style="width:100%;display:none;margin-top:10px">';
+  h+='</div>';
+  el.innerHTML=h; el.classList.add('on'); document.body.style.overflow='hidden';
+  function close(){ el.classList.remove('on'); document.body.style.overflow=''; }
+  $('k-x').onclick=close; el.onclick=function(e){ if(e.target===el) close(); };
+  document.addEventListener('keydown',function f(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',f);} });
+  if($('k-sh')) $('k-sh').onclick=function(){ var cv=kImage(), im=$('k-img'); im.src=cv.toDataURL('image/png'); im.style.display='block';
+    cv.toBlob(function(b){ try{ var f=new File([b],'kartoteka.png',{type:'image/png'}); if(navigator.canShare&&navigator.canShare({files:[f]})){ navigator.share({files:[f],text:'Pečat! · '+k.title}).catch(function(){}); return; } }catch(e){}
+      var a=document.createElement('a'); a.href=im.src; a.download='kartoteka.png'; a.click(); }); };
+}
+function kImage(){
+  var k=KT[S.lang], g=kGroups(), all=kCards().slice().sort(function(a,b){return a.pct-b.pct;}), W=1080, H=1350, cv=document.createElement('canvas'); cv.width=W; cv.height=H; var x=cv.getContext('2d');
+  var FS='"Archivo Black","Arial Black",Impact,sans-serif', FT='"IBM Plex Mono","Courier New",monospace', FL='"Archivo Narrow","Arial Narrow",Arial,sans-serif';
+  x.fillStyle='#6b4a2b'; x.fillRect(0,0,W,H); x.fillStyle='#f3efe1'; x.fillRect(60,60,W-120,H-120);
+  x.fillStyle='#1f252b'; x.textAlign='center'; x.font='80px '+FS; x.fillText(k.title.toUpperCase(),W/2,190);
+  x.font='500 30px '+FT; x.fillStyle='#5b6168'; x.fillText('Pečat! · '+k.sub(all.length),W/2,240);
+  var gold=KCATS.filter(function(c){return g[c].length>=5;}).length;
+  // ladice
+  KCATS.forEach(function(c,i){ var col=i%3, row=Math.floor(i/3), bx=110+col*290, by=290+row*130, n=g[c].length, done=n>=5;
+    x.fillStyle=done?'#f2c94c':'#e3dcc6'; x.fillRect(bx,by,250,105); x.strokeStyle='#1f252b'; x.lineWidth=4; x.strokeRect(bx,by,250,105);
+    x.fillStyle='#1f252b'; x.fillRect(bx+105,by+70,40,10); x.textAlign='center'; x.font='700 30px '+FL; x.fillText(k.cat[c],bx+125,by+40);
+    x.font='500 24px '+FT; x.fillText(Math.min(n,5)+'/5'+(done?' ★':''),bx+125,by+66); });
+  var y=740; x.textAlign='left'; x.fillStyle='#b3271d'; x.font='700 30px '+FL; x.fillText(k.seals(gold,KCATS.length).toUpperCase(),110,y); y-=15;
+  all.slice(0,4).forEach(function(c){ y+=100; x.fillStyle='#1f252b'; x.font='700 44px '+FS.replace('"Archivo Black",','');
+    var a='„'+c.a+'”'; while(x.measureText(a).width>620&&a.length>4) a=a.slice(0,-2)+'…”'; x.font='44px '+FS; x.fillText(a,110,y);
+    x.textAlign='right'; x.fillStyle='#2e6b3f'; x.fillText(pctS(c.pct)+' %',W-110,y); x.textAlign='left';
+    x.fillStyle='#5b6168'; x.font='500 24px '+FT; var q=c.q; while(x.measureText(q).width>860&&q.length>4) q=q.slice(0,-2)+'…'; x.fillText(q,110,y+36); });
+  x.save(); x.translate(W-175,175); x.rotate(-0.2); x.globalAlpha=.85; x.strokeStyle='#3b3f9e'; x.lineWidth=6; x.beginPath(); x.arc(0,0,70,0,7); x.stroke(); x.lineWidth=3; x.beginPath(); x.arc(0,0,58,0,7); x.stroke();
+  x.fillStyle='#3b3f9e'; x.textAlign='center'; x.font='30px '+FS; x.fillText('PEČAT!',0,11); x.restore();
+  x.fillStyle='#5b6168'; x.textAlign='left'; x.font='500 26px '+FT; x.fillText(location.host||'pecat',110,H-95);
+  return cv;
+}
 function viewFb(){
   var t=T(), rec=S.results[S.idx], last=S.idx===N-1, tot=total(), r=E.reached(tot);
   var kind=rec.kind||(!rec.ok?(rec.time?'time':'wrong'):(rec.pct<6?'rare':(rec.pct<20?'mid':'common')));
@@ -1178,6 +1268,7 @@ function viewFb(){
    '<div class="meter"><div class="people" aria-hidden="true">'+ppl+'</div>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+
    (rec.ex?'<p class="could">'+esc(t.could)+' <b>'+rec.ex.map(esc).join('</b> · <b>')+'</b></p>':'')+
    '<p class="gain"><b id="gn">+0</b>'+(rec.mult?'<span class="chip fire">×'+String(rec.mult).replace('.',',')+'</span>':'')+esc(t.gain)+(rec.km?' · <b class="km">+'+rec.km+' km</b>':'')+'</p>'+
+   (rec.card?'<div class="chips"><span class="chip card">🗂 '+esc(KT[S.lang].chip)+'</span></div>':'')+
    (rec.car?'<div class="chips"><span class="chip'+(rec.car.b>rec.car.a?' fire':'')+'">'+esc(CARMSG[S.lang].chip.replace('{b}',CARNAME[S.lang][rec.car.b]))+'</span></div>':'')+
    '<button type="button" class="btn" id="b-next">'+esc(last?t.finish:t.next)+' →</button>', rec.ok?'back':'eject');
   if(rec.car){ setTimeout(function(){ var M=CARMSG[S.lang], nm=CARNAME[S.lang]; showToast((rec.car.b>rec.car.a?M.up:M.down).replace('{a}',nm[rec.car.a]).replace('{b}',nm[rec.car.b])); drawCar(); var c=$('car'); if(c){c.classList.remove('swap'); void c.getBoundingClientRect(); c.classList.add('swap');} (rec.car.b>rec.car.a?SFX.win:SFX.bad)(); },900); }
