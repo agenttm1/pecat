@@ -609,6 +609,14 @@ function tone(f,d,type,vol,slide){ if(!soundOn)return; var c=ac(); if(!c)return;
 function noise(d,vol,freq,type){ if(!soundOn)return; var c=ac(); if(!c)return; var n=Math.floor(c.sampleRate*d), b=c.createBuffer(1,n,c.sampleRate), x=b.getChannelData(0);
   for(var i=0;i<n;i++)x[i]=(Math.random()*2-1)*Math.pow(1-i/n,3); var s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
   f.type=type||'lowpass'; f.frequency.value=freq||900; g.gain.value=vol||.6; s.buffer=b; s.connect(f); f.connect(g); g.connect(c.destination); s.start(); }
+// snimljeni zvukovi: učitaju se jednom, puštaju kroz WebAudio s laganim pojačavanjem
+var CLIPS={}, CLIPSRC={zagreb:'zagreb.mp3'};
+function loadClip(n){ if(CLIPS[n]) return CLIPS[n]; var c=ac(); if(!c||!window.fetch) return Promise.resolve(null);
+  CLIPS[n]=fetch(CLIPSRC[n]).then(function(r){return r.arrayBuffer();}).then(function(b){ return new Promise(function(ok,no){ c.decodeAudioData(b,ok,no); }); }).catch(function(){ CLIPS[n]=null; return null; });
+  return CLIPS[n]; }
+function playClip(n,fade,vol){ if(!soundOn)return; var c=ac(); if(!c)return;
+  loadClip(n).then(function(buf){ if(!buf||!soundOn)return; var s=c.createBufferSource(), g=c.createGain(), t=c.currentTime;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol||.9,t+(fade||0)); s.buffer=buf; s.connect(g); g.connect(c.destination); s.start(t); }); }
 var SFX={
   stamp:function(){noise(.18,.9,700); tone(90,.18,'sine',.5,45);},
   ding:function(){tone(880,.5,'triangle',.18); setTimeout(function(){tone(660,.6,'triangle',.16);},180);},
@@ -948,7 +956,7 @@ function viewStart(){
 function stazLine(){ var z=staz(), x=X(), M=[7,30,100], h=z.n?'<b>'+esc(x.staz(z.n))+'</b>':esc(x.stazNone);
   M.forEach(function(m){ if((z.best||0)>=m) h+=' <span class="medal" title="'+esc(x.medal[m])+'">'+m+'</span>'; }); return h; }
 function startGame(mode,btn){
-  if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket();
+  if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); if(C()[0].c==='Zagreb') loadClip('zagreb');
   var t=T(), tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
   S.mode=mode; S.day=dayNo(); S.hard=mode==='chal'?!!CHAL.h:!!($('hard')&&$('hard').checked);
   if(mode==='daily') S.seed=hashStr(S.lang+'|'+S.day); else if(mode==='chal') S.seed=CHAL.s>>>0; else S.seed=(Math.random()*4294967296)>>>0;
@@ -963,6 +971,7 @@ function startGame(mode,btn){
     S.carDist=0; S.car=1; drawCar(); S.phase='q';
     hook('questions',S.lang,S.ids);
     render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
+    if(C()[0].c==='Zagreb') playClip('zagreb',.4); // dolazak u Zagreb: 0,4 s pojačavanja
   }, RM?200:1500);
 }
 
