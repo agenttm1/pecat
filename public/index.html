@@ -389,6 +389,8 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 .kd li{background:#fbfaf4;border:1px solid #b9b29c;border-radius:4px;padding:7px 9px;display:grid;gap:2px}
 .kd li small{font-size:12px;color:#5b6168}.kd li b{font-size:16px}.kd li i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#2e6b3f}
 .chip.card{background:#f6dc85;border-color:#8a5a00;color:#5a3a00}
+.go.shut{background:#7a7f84;cursor:not-allowed;box-shadow:none}
+.mode.rounds{display:flex;flex-direction:column;gap:2px;cursor:default}
 </style>
 </head>
 <body>
@@ -906,21 +908,21 @@ var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
 ['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
 
 var XT={
- hr:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo među papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Pogledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
+ hr:{round:function(r){return r+'/2';},left:function(n){return n>=2?'Danas imaš 2 partije. Svaka ima 8 novih pitanja.':'Još jedna partija danas, s 8 novih pitanja.';},closed:'Šalter zatvoren',closedSub:function(t){return 'Novi brojevi u ponoć, još '+t+'. Sutra opet 2 partije s novim pitanjima.';},rdone:function(r,p){return 'Partija '+r+': '+p+' '+bod(p);},resume:'Nastavi partiju',back:'Natrag na šalter',freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo među papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Pogledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
    hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Tjedan bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
    chal:'Izazovi prijatelja',chalCopied:'Poveznica izazova kopirana!',chalTitle:function(n,c,p){return (n||'Netko')+' te izaziva: stigao/la do '+c+' ('+p+' '+bod(p)+').';},chalSub:'Ista pitanja, isti događaji. Vidi tko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Birokracija ne zna pobjednika.';},
    suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+' '+bod(p)+') u Pečat! Možeš li bolje s istim pitanjima?';}},
- ba:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Gledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
+ ba:{round:function(r){return r+'/2';},left:function(n){return n>=2?'Danas imaš 2 partije. Svaka ima 8 novih pitanja.':'Još jedna partija danas, s 8 novih pitanja.';},closed:'Šalter zatvoren',closedSub:function(t){return 'Novi brojevi u ponoć, još '+t+'. Sutra opet 2 partije s novim pitanjima.';},rdone:function(r,p){return 'Partija '+r+': '+p+' '+bod(p);},resume:'Nastavi partiju',back:'Nazad na šalter',freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Gledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
    hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Sedmica bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
    chal:'Izazovi raju',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+' '+bod(p)+').';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođi sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Ni kanton ne zna ko je pobijedio.';},
    suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+' '+bod(p)+') u Pečat! Možeš li bolje s istim pitanjima?';}},
- rs:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['To nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Koleginica kaže da to nije u registru.','Gledala sam i u fioci. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne računa se)';},
+ rs:{round:function(r){return r+'/2';},left:function(n){return n>=2?'Danas imaš 2 partije. Svaka ima 8 novih pitanja.':'Još jedna partija danas, sa 8 novih pitanja.';},closed:'Šalter zatvoren',closedSub:function(t){return 'Novi brojevi u ponoć, još '+t+'. Sutra opet 2 partije sa novim pitanjima.';},rdone:function(r,p){return 'Partija '+r+': '+p+' '+bod(p);},resume:'Nastavi partiju',back:'Nazad na šalter',freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['To nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Koleginica kaže da to nije u registru.','Gledala sam i u fioci. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne računa se)';},
    hard:'Šef odseka',hardSub:'15 sekundi, jedan pokušaj, bez praštanja za greške u kucanju, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Nedelja bez bolovanja',30:'Mesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odseka ne priznaje greške u kucanju. Mislio/la si: <b>'+w+'</b>';},
@@ -947,6 +949,45 @@ function byId(id){ var p=id.split('-'); if(p[0]==='u') return ((window.PECAT_USE
 window.PECAT_RERENDER=function(){ if(S.phase==='start') render(); };
 window.PECAT_Q=function(id){ try{ return byId(id); }catch(e){ return null; } };
 function curQ(){ return byId(S.ids[S.idx]); }
+/* ---------- dnevni setovi: 2 partije dnevno, svaka s 8 novih pitanja ---------- */
+var DSETS={};
+function dayDateObj(d){ return new Date(Date.parse('2026-11-01T12:00:00Z')+(d-1)*86400000); }
+function drawDaily(R,ex,TH,P,F,Wp){
+  var fresh=P.filter(function(x){return !ex[x.id];}); if(fresh.length<N*2) fresh=P;
+  var ff=F.filter(function(x){return !ex[x.id];}); if(!ff.length) ff=F;
+  var fore=[pick(ff,R).id];
+  var wf=Wp.filter(function(x){return !ex[x.id];}); if(wf.length && R()<.5) fore.push(pick(wf,R).id);
+  var NR=N-fore.length, picked=[], usedHead={}, ADJ=/^(hrvatsk|bosansk|srpsk|domać|domac|poznat|tradicionaln|neš|nes)/i;
+  function head(x){ var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); return (w[0]||'').toLowerCase(); }
+  if(TH){ shuffle(fresh.filter(function(x){return window.PECAT_THEMES.match(TH,x.q);}),R).slice(0,2).forEach(function(x){ usedHead[head(x)]=1; picked.push(x.id); }); }
+  shuffle(fresh,R).forEach(function(x){ if(picked.length>=NR||picked.indexOf(x.id)>=0)return; var h=head(x); if(usedHead[h])return; usedHead[h]=1; picked.push(x.id); });
+  shuffle(fresh,R).forEach(function(x){ if(picked.length<NR && picked.indexOf(x.id)<0) picked.push(x.id); });
+  return shuffle(picked.concat(fore),R);
+}
+// isti izračun kod svih igrača: dan po dan od prvog dana, bez ponavljanja pitanja iz zadnjih dana
+function dailySets(day){
+  var key=S.lang+'|'+day; if(DSETS[key]) return DSETS[key];
+  var P=pool(), F=forePool(), Wp=worldPool(), hist=[], res=null, T0=window.PECAT_THEMES;
+  for(var d=1; d<=day; d++){
+    var ex={};
+    for(var k=1;k<=12&&k<=hist.length;k++) hist[hist.length-k].forEach(function(id){ var p=id.charAt(0); if(p==='f'&&k>5) return; if(p==='w'&&k>2) return; ex[id]=1; });
+    var TH=T0?T0.forWeek(T0.weekId(dayDateObj(d))):null;
+    var r1=drawDaily(mulberry(hashStr(S.lang+'|'+d)),ex,TH,P,F,Wp);
+    r1.forEach(function(id){ ex[id]=1; });
+    var r2=drawDaily(mulberry(hashStr(S.lang+'|'+d+'|2')),ex,TH,P,F,Wp);
+    hist.push(r1.concat(r2)); if(d===day) res={1:r1,2:r2};
+  }
+  return (DSETS[key]=res||{1:[],2:[]});
+}
+window.PECAT_SETS=function(d){ return dailySets(d); };
+function playsKey(){ return 'pecat:plays:'+S.lang+':'+dayNo(); }
+function playsToday(){ var day=dayNo(); return Math.max(+(store(playsKey())||0),(store('pecat:daily:'+S.lang+':'+day)?1:0)+(store('pecat:daily2:'+S.lang+':'+day)?1:0)); }
+function runToday(){ var r=store('pecat:run'); return r&&r.lang===S.lang&&r.day===dayNo()&&r.ids&&r.phase!=='end'?r:null; }
+function snapObj(){ return {lang:S.lang,phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car,mode:S.mode,seed:S.seed,pauseAt:S.pauseAt,paused:S.paused,hard:S.hard,day:S.day,round:S.round,ended:S.ended,voted:S.voted}; }
+function saveRun(){ if(S.mode!=='daily'||S.phase==='start') return; if(S.phase==='end'||S.ended){ var r0=store('pecat:run'); if(r0&&r0.lang===S.lang) store('pecat:run',null); return; } store('pecat:run',snapObj()); }
+function untilMidnight(){ var p={}; try{ new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Zagreb',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).forEach(function(x){p[x.type]=+x.value;}); }catch(e){ var d0=new Date(); p={hour:d0.getHours(),minute:d0.getMinutes(),second:d0.getSeconds()}; }
+  var left=86400-(p.hour*3600+p.minute*60+p.second), h=Math.floor(left/3600), m=Math.floor(left%3600/60), sec=left%60; function z(n){return (n<10?'0':'')+n;} return h+':'+z(m)+':'+z(sec); }
+var closedT=0;
 function drawQuestions(rng){
   var R=rng||Math.random, daily=!!rng;
   var all=daily?pool():pool().concat(userPool()), seen=daily?[]:(store('pecat:seen:'+S.lang)||[]), fresh=all.filter(function(x){return seen.indexOf(x.id)<0;});
@@ -1054,7 +1095,7 @@ function viewStart(){
   var t=T(), m=MEMO[S.lang], st=store('pecat:stats:'+S.lang)||{best:0,games:0};
   document.body.classList.remove('typing'); pileDraw(0); S.pile=0;
   buildMap(); mapState(0,false); S.carDist=0; placeCarAt(0); overview(true);
-  var P=cityPts(), tiers='', x=X(), day=dayNo(), dd=store('pecat:daily:'+S.lang+':'+day);
+  var P=cityPts(), tiers='', x=X(), day=dayNo(), dd=store('pecat:daily:'+S.lang+':'+day), d2=store('pecat:daily2:'+S.lang+':'+day), run=runToday(), plays=playsToday(), shut=plays>=2&&!run;
   for(var i=0;i<6;i++) tiers+='<li><span class="ring r'+i+'"><svg viewBox="-34 -34 68 52">'+carArt(i)+'</svg></span><b>'+esc(CARNAME[S.lang][i])+'</b></li>';
   $('hero').innerHTML=
    '<div class="sign-stamp">PEČAT!</div>'+
@@ -1063,11 +1104,10 @@ function viewStart(){
    (CHAL&&CHAL.l===S.lang?'<div class="chal"><b>'+esc(x.chalTitle(CHAL.n,CHAL.c,CHAL.p))+'</b><small>'+esc(x.chalSub)+(CHAL.h?' · '+esc(x.hard):'')+'</small><button type="button" class="btn stampy" id="b-chal">'+esc(x.chalGo)+'</button></div>':'')+
    '<ul class="tiers">'+tiers+'</ul>'+
    '<div class="scale"><i></i><span>'+esc(m.common)+'</span><span>'+esc(m.rare)+' →</span></div>'+
-   '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go" id="b-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(dd?m.go:x.dailyN(day))+'</button></div>'+
-   '<p class="gosub">'+esc(dd?x.freeSub:x.dailySub)+'</p>'+
+   '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go'+(shut?' shut':'')+'" id="b-go"'+(shut?' disabled':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(run?x.resume:(shut?x.closed:x.dailyN(day)+' · '+x.round(plays+1)))+'</button></div>'+
+   '<p class="gosub" id="gosub">'+esc(run?x.dailyN(day)+' · '+x.round(run.round||1):(shut?x.closedSub(untilMidnight()):x.left(2-plays)))+'</p>'+
    '<div class="modes">'+
-     (dd?'<button type="button" class="mode done" id="b-daily"><b>'+esc(x.dailyN(day))+'</b><small>'+esc(x.done(dd.score))+'</small></button>'
-        :'<button type="button" class="mode" id="b-free"><b>'+esc(x.free)+'</b><small>'+esc(x.freeSub)+'</small></button>')+
+     (dd||d2?'<div class="mode done rounds"><b>'+esc(x.dailyN(day))+'</b>'+(dd?'<small>'+esc(x.rdone(1,dd.score))+'</small>':'')+(d2?'<small>'+esc(x.rdone(2,d2.score))+'</small>':'')+'</div>':'')+
      '<button type="button" class="mode kbtn" id="b-kart"><b>🗂 '+esc(KT[S.lang].btn)+'</b><small>'+esc(KT[S.lang].sub(kCards().length))+'</small></button>'+
      '<label class="hardsw"><input type="checkbox" id="hard"'+(store('pecat:hard')?' checked':'')+'><span><b>'+esc(x.hard)+'</b><small>'+esc(x.hardSub)+'</small></span></label>'+
      '<p class="staz">'+stazLine()+'</p>'+
@@ -1076,26 +1116,33 @@ function viewStart(){
    '<details class="rules-box"><summary>'+esc(m.rules)+'</summary><ol class="rules">'+t.rules.map(function(r,i){return '<li><b>'+(i+1)+'</b><span>'+esc(r)+'</span></li>';}).join('')+'</ol></details>'+
    (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+' '+bod(st.best)+'</b> · '+st.games+' '+esc(t.games)+'</p>':'');
   hook('hero',$('acct'),S.lang);
-  $('b-go').onclick=function(){ startGame(dd?'free':'daily',this); };
-  if($('b-daily')) $('b-daily').onclick=function(){ startGame('daily',$('b-go')); };
-  if($('b-free')) $('b-free').onclick=function(){ startGame('free',$('b-go')); };
+  $('b-go').onclick=function(){ if(run) return resumeRun(run); if(!shut) startGame('daily',this); };
+  clearInterval(closedT); if(shut) closedT=setInterval(function(){ if(S.phase!=='start'||!$('gosub')){ clearInterval(closedT); return; } if(dayNo()!==day){ clearInterval(closedT); render(); return; } $('gosub').textContent=x.closedSub(untilMidnight()); },1000);
   if($('b-kart')) $('b-kart').onclick=kOpen;
   $('hard').onchange=function(){ store('pecat:hard',this.checked); SFX.paper(); };
   if($('b-chal')) $('b-chal').onclick=function(){ startGame('chal',$('b-go')); };
 }
 function stazLine(){ var z=staz(), x=X(), M=[7,30,100], h=z.n?'<b>'+esc(x.staz(z.n))+'</b>':esc(x.stazNone);
   M.forEach(function(m){ if((z.best||0)>=m) h+=' <span class="medal" title="'+esc(x.medal[m])+'">'+m+'</span>'; }); return h; }
+function resumeRun(run){
+  ac(); for(var k in run) S[k]=run[k]; EVR=mulberry((S.seed^0x5bd1e995)+S.idx*7919);
+  hook('start',S.lang,{hard:S.hard,mode:S.mode}); hook('questions',S.lang,S.ids);
+  if(S.phase==='fb'&&!S.results[S.idx]) S.phase='q';
+  buildMap(); render(); placeCarAt(S.carDist||0); followCar(300,true); pileDraw(S.pile||0);
+}
 function startGame(mode,btn){
   if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); if(S.lang==='hr') loadClip('zagreb');
   var t=T(), tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
-  S.mode=mode; S.day=dayNo(); S.hard=mode==='chal'?!!CHAL.h:!!($('hard')&&$('hard').checked);
-  if(mode==='daily') S.seed=hashStr(S.lang+'|'+S.day); else if(mode==='chal') S.seed=CHAL.s>>>0; else S.seed=(Math.random()*4294967296)>>>0;
+  S.mode=mode; S.day=dayNo();
+  if(mode==='daily'){ var pn=playsToday(); if(pn>=2){ btn.disabled=false; tk.classList.remove('out'); return render(); } S.round=pn+1; store(playsKey(),S.round); } else S.round=0;
+  S.hard=mode==='chal'?!!CHAL.h:!!($('hard')&&$('hard').checked);
+  if(mode==='daily') S.seed=hashStr(S.lang+'|'+S.day+(S.round>1?'|'+S.round:'')); else if(mode==='chal') S.seed=CHAL.s>>>0; else S.seed=(Math.random()*4294967296)>>>0;
   hook('start',S.lang,{hard:S.hard,mode:mode});
-  S.ticket=mode==='daily'?S.day:100+Math.floor(Math.random()*900);
+  S.ticket=mode==='daily'?S.day+'/'+S.round:100+Math.floor(Math.random()*900);
   var roll=setInterval(function(){ scr.textContent=100+Math.floor(Math.random()*900); if(++n>8){ clearInterval(roll); scr.textContent=S.ticket; SFX.ding(); } },RM?1:70);
   setTimeout(function(){
     var qr=mulberry(S.seed); EVR=mulberry(S.seed^0x5bd1e995);
-    S.ids=mode==='chal'?CHAL.i.slice():drawQuestions(mode==='daily'?qr:null);
+    S.ids=mode==='chal'?CHAL.i.slice():(mode==='daily'?dailySets(S.day)[S.round].slice():drawQuestions(null));
     S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
     S.voted=0; S.ended=0; S.evAt=mode==='chal'&&Array.isArray(CHAL.e)?CHAL.e.slice():shuffle([1,2,3,4,5,6],qr).slice(0,2+(qr()<.5?1:0));
     // pauza za marendu: jednom u partiji, na pitanju bez događaja
@@ -1109,7 +1156,7 @@ function startGame(mode,btn){
 function viewQ(){
   var t=T(), q=curQ();
   say(q.f,'neutral'); SFX.paper();
-  var chips=(S.hard?'<span class="chip fire">'+esc(X().hard)+'</span>':'')+(S.mode==='daily'?'<span class="chip">'+esc(X().dailyN(S.day))+'</span>':'')+(S.streak>=2?'<span class="chip fire">'+esc(t.streak(S.streak))+'</span>':'')+(S.mod.mult?'<span class="chip fire">'+esc(t.multChip(S.mod.mult))+'</span>':'')+(S.mod.time?'<span class="chip">'+esc(t.timeChip(S.mod.time))+'</span>':'');
+  var chips=(S.hard?'<span class="chip fire">'+esc(X().hard)+'</span>':'')+(S.mode==='daily'?'<span class="chip">'+esc(X().dailyN(S.day)+' · '+X().round(S.round||1))+'</span>':'')+(S.streak>=2?'<span class="chip fire">'+esc(t.streak(S.streak))+'</span>':'')+(S.mod.mult?'<span class="chip fire">'+esc(t.multChip(S.mod.mult))+'</span>':'')+(S.mod.time?'<span class="chip">'+esc(t.timeChip(S.mod.time))+'</span>':'');
   desk('<form id="f" autocomplete="off" style="display:contents">'+
    '<p class="form-no"><span>'+esc(t.field)+' '+(S.idx+1)+'/8</span><span>№ '+S.ticket+'</span></p>'+
    (chips?'<div class="chips">'+chips+'</div>':'')+
@@ -1363,7 +1410,7 @@ function viewPause(){
 function save(){ var k='pecat:stats:'+S.lang, st=store(k)||{best:0,games:0}; st.games++; st.best=Math.max(st.best,total()); store(k,st); }
 function marks(){return S.results.map(function(x){return !x.ok?'🟥':(x.pct<10?'🟩':'🟨');}).join('');}
 function bod(n){ n=Math.abs(Math.round(n)); var d=n%10,h=n%100; return d===1&&h!==11?'bod':(d>=2&&d<=4&&(h<12||h>14)?'boda':'bodova'); }
-function modeLabel(){ return S.mode==='daily'?X().dailyN(S.day):(S.mode==='chal'?'⚔ Izazov':'№ '+S.ticket); }
+function modeLabel(){ return S.mode==='daily'?X().dailyN(S.day)+' · '+X().round(S.round||1):(S.mode==='chal'?'⚔ Izazov':'№ '+S.ticket); }
 function shareText(){
   var t=T(), r=E.reached(total()), stop=r?C()[r-1].c:'';
   return 'Pečat! '+L[S.lang].flag+' '+modeLabel()+(S.hard?' · '+X().hard:'')+'\n'+t.reached(stop,r)+' · '+total()+' '+bod(total())+'\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
@@ -1469,7 +1516,7 @@ async function viewEnd(){
   }
   var x0=X(), chalRes=null, stazUp=null;
   if(S.mode==='chal'&&CHAL){ chalRes=tot>CHAL.p?{k:'win',txt:x0.chalWin(CHAL.n,tot,CHAL.p)}:(tot<CHAL.p?{k:'lose',txt:x0.chalLose(CHAL.n,tot,CHAL.p)}:{k:'tie',txt:x0.chalTie(tot)}); }
-  if(S.mode==='daily'&&!S.ended){ var dk='pecat:daily:'+S.lang+':'+S.day; if(!store(dk)){ store(dk,{score:tot,r:r,m:marks()}); stazUp=stazBump(); } }
+  if(S.mode==='daily'&&!S.ended){ var dk='pecat:daily'+((S.round||1)>1?'2':'')+':'+S.lang+':'+S.day; if(!store(dk)){ store(dk,{score:tot,r:r,m:marks()}); if((S.round||1)===1||!store('pecat:daily:'+S.lang+':'+S.day)) stazUp=stazBump(); } }
   S.ended=1;
   var slots=''; for(var i=0;i<N;i++) slots+='<div><span>'+esc(C()[i].c)+'</span></div>';
   var rows=S.results.map(function(x){ var col=!x.ok?'var(--alarm)':(x.pct<10?'var(--ok)':'var(--gold)');
@@ -1493,7 +1540,7 @@ async function viewEnd(){
    '</section>'+
    '<div class="vote" id="vote"></div>'+
    '<div class="biser" id="biser"></div>'+(window.PECAT_OPEN&&window.PECAT_OPEN()?'<button type="button" class="obtn zakend" id="b-zak">📜 '+esc(ZAKEND[S.lang])+'</button>':'')+
-   '<button type="button" class="btn ghost wide" id="b-again">'+esc(t.again)+'</button>'+
+   '<button type="button" class="btn ghost wide" id="b-again">'+esc(S.mode==='daily'&&playsToday()>=2?X().back:t.again)+'</button>'+
    '<details class="sheetbox"><summary>'+esc(t.answers)+'</summary><table class="tbl">'+rows+'</table></details></div>','eject');
   overview(false);
   var cells=document.querySelectorAll('#slots div'), d=RM?0:220;
@@ -1505,7 +1552,7 @@ async function viewEnd(){
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
   setTimeout(showShareImage,RM?0:600);
   if($('b-zak')) $('b-zak').onclick=function(){ window.PECAT_OPEN('zak'); };
-  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,day:S.day,
+  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,day:S.day,round:S.round||0,
     answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q,x.miss||[]]; })},$('vote')); }
   $('b-chal2').onclick=function(){
     var me=(window.PECAT_ME&&window.PECAT_ME())||'', stop=r?C()[r-1].c:'—';
@@ -1524,6 +1571,7 @@ function render(){
   if(S.phase==='ev' && !S.ev) S.phase='q';
   chrome();
   ({start:viewStart,q:viewQ,fb:viewFb,ev:viewEv,pause:viewPause,end:viewEnd})[S.phase]();
+  saveRun();
 }
 
 Array.prototype.forEach.call(document.querySelectorAll('.langs button'),function(b){
@@ -1542,7 +1590,7 @@ function start(snap){
   if(S.phase!=='start'){ placeCarAt(S.carDist||0); if(S.phase!=='end') followCar(300,true); pileDraw(S.pile||0); }
 }
 var hot=window.claude&&window.claude.hot;
-if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car,mode:S.mode,seed:S.seed,pauseAt:S.pauseAt,paused:S.paused,hard:S.hard,day:S.day,ended:S.ended,voted:S.voted};});
+if(hot&&hot.snapshot) hot.snapshot(function(){return snapObj();});
 if(hot&&hot.ready) hot.ready(start); else start((hot&&hot.data)||{});
 })();
 </script>

@@ -121,5 +121,15 @@ function call(method, url, body, cookie, extra) {
   assert.equal((await call('GET', '/api/nn?lang=hr')).json.zakon.text, 'Zakon o obaveznoj kavi na šalteru');
   await call('POST', '/api/admin/petition/del', { lang: 'hr', id: pt2.id }, '', { 'x-admin-key': 'dev-admin' });
   assert.equal((await call('GET', '/api/petitions?lang=hr', null, Cc)).json.list.length, 1);
+  // 2 partije dnevno i izazovi bez izbora
+  const E = (await call('POST', '/api/auth', { credential: 'dev:Eva' })).cookie; const st = require('../lib/store');
+  const gc = (await call('POST', '/api/start', { lang: 'rs', chal: true })).json.gt;
+  assert.equal((await call('POST', '/api/score', { lang: 'rs', score: 300, gt: gc }, E)).json.error, 'ticket_chal');
+  const eu = (await call('GET', '/api/me', null, E)).json.user.id;
+  for (let i = 0; i < 3; i++) {
+    await st.cmd('DEL', 'rl:' + eu);
+    const g = (await call('POST', '/api/start', { lang: 'rs' })).json.gt; const r = await call('POST', '/api/score', { lang: 'rs', score: 100 + i, gt: g }, E);
+    if (i < 2) assert.equal(r.code, 200, JSON.stringify(r.json)); else assert.equal(r.json.error, 'daily_limit');
+  }
   console.log('API OK');
 })().catch((e) => { console.error(e); process.exit(1); });
