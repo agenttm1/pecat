@@ -17,7 +17,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
       copied: 'Poveznica kopirana!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat tjedna. Mjesta u Saboru dijele se D’Hondtovom metodom, kao u pravom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ovaj tjedan.'; }, notBest: function (b) { return 'Tvoj najbolji ovaj tjedan ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', open: 'Otvori Sabor', devName: 'Testno ime', devGo: 'Testna prijava',
+      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. tjedan'; }, open: 'Otvori Sabor', devName: 'Testno ime', devGo: 'Testna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne izborna komisija.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     ba: {
       nn: 'Novine', nnTitle: 'Službene novine', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · sedmica ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vijeće ministara', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
@@ -33,7 +33,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi raju',
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat sedmice. Mjesta u Parlamentu dijele se D’Hondtovom metodom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ove sedmice.'; }, notBest: function (b) { return 'Tvoj najbolji ove sedmice ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', open: 'Otvori Parlament', devName: 'Testno ime', devGo: 'Testna prijava',
+      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. sedmica'; }, open: 'Otvori Parlament', devName: 'Testno ime', devGo: 'Testna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne CIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polahko, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     rs: {
       nn: 'Novine', nnTitle: 'Službeni glasnik', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · nedelja ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vlada', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
@@ -49,7 +49,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat nedelje. Mesta u Skupštini dele se D’Ontovom metodom.',
       voted: function (r, n) { return 'Glas je uračunat: ' + r + '. mesto od ' + n + ' ove nedelje.'; }, notBest: function (b) { return 'Tvoj najbolji ove nedelje ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne računa (igra je bila prebrza).', voteLogin: 'Prijavi se Guglom i ovaj rezultat ide na izbore.', open: 'Otvori Skupštinu', devName: 'Probno ime', devGo: 'Probna prijava',
+      tooFast: 'Ovaj rezultat se ne računa (igra je bila prebrza).', voteLogin: 'Prijavi se Guglom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. nedelja'; }, open: 'Otvori Skupštinu', devName: 'Probno ime', devGo: 'Probna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne RIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora da ima 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } }
   };
   var COLORS = ['#3b37a6', '#b3271d', '#2e6b3f', '#c99a2e', '#7a4b8c', '#2b8a99', '#d0662b', '#6b7d2a', '#a23b72', '#44546a'];
@@ -80,6 +80,19 @@
     '.vote{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:15px}',
     '.vote:empty{display:none}',
     '.vote p{margin:0}',
+    '.vote{width:100%;align-items:stretch}',
+    '.ballot{position:relative;background:#fffdf5;border:2px solid var(--ink);padding:12px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:360px;width:100%;align-self:center;box-shadow:4px 4px 0 rgba(0,0,0,.18);background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(59,55,166,.08) 27px 28px)}',
+    '.ballot::before{content:"";position:absolute;inset:5px;border:1px dashed rgba(31,37,43,.35);pointer-events:none}',
+    '.bhead{display:flex;align-items:center;gap:10px;align-self:stretch;border-bottom:2px solid var(--ink);padding-bottom:8px;text-align:left}',
+    '.bhead .bbox{display:grid;place-items:center;width:34px;height:34px;border:2px solid var(--ink);font-size:18px;background:var(--paper)}',
+    '.bhead b{display:block;font-family:var(--f-stamp);font-size:17px;letter-spacing:.06em;text-transform:uppercase}',
+    '.bhead small{font-family:var(--f-type);font-size:12px;color:var(--ink-soft)}',
+    '.bmain{font-size:16px;font-weight:700;line-height:1.3}',
+    '.bsub{font-size:14px;color:var(--ink-soft)}',
+    '.glogin{display:flex;justify-content:center;width:100%;min-height:44px}',
+    '.glogin .gbox{justify-content:center}',
+    '.ballot .perr:empty{display:none}',
+    '.bstamp{position:absolute;right:10px;top:8px;width:40px;height:40px;border:3px solid var(--ok);border-radius:50%;color:var(--ok);display:grid;place-items:center;font-size:22px;font-weight:900;transform:rotate(-14deg);opacity:.85}',
     '#pnl{border:0;padding:0;background:transparent;max-width:min(520px,100vw);width:100%;max-height:100dvh;margin:auto}',
     '#pnl::backdrop{background:rgba(20,25,22,.6)}',
     '.pnl{background:var(--paper);border:3px solid var(--ink);margin:10px;display:flex;flex-direction:column;max-height:calc(100dvh - 20px);box-shadow:0 10px 40px rgba(0,0,0,.4)}',
@@ -142,7 +155,7 @@
       el.innerHTML = '<div class="gbox"></div>';
       loadGis().then(function () {
         google.accounts.id.initialize({ client_id: CFG.google, callback: function (r) { onCredential(r.credential); }, ux_mode: 'popup' });
-        google.accounts.id.renderButton(el.querySelector('.gbox'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', locale: LANG === 'rs' ? 'sr' : (LANG === 'ba' ? 'bs' : 'hr') });
+        google.accounts.id.renderButton(el.querySelector('.gbox'), { theme: 'filled_black', size: 'large', text: 'continue_with', shape: 'pill', logo_alignment: 'left', width: Math.min(300, (el.clientWidth || 300) - 8), locale: LANG === 'rs' ? 'sr' : (LANG === 'ba' ? 'bs' : 'hr') });
       }).catch(function () { el.innerHTML = '<p class="perr">' + esc(errText()) + '</p>'; });
     } else if (CFG.dev) {
       el.innerHTML = '<div class="pform"><input id="devn" placeholder="' + esc(tx().devName) + '" maxlength="20"><button type="button" class="obtn dark" id="devgo">' + esc(tx().devGo) + '</button></div>';
@@ -348,16 +361,20 @@
   }
 
   /* ---------- kraj igre: glas na izbore ---------- */
+  function ballot(inner, stamped) {
+    var t = tx(), w = (CFG && CFG.week ? CFG.week.split('-W')[1] : '').replace(/^0/, '');
+    return '<div class="ballot' + (stamped ? ' stamped' : '') + '"><div class="bhead"><span class="bbox">🗳</span><span><b>' + esc(t.ballot) + '</b><small>' + esc(t.ballotSub(w)) + '</small></span></div>' + inner + (stamped ? '<span class="bstamp">✓</span>' : '') + '</div>';
+  }
   function submit(data, el) {
     if (!GT || GT.lang !== data.lang) return;
     var t = tx(), gt = GT.gt; GT = null;
     api('score', { lang: data.lang, score: data.score, gt: gt }).then(function (j) {
       if (!el || !document.body.contains(el)) return;
-      el.innerHTML = '<p>🗳 ' + esc(t.voted(j.rank, j.voters)) + (j.hard ? esc(t.hardVote) : '') + (j.improved ? '' : ' ' + esc(t.notBest(j.best))) + '</p><button type="button" class="obtn" id="o-open">' + ICON + esc(t.open) + '</button>';
+      el.innerHTML = ballot('<p class="bmain">' + esc(t.voted(j.rank, j.voters)) + (j.hard ? esc(t.hardVote) : '') + '</p>' + (j.improved ? '' : '<p class="bsub">' + esc(t.notBest(j.best)) + '</p>') + '<button type="button" class="obtn" id="o-open">' + ICON + esc(t.open) + '</button>', true);
       el.querySelector('#o-open').onclick = function () { openPanel('izb'); };
     }).catch(function (e) {
       if (!el || !document.body.contains(el)) return;
-      el.innerHTML = '<p class="pmsg">' + esc(/ticket/.test(e.code || '') ? t.tooFast : errText(e.code)) + '</p>';
+      el.innerHTML = ballot('<p class="bsub">' + esc(/ticket/.test(e.code || '') ? t.tooFast : errText(e.code)) + '</p>');
     });
   }
 
@@ -375,7 +392,7 @@
       if (ME) return submit(data, el);
       if (!GT) return;
       PENDING = { data: data, el: el };
-      el.innerHTML = '<p>' + esc(t.voteLogin) + '</p><div id="lgn2"></div><p class="perr"></p>';
+      el.innerHTML = ballot('<p class="bmain">' + esc(t.voteLogin) + '</p><div id="lgn2" class="glogin"></div><p class="perr"></p>');
       loginBox(el.querySelector('#lgn2'));
     }
   };

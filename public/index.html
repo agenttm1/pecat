@@ -6,6 +6,7 @@
 <title>Pečat! Igra s pečatom</title>
 <meta name="description" content="Navedi odgovor kojeg se nitko drugi ne bi sjetio. Što rjeđi odgovor, to dalje stižeš od šaltera do šaltera. Dnevni broj, izbori i Sabor. HR, BiH i SRB.">
 <meta name="theme-color" content="#3b37a6">
+<meta name="color-scheme" content="only light">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Pečat!">
 <meta property="og:title" content="Pečat! Igra s pečatom">
@@ -25,6 +26,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:only light;
   /* Putovanje kroz birokraciju: karta države gore, šalter u sredini, obrazac na pultu dolje. Sve se odvija na jednom ekranu. */
   --wall-hi:#dfe3d2; --wall-lo:#6e8672; --stripe:#3e5947;
   --paper:#f6f3e7; --paper-edge:#cfc9b2; --ink:#1f252b; --ink-soft:#5b6168;
@@ -248,6 +250,20 @@ h2{font-size:25px}
 .chal small{color:var(--ink-soft)}
 .chalres{margin:0; text-align:center; font-weight:700; font-size:17px; padding:8px; border:2px solid}
 .chalres.win{color:var(--ok)} .chalres.lose{color:var(--alarm)} .chalres.tie{color:var(--stamp)}
+.sharecard{display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; padding:14px 12px 10px; background:var(--paper); border:2px solid var(--ink); box-shadow:4px 4px 0 rgba(0,0,0,.18)}
+.sharecard .shbox img{max-width:300px}
+.sharebtns{display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; max-width:360px}
+.sharebtns .btn{display:flex; align-items:center; justify-content:center; gap:6px; padding:12px 8px; font-size:16px; min-height:48px}
+.sharebtns .btn svg{width:20px; height:20px; flex:none}
+.sharebtns .btn:disabled{opacity:.55}
+.linkbtn{background:none; border:0; padding:4px 8px; font:inherit; font-size:14px; color:var(--ink-soft); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.sharecard .msg{margin:0; min-height:0; font-size:14px; color:var(--ok); text-align:center}
+.sharecard .msg:empty{display:none}
+.btn.wide{width:100%; max-width:360px; align-self:center; min-height:52px; font-size:18px}
+.stazbadge{display:flex; align-items:center; gap:10px; margin:0; padding:8px 14px; border:2px dashed var(--ok); background:#eef6ef; color:var(--ok); align-self:center}
+.stazbadge .medal{min-width:34px; height:34px; font-size:13px}
+.stazbadge span{display:flex; flex-direction:column; line-height:1.15}
+.stazbadge small{font-size:12.5px; color:var(--ink-soft)}
 .shbox{display:flex; flex-direction:column; gap:8px; align-items:center}
 .shbox img{width:100%; max-width:360px; height:auto; display:block; box-shadow:0 6px 18px rgba(0,0,0,.25); border-radius:3px; animation:shpop .4s ease both}
 .shph{width:100%; max-width:360px; aspect-ratio:4/5; background:repeating-linear-gradient(45deg,#ece7d5 0 10px,#f3efe0 10px 20px); border-radius:3px}
@@ -1214,13 +1230,13 @@ async function showShareImage(){
   var box=$('shbox'); if(!box) return; var sh=SHARE[S.lang];
   var cv=await makeShareImage(); if(!$('shbox')) return;
   var url; try{ url=cv.toDataURL('image/png'); }catch(e){ return; }
-  box.innerHTML='<img id="shimg" src="'+url+'" alt="'+esc(shareText().replace(/\n/g,' · '))+'">'+
-    '<div class="row"><button type="button" class="btn stampy" id="b-img">'+esc(sh.btn)+'</button></div><p class="msg" id="shmsg" role="status"></p>';
-  $('b-img').onclick=async function(){
+  box.innerHTML='<img id="shimg" src="'+url+'" alt="'+esc(shareText().replace(/\n/g,' · '))+'">';
+  var bi=$('b-img'); if(!bi) return; bi.disabled=false;
+  bi.onclick=async function(){
     var blob=await canvasBlob(cv), file=null; try{ file=blob&&new File([blob],'pecat-'+S.ticket+'.png',{type:'image/png'}); }catch(e){}
     try{ if(file&&navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],text:shareText()}); SFX.ding(); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
     try{ var a=document.createElement('a'); a.href=url; a.download='pecat-'+S.ticket+'.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
-    $('shmsg').textContent=sh.hint;
+    $('msg').textContent=sh.hint;
   };
 }
 
@@ -1248,13 +1264,19 @@ async function viewEnd(){
    '<p class="score"><b id="sc">0</b> '+bod(tot)+'</p>'+
    '<div class="bigstamp'+(win?' gold':'')+'" id="bigst" style="visibility:hidden">'+esc(win?t.win:t.lose)+'</div>'+
    '<p class="endmsg">„'+esc(L[S.lang].end[END_IX[r]])+'”</p>'+
-   '<div class="shbox" id="shbox"><div class="shph"></div></div>'+
    (chalRes?'<p class="chalres '+chalRes.k+'">'+esc(chalRes.txt)+'</p>':'')+
-   (stazUp?'<p class="staz up">'+esc(X().stazUp(stazUp))+(X().medal[stazUp]?' <span class="medal">'+stazUp+'</span> '+esc(X().medal[stazUp]):'')+'</p>':'')+
+   (stazUp?'<p class="stazbadge"><span class="medal">'+stazUp+'</span><span><b>'+esc(X().stazUp(stazUp))+'</b>'+(X().medal[stazUp]?'<small>'+esc(X().medal[stazUp])+'</small>':'')+'</span></p>':'')+
+   '<section class="sharecard">'+
+     '<div class="shbox" id="shbox"><div class="shph"></div></div>'+
+     '<div class="sharebtns">'+
+       '<button type="button" class="btn stampy" id="b-img" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6h14v-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+esc(SHARE[S.lang].btn)+'</button>'+
+       '<button type="button" class="btn" id="b-chal2">⚔ '+esc(x0.chal)+'</button>'+
+     '</div>'+
+     '<button type="button" class="linkbtn" id="b-copy">'+esc(t.copy)+'</button>'+
+     '<p class="msg" id="msg" role="status"></p>'+
+   '</section>'+
    '<div class="vote" id="vote"></div>'+
-   '<pre class="share" id="share">'+esc(shareText())+'</pre>'+
-   '<p class="msg" id="msg" role="status" style="color:var(--ok)"></p>'+
-   '<div class="row"><button type="button" class="btn stampy" id="b-copy">'+esc(t.copy)+'</button><button type="button" class="btn" id="b-chal2">⚔ '+esc(x0.chal)+'</button><button type="button" class="btn ghost" id="b-again">'+esc(t.again)+'</button></div>'+
+   '<button type="button" class="btn ghost wide" id="b-again">'+esc(t.again)+'</button>'+
    '<details class="sheetbox"><summary>'+esc(t.answers)+'</summary><table class="tbl">'+rows+'</table></details></div>','eject');
   overview(false);
   var cells=document.querySelectorAll('#slots div'), d=RM?0:220;
