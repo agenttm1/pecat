@@ -59,17 +59,36 @@ button{font:inherit; color:inherit; cursor:pointer}
 /* karta */
 .mapcard{position:relative; border:3px solid var(--ink); border-radius:8px; overflow:hidden; background:var(--sea); height:210px; transition:height .35s ease, opacity .25s, margin .35s}
 .mapcard svg{display:block; width:100%; height:100%}
-.mapcard .nb{fill:var(--land); stroke:#9aa79c; stroke-width:1.2}
-.mapcard .main{fill:var(--paper); stroke:var(--ink); stroke-width:2.2; stroke-linejoin:round}
-.mapcard .nb{vector-effect:non-scaling-stroke}
-.road-edge{fill:none; stroke:#9c9584; stroke-linecap:round; stroke-linejoin:round}
-.road{fill:none; stroke:#fffdf3; stroke-linecap:round; stroke-linejoin:round}
-.route-bg{fill:none; stroke:#c9a54a; stroke-linecap:round; opacity:.9}
-.route-done{fill:none; stroke:var(--stamp); stroke-width:5; stroke-linecap:round; stroke-linejoin:round}
-.city circle{fill:#fff; stroke:var(--ink); stroke-width:2.5}
-.city.done circle{fill:var(--stamp); stroke:var(--stamp)}
-.city.miss circle{fill:var(--alarm); stroke:var(--alarm)}
-.city.here circle{fill:var(--gold); animation:pulse 1.2s infinite}
+.mapcard{background:#c3dbe1}
+.mapcard .nb{fill:url(#pNb); stroke:#a8a28c; stroke-width:1; stroke-dasharray:6 3 1.5 3}
+.mapcard .main{stroke:none}
+.mapcard .main-ol{fill:none; stroke:#2b2e2a; stroke-width:1.8; stroke-linejoin:round}
+.mapcard .coast{fill:none; stroke-linejoin:round}
+.mapcard .c1{stroke:#8db6c3; stroke-width:3}
+.mapcard .c2{stroke:#a7c8d1; stroke-width:8; opacity:.75}
+.mapcard .c3{stroke:#b7d2d9; stroke-width:15; opacity:.6}
+.mapcard .tint{fill:none; stroke:#c8102e; stroke-width:12; opacity:.12}
+.mapcard .grat{fill:none; stroke:#5d7f8a; stroke-width:.6; opacity:.35}
+.mapcard .river{fill:none; stroke:#5f9db3; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; opacity:.9}
+.mapcard .mt path{fill:#d9c9a3; stroke:#7a5a32; stroke-width:1.1; stroke-linejoin:round}
+.mapcard .mt text{font-family:var(--f-label); font-style:italic; font-size:9px; fill:#7a5a32; text-anchor:middle; paint-order:stroke; stroke:#f7f2df; stroke-width:2.5px}
+.mapcard .ctry{font-family:var(--f-label); font-weight:700; letter-spacing:.32em; fill:#8f8a77; text-anchor:middle; font-size:11px}
+.mapcard .ctry.sea{fill:#4f7f8f; font-style:italic; font-weight:600; letter-spacing:.45em}
+.road-edge{fill:none; stroke:#3b3a36; stroke-linecap:round; stroke-linejoin:round}
+.road{fill:none; stroke:#f2c94c; stroke-linecap:round; stroke-linejoin:round}
+.route-bg{fill:none; stroke:#fffdf3; stroke-linecap:round; opacity:.95}
+.route-done{fill:none; stroke:var(--stamp); stroke-width:5; stroke-linecap:round; stroke-linejoin:round; opacity:.92}
+.city .seal{fill:none; stroke:var(--stamp); opacity:0; transform-box:fill-box; transform-origin:center}
+.city.done .seal{opacity:.85; animation:sealin .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes sealin{from{opacity:0; transform:scale(2.2) rotate(-25deg)}to{opacity:.85; transform:rotate(-12deg)}}
+.city .dot{fill:#fff; stroke:var(--ink); stroke-width:2.5}
+.city.done .dot{fill:var(--stamp); stroke:var(--stamp)}
+.city.miss .dot{fill:var(--alarm); stroke:var(--alarm)}
+.city.here .dot{fill:var(--gold); animation:pulse 1.2s infinite}
+.scalebar{position:absolute; left:10px; bottom:10px; z-index:2; display:flex; align-items:flex-end; gap:5px; pointer-events:none; font-family:var(--f-type); font-size:10.5px; color:var(--ink)}
+.scalebar i{display:block; height:6px; border:1.5px solid var(--ink); border-top:0; background:linear-gradient(90deg,var(--ink) 0 50%,#f7f2df 50%); }
+.scalebar b{font-weight:600; background:rgba(247,242,223,.85); padding:0 3px}
+.mapcard svg.compass{position:absolute; right:8px; bottom:8px; width:38px; height:38px; z-index:2; pointer-events:none}
 @keyframes pulse{50%{r:13}}
 .city text{font-family:var(--f-label); font-weight:700; paint-order:stroke; stroke:var(--paper); stroke-width:4px; fill:var(--ink)}
 .city text.num{font-family:var(--f-stamp); fill:#fff; stroke:none; text-anchor:middle; dominant-baseline:central}
@@ -89,7 +108,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .led b{font-weight:600}
 .led span.pop{animation:ledpop .5s}
 @keyframes ledpop{40%{color:#fff3a8; transform:scale(1.12)}}
-.toast{position:absolute; left:8px; right:8px; bottom:8px; background:var(--ink); color:var(--paper); font-family:var(--f-type); font-size:13px; padding:6px 10px; border-radius:4px; transform:translateY(140%); transition:transform .35s cubic-bezier(.2,1.2,.4,1); pointer-events:none}
+.toast{z-index:3; position:absolute; left:8px; right:8px; bottom:8px; background:var(--ink); color:var(--paper); font-family:var(--f-type); font-size:13px; padding:6px 10px; border-radius:4px; transform:translateY(140%); transition:transform .35s cubic-bezier(.2,1.2,.4,1); pointer-events:none}
 .toast.on{transform:none}
 body.typing .mapcard{height:0; opacity:0; margin-bottom:-10px; border-width:0}
 
@@ -357,6 +376,8 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
   <section class="hero" id="hero"></section>
 
   <section class="mapcard" id="mapcard" aria-label="Karta puta">
+    <div class="scalebar" id="scalebar" aria-hidden="true"><i></i><b>50 km</b></div>
+    <svg class="compass" viewBox="-20 -20 40 40" aria-hidden="true"><circle r="15" fill="rgba(247,242,223,.85)" stroke="#1f252b" stroke-width="1.2"/><circle r="11.5" fill="none" stroke="#1f252b" stroke-width=".5" stroke-dasharray="1.2 1.2"/><path d="M0-17L3.5 0L0 3L-3.5 0Z" fill="#b3271d"/><path d="M0 17L3.5 0L0-3L-3.5 0Z" fill="#1f252b"/><text y="-17.5" text-anchor="middle" font-size="7" font-weight="700" fill="#1f252b" font-family="Archivo Black,Arial Black,sans-serif">S</text></svg>
     <svg id="map" preserveAspectRatio="xMidYMid slice"></svg>
     <div class="led"><span>№ <b id="v-no">---</b></span><span><b id="v-ct">0/8</b></span><span><b id="v-pts">0</b> <small id="l-pts"></small></span></div>
     <div class="toast" id="toast"></div>
@@ -410,6 +431,7 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 <script src="data_rs2.js"></script>
 <script src="data_fore.js"></script>
 <script src="maps.js"></script>
+<script src="geo.js"></script>
 <script src="cars.js"></script>
 <script src="wiki.js"></script>
 <script>
@@ -726,11 +748,34 @@ function kmOf(d){ return Math.round(d*1.11); }
 function buildMap(){
   var m=mapData(), P=cityPts(), svg=$('map'); buildRoute();
   var road='M'+RT.pts.map(function(p){return p[0]+','+p[1];}).join('L');
-  var h='<path class="nb" d="'+m.nb+'"/><path class="main" d="'+m.main+'"/>'+
+  var G=window.PECAT_GEO||{}, pc=(G.proj||{})[S.lang]||[44.5,16.5], cs=Math.cos(pc[0]*Math.PI/180);
+  function pr(ll){ return [(ll[1]-pc[1])*cs*100, -(ll[0]-pc[0])*100]; }
+  function smooth(P){ if(P.length<3) return 'M'+P.join('L'); var d='M'+P[0][0].toFixed(1)+','+P[0][1].toFixed(1);
+    for(var i=0;i<P.length-1;i++){ var p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||p2;
+      d+='C'+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+','+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)+' '+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+','+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1); }
+    return d; }
+  var bx=m.box, X0=Math.floor((bx[0]-400)/100)*100, Y0=Math.floor((bx[1]-400)/100)*100, X1=bx[0]+bx[2]+400, Y1=bx[1]+bx[3]+400;
+  var h='<defs>'+
+      '<pattern id="pSea" width="40" height="14" patternUnits="userSpaceOnUse"><path d="M0 7q5-3 10 0t10 0 10 0 10 0" fill="none" stroke="#9cc0cb" stroke-width=".9"/></pattern>'+
+      '<pattern id="pNb" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="9" height="9" fill="#e6e2d2"/><line x1="0" y1="0" x2="0" y2="9" stroke="#d3cdb8" stroke-width="2.4"/></pattern>'+
+      '<pattern id="pLand" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#f7f2df"/><circle cx="3" cy="4" r=".7" fill="#e5dcc0"/><circle cx="11" cy="12" r=".6" fill="#e8dfc5"/><circle cx="13" cy="3" r=".5" fill="#ece4cc"/></pattern>'+
+      '<clipPath id="clipMain"><path d="'+m.main+'"/></clipPath>'+
+    '</defs>'+
+    '<rect x="'+X0+'" y="'+Y0+'" width="'+(X1-X0)+'" height="'+(Y1-Y0)+'" fill="url(#pSea)"/>'+
+    '<path class="coast c3" d="'+m.main+'"/><path class="coast c2" d="'+m.main+'"/><path class="coast c1" d="'+m.main+'"/>'+
+    '<path class="nb" d="'+m.nb+'"/><path class="main" d="'+m.main+'" fill="url(#pLand)"/>'+
+    '<path class="tint" d="'+m.main+'" clip-path="url(#clipMain)"/>';
+  var gr=''; for(var gx=X0;gx<=X1;gx+=100) gr+='M'+gx+' '+Y0+'V'+Y1; for(var gy=Y0;gy<=Y1;gy+=100) gr+='M'+X0+' '+gy+'H'+X1;
+  h+='<path class="grat" d="'+gr+'"/>';
+  (G.rivers||[]).forEach(function(r){ h+='<path class="river" d="'+smooth(r.p.map(pr))+'"/>'; });
+  (G.mountains||[]).forEach(function(mt){ var q=pr(mt.ll); if(q[0]<bx[0]-60||q[0]>bx[0]+bx[2]+60||q[1]<bx[1]-60||q[1]>bx[1]+bx[3]+60) return;
+    h+='<g class="mt" data-x="'+q[0].toFixed(1)+'" data-y="'+q[1].toFixed(1)+'"><path d="M-14 4L-7-6L0 4M-4 4L4-9L12 4M8 4L13-2L18 4"/><text y="16">'+esc(mt.n)+'</text></g>'; });
+  ((G.labels||{})[S.lang]||[]).forEach(function(lb){ var q=pr([lb[1],lb[2]]); h+='<text class="ctry'+(lb[3]?' '+lb[3]:'')+'" x="'+q[0].toFixed(1)+'" y="'+q[1].toFixed(1)+'">'+esc(lb[0])+'</text>'; });
+  h+='<path class="main-ol" d="'+m.main+'"/>'+
     '<path class="road-edge" d="'+road+'"/><path class="road" d="'+road+'"/><path class="route-bg" d="'+road+'"/><path class="route-done" id="rdone" d=""/>';
   P.forEach(function(p,i){
     var lx=p.x+14, anchor='start'; if(p.x>m.box[0]+m.box[2]*.72){lx=p.x-14; anchor='end';}
-    h+='<g class="city" id="city'+i+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="10"/><text class="num" x="'+p.x+'" y="'+(p.y+.5)+'" font-size="11">'+(i+1)+'</text>'+
+    h+='<g class="city" id="city'+i+'"><circle class="seal" cx="'+p.x+'" cy="'+p.y+'" r="15"/><circle class="dot" cx="'+p.x+'" cy="'+p.y+'" r="10"/><text class="num" x="'+p.x+'" y="'+(p.y+.5)+'" font-size="11">'+(i+1)+'</text>'+
        '<text x="'+lx+'" y="'+(p.y+5)+'" font-size="15" text-anchor="'+anchor+'">'+esc(p.n)+'</text></g>';
   });
   h+='<g id="car"><ellipse cx="0" cy="4" rx="26" ry="5" fill="rgba(0,0,0,.18)"/><g id="carflip"><g id="carbody"></g></g></g>';
@@ -749,14 +794,21 @@ function setView(cx,cy,w,instant){
 }
 function applyCam(){ var svg=$('map'); svg.setAttribute('viewBox',camera.x+' '+camera.y+' '+camera.w+' '+camera.h);
   var mc=$('mapcard'), k=camera.w/((mc&&mc.clientWidth)||360), fs=14*k, rr=10*k;
-  Array.prototype.forEach.call(svg.querySelectorAll('.city'),function(g){ var c=g.querySelector('circle'), tx=g.querySelectorAll('text'); c.setAttribute('r',rr);
+  Array.prototype.forEach.call(svg.querySelectorAll('.city'),function(g){ var c=g.querySelector('.dot'), tx=g.querySelectorAll('text'); c.setAttribute('r',rr); var se=g.querySelector('.seal'); if(se){ se.setAttribute('r',rr*1.55); se.style.strokeWidth=2*k; se.style.strokeDasharray=(2.2*k)+' '+(1.6*k); }
     tx[0].setAttribute('font-size',11*k); var cx=+c.getAttribute('cx'), lab=tx[1]; lab.setAttribute('font-size',fs); lab.style.display=k>1.05?'none':''; lab.setAttribute('x',cx+(lab.getAttribute('text-anchor')==='end'?-1:1)*(rr+4*k)); });
   var car=$('car'); if(car&&carPos) car.setAttribute('transform','translate('+carPos.x+','+(carPos.y-rr*.4)+') scale('+(k*1.1)+')');
   var fl=$('carflip'); if(fl) fl.setAttribute('transform',carDir<0?'scale(-1,1)':'');
   var w=function(sel,v){var e=svg.querySelector(sel); if(e)e.style.strokeWidth=v*k;};
   w('.road-edge',9); w('.road',6); w('#rdone',5);
   var rb=svg.querySelector('.route-bg'); if(rb){rb.style.strokeWidth=1.4*k; rb.style.strokeDasharray=(6*k)+' '+(7*k);}
-  svg.querySelectorAll('.main').forEach(function(m){m.style.strokeWidth=2.2*k;}); }
+  svg.querySelectorAll('.main-ol').forEach(function(m){m.style.strokeWidth=1.8*k;});
+  [['.c1',3],['.c2',8],['.c3',15],['.tint',12],['.river',1.6],['.grat',.6],['.nb',1]].forEach(function(a){ svg.querySelectorAll(a[0]).forEach(function(e){ e.style.strokeWidth=a[1]*k; }); });
+  svg.querySelectorAll('.grat').forEach(function(e){ e.style.strokeDasharray=(3*k)+' '+(4*k); });
+  svg.querySelectorAll('.mt').forEach(function(g){ g.setAttribute('transform','translate('+g.dataset.x+','+g.dataset.y+') scale('+k+')'); g.querySelector('text').style.display=k>1.05?'none':''; });
+  svg.querySelectorAll('.ctry').forEach(function(t){ t.setAttribute('font-size',(t.classList.contains('sea')?13:11)*k); });
+  // mjerilo i ruža vjetrova (izvan SVG-a, stalne veličine)
+  var sb=$('scalebar'); if(sb&&mc){ var pxu=(mc.clientWidth||360)/camera.w, km=[5,10,20,25,50,100,200,250,500].find(function(v){ return v/1.11*pxu>=48; })||500;
+    sb.querySelector('i').style.width=Math.round(km/1.11*pxu)+'px'; sb.querySelector('b').textContent=km+' km'; } }
 function overview(instant){ var b=mapData().box; setView(b[0]+b[2]/2,b[1]+b[3]/2+b[3]*.02,Math.max(b[2],b[3]*((($('mapcard').clientWidth||360)/($('mapcard').clientHeight||200))))*1.04,instant); }
 function placeCar(x,y){ carPos={x:x,y:y}; applyCam(); }
 function placeCarAt(d){ var p=pointAt(d); if(p.dx) carDir=p.dx<0?-1:1; placeCar(p.x,p.y); $('rdone').setAttribute('d',subPath(d)); }
