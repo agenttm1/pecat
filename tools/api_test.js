@@ -36,7 +36,7 @@ function call(method, url, body, cookie, extra) {
   assert.equal((await play(A, 640)).json.rank, 1);
   const r2 = await play(B, 700); assert.equal(r2.json.rank, 1);
   await play(Cc, 300);
-  assert.equal((await play(A, 900.5 + 100)).json.error, 'score');
+  assert.equal((await play(A, 1300)).json.error, 'score');
   assert.equal((await play(A, 600)).code, 429, 'brzo ponavljanje');
   const g = (await call('POST', '/api/start', { lang: 'hr' })).json.gt;
   assert.equal((await call('POST', '/api/score', { lang: 'ba', score: 1, gt: g }, B)).json.error, 'ticket');
@@ -83,7 +83,14 @@ function call(method, url, body, cookie, extra) {
   // Šef odsjeka: dupli glasovi
   const gh = (await call('POST', '/api/start', { lang: 'ba', hard: true })).json.gt;
   const D = (await call('POST', '/api/auth', { credential: 'dev:Dino' })).cookie;
-  const hs = (await call('POST', '/api/score', { lang: 'ba', score: 400, gt: gh }, D)).json; assert.equal(hs.counted, 800);
+  const hs = (await call('POST', '/api/score', { lang: 'ba', score: 400, gt: gh }, D)).json; assert.equal(hs.counted, 400); assert(hs.hard);
+  const bba = (await call('GET', '/api/board?lang=ba', null, D)).json; assert.equal(bba.izbori.length, 0); assert.equal(bba.sef[0].score, 400);
+  // dnevni broj i radni staž na serveru
+  const today = require('../lib/app').dayNo();
+  assert.equal((await call('POST', '/api/daily', { lang: 'hr', day: today - 1, score: 500 }, D)).json.error, 'day');
+  let dy = (await call('POST', '/api/daily', { lang: 'hr', day: today, score: 500 }, D)).json; assert.deepEqual([dy.first, dy.staz.n], [true, 1]);
+  dy = (await call('POST', '/api/daily', { lang: 'hr', day: today, score: 900 }, D)).json; assert.deepEqual([dy.first, dy.staz.n], [false, 1]);
+  const meD = (await call('GET', '/api/me', null, D)).json.user; assert.equal(meD.daily.hr, 500); assert.equal(meD.staz.n, 1);
   // prijedlozi
   assert.equal((await call('POST', '/api/suggest', { lang: 'hr', q: 'Navedi nešto', a: 'a;b;c' })).code, 401);
   assert.equal((await call('POST', '/api/suggest', { lang: 'hr', q: 'Navedi vrstu burek', a: 'sir, meso, krumpir, jabuka', f: 'Burek je jedan' }, B)).code, 200);

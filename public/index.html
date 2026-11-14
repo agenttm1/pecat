@@ -3,7 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-<title>Pečat!</title>
+<title>Pečat! Igra s pečatom</title>
+<meta name="description" content="Navedi odgovor kojeg se nitko drugi ne bi sjetio. Što rjeđi odgovor, to dalje stižeš od šaltera do šaltera. Dnevni broj, izbori i Sabor. HR, BiH i SRB.">
+<meta name="theme-color" content="#3b37a6">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pečat!">
+<meta property="og:title" content="Pečat! Igra s pečatom">
+<meta property="og:description" content="Navedi odgovor kojeg se nitko drugi ne bi sjetio. Novi dnevni broj svaki dan.">
+<meta property="og:url" content="https://pecat-v2.vercel.app/">
+<meta property="og:image" content="https://pecat-v2.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="hr_HR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pečat!">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -212,6 +229,7 @@ h2{font-size:25px}
 .slots div.x{border:3px solid var(--alarm); color:var(--alarm); animation:thud .3s both; transform:rotate(6deg)}
 .bigstamp{align-self:center; font-family:var(--f-stamp); border:5px double; border-radius:10px; padding:5px 18px 8px; font-size:clamp(24px,8vw,38px); white-space:nowrap; text-transform:uppercase; transform:rotate(-6deg); color:var(--alarm); border-color:var(--alarm); mix-blend-mode:multiply}
 .bigstamp.gold{color:#8a6516; border-color:#8a6516}
+.gosub{margin:-4px 0 0; font-size:14px; color:var(--ink-soft)}
 .modes{display:flex; flex-direction:column; gap:8px; width:100%; max-width:340px}
 .mode{display:flex; flex-direction:column; align-items:center; gap:1px; border:3px solid var(--stamp); color:var(--stamp); background:#fff; padding:9px 12px; border-radius:4px; box-shadow:3px 3px 0 rgba(59,55,166,.25)}
 .mode b{font-family:var(--f-stamp); font-size:18px; letter-spacing:.02em}
@@ -386,7 +404,7 @@ hr:{flag:'🇭🇷',
  short:['PORT','PIS','Š3','Š5','POŠTA','BILJ','UZU','ŠEF'],
  t:{no:'VAŠ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'ŠALTER RADI 8–10',form:'Obrazac P-8',
   title:'Skupi 8 pečata prije nego ti kažu „Dođite sutra.”',
-  rules:['Svaki broj dobiva 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi sjeti tvog odgovora, to više bodova nosi.','Krivo ili prekasno: fali vam papir, 0 bodova.'],
+  rules:['Svaki broj dobiva 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi sjeti tvog odgovora, to više bodova nosi.','Ako odgovora nema u papirima, imaš još dva pokušaja. Prekasno ili tri promašaja: fali vam papir, 0 bodova.'],
   push:'PRITISNI',hello:'Dobar dan. Uzmite broj. Ne, ne taj automat. Šalim se, taj.',called:function(n){return 'Broj '+n+'! Izvolite.';},
   best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rješenje',
   nonsense:'To nije riječ, to je mačka hodala po tipkovnici.',notice:'OBAVIJEST',evNext:'Natrag u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vrijeme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši barem dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primjerak je dovoljan.',
@@ -397,7 +415,7 @@ hr:{flag:'🇭🇷',
   byeWin:'Izvolite rješenje. I zatvorite vrata.',byeLose:'Sljedeći! Ne, ne vi. Vi dođite sutra.',decree:'Rješenje',decreeSub:function(n){return 'Klasa: P-8 · Ur. broj: '+n;},win:'PEČAT!',lose:'Dođite sutra',
   reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
   copy:'Kopiraj rezultat',copied:'Kopirano! Zalijepi gdje hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
-  note:'Rijetkost se računa iz pregleda članaka na Wikipediji (2025.) i procjene. Kad igra dobije igrače, računat će se iz pravih odgovora.'},
+  note:'Rijetkost se računa iz odgovora pravih igrača. Dok pitanje nema dovoljno igrača, pomaže procjena prema Wikipediji.'},
  react:{rare:['Ovo još nitko nije napisao. Sumnjivo, ali prolazi.','Šefica je kimnula. Ne pitajte zašto.','Preskočili ste pola reda. Pravite se da nitko nije vidio.','Ovo ide ravno u arhivu. Onu dobru.'],
   mid:['Prolazi. Sjednite tamo.','Može. Ali polako.','Pečat još ne, ali gledala vas je ljubaznije.'],
   common:['To su svi napisali. Uzmite novi broj.','Ne budite kao svi. Mi smo već svi.','Taj obrazac imamo u 400 primjeraka.'],
@@ -409,7 +427,7 @@ ba:{flag:'🇧🇦',
  short:['PORT','OPĆ','Š2','KANT','CIPS','POŠTA','OVJ','ŠEF'],
  t:{no:'TVOJ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'PAUZA ZA KAHVU 9–11',form:'Obrazac P-8',
   title:'Skupi 8 pečata prije nego ti kažu „Dođi sutra.”',
-  rules:['Svaki broj dobije 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje raje sjeti tvog odgovora, to više bodova nosi.','Pogrešno ili prekasno: fali ti papir, 0 bodova.'],
+  rules:['Svaki broj dobije 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje raje sjeti tvog odgovora, to više bodova nosi.','Ako odgovora nema u papirima, imaš još dva pokušaja. Prekasno ili tri promašaja: fali ti papir, 0 bodova.'],
   push:'PRITISNI',hello:'Dobar dan. Uzmi broj, sjedi, popij kahvu. Ne žuri.',called:function(n){return 'Broj '+n+'! Hajde, bujrum.';},
   best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rješenje',
   nonsense:'To nije riječ, to je mačka hodala po tastaturi.',notice:'OBAVJEŠTENJE',evNext:'Nazad u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vrijeme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši barem dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primjerak je dosta.',
@@ -420,7 +438,7 @@ ba:{flag:'🇧🇦',
   byeWin:'Evo ti rješenje. Zatvori vrata za sobom.',byeLose:'Sljedeći! Ti dođi sutra, bujrum.',decree:'Rješenje',decreeSub:function(n){return 'Broj predmeta: '+n+' · kanton nadležan';},win:'PEČAT!',lose:'Dođi sutra',
   reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
   copy:'Kopiraj rezultat',copied:'Kopirano! Zalijepi gdje hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
-  note:'Rijetkost se računa iz pregleda članaka na Wikipediji (2025.) i procjene. Kad igra dobije igrače, računat će se iz pravih odgovora.'},
+  note:'Rijetkost se računa iz odgovora pravih igrača. Dok pitanje nema dovoljno igrača, pomaže procjena prema Wikipediji.'},
  react:{rare:['Ovo niko nije napisao. Imaš li ti vezu?','Šef kaže: ovaj je naš.','Preskočio si pola reda, raja ćuti.'],
   mid:['Može. Sjedi, popij kahvu.','Prolazi, ali nemoj se žuriti.'],
   common:['To je napisala cijela čaršija.','Uzmi novi broj, haman ti je 200.','Tako kaže svako. I komšija.'],
@@ -432,7 +450,7 @@ rs:{flag:'🇷🇸',
  short:['PORT','OPŠ','Š4','PIS','POŠTA','BEL','KZK','ŠEF'],
  t:{no:'VAŠ BROJ',ct:'ŠALTER',pts:'BODOVI',sign:'RADIMO DO 13H',form:'Obrazac P-8',
   title:'Skupi 8 pečata pre nego što ti kažu „Dođite sutra.”',
-  rules:['Svaki broj dobija 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi seti tvog odgovora, to više bodova nosi.','Pogrešno ili prekasno: fali vam papir, 0 bodova.'],
+  rules:['Svaki broj dobija 8 nasumičnih pitanja. Imaš 30 sekundi za svako.','Što se manje ljudi seti tvog odgovora, to više bodova nosi.','Ako odgovora nema u papirima, imaš još dva pokušaja. Prekasno ili tri promašaja: fali vam papir, 0 bodova.'],
   push:'PRITISNI',hello:'Dobar dan. Uzmite broj. Sistem radi. Za sada.',called:function(n){return 'Broj '+n+'! Izvolite.';},
   best:'Najbolji rezultat',games:'odigrano',field:'Rubrika',ph:'Upiši odgovor',send:'Predaj',next:'Dalje',finish:'Po rešenje',
   nonsense:'To nije reč, to je mačka hodala po tastaturi.',notice:'OBAVEŠTENJE',evNext:'Nazad u red',multChip:function(m){return 'Veza: ×'+String(m).replace('.',',');},timeChip:function(s){return 'Vreme: '+s+' s';},bonusRow:'Događaj',could:'Prolazilo je npr.:',short:'Prekratko. Upiši bar dva slova.',banned:'Taj odgovor ne primamo. Probaj drugi.',dup:'To si već predao. Jedan primerak je dovoljan.',
@@ -443,7 +461,7 @@ rs:{flag:'🇷🇸',
   byeWin:'Izvolite rešenje. Zatvorite vrata.',byeLose:'Sledeći! Ne vi, vi dođite sutra.',decree:'Rešenje',decreeSub:function(n){return 'Broj predmeta: '+n+' · 60 radnih dana';},win:'PEČAT!',lose:'Dođite sutra',
   reached:function(c,k){return k?'Stigao/la sam do: '+c+' ('+k+'/8)':'Portir me nije pustio (0/8)';},
   copy:'Kopiraj rezultat',copied:'Kopirano! Nalepi gde hoćeš.',copyFail:'Označi tekst i kopiraj ručno.',again:'Uzmi novi broj',answers:'Moji odgovori',
-  note:'Retkost se računa iz pregleda članaka na Vikipediji (2025.) i procene. Kad igra dobije igrače, računaće se iz pravih odgovora.'},
+  note:'Retkost se računa iz odgovora pravih igrača. Dok pitanje nema dovoljno igrača, pomaže procena prema Vikipediji.'},
  react:{rare:['Ovo niko nije napisao. Imaš li ti nekog ovde?','Šef kaže: pustite ga.','Preskočio si pola reda. Niko nije video, ni ja.'],
   mid:['Može. Sedite tamo.','Prolazi, ali bez guranja.'],
   common:['To je napisala cela opština.','Uzmite novi broj.','Tako kažu svi. I ovaj iza vas.'],
@@ -769,27 +787,27 @@ var tick=null, deadline=0, lastTick=0, CUR=LIMIT, busy=false;
 ['hr','ba','rs'].forEach(function(l){ for(var k in MORE[l]) L[l].react[k]=L[l].react[k].concat(MORE[l][k]); });
 
 var XT={
- hr:{noPaper:['Toga nemamo među papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Pogledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
-   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+ hr:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo među papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Pogledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Tjedan bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
-   chal:'Izazovi prijatelja',chalCopied:'Poveznica izazova kopirana!',chalTitle:function(n,c,p){return (n||'Netko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi tko stiže dalje.',chalGo:'Prihvati izazov',
+   chal:'Izazovi prijatelja',chalCopied:'Poveznica izazova kopirana!',chalTitle:function(n,c,p){return (n||'Netko')+' te izaziva: stigao/la do '+c+' ('+p+' '+bod(p)+').';},chalSub:'Ista pitanja, isti događaji. Vidi tko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Birokracija ne zna pobjednika.';},
-   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
- ba:{noPaper:['Toga nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Gledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne broji se)';},
-   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+' '+bod(p)+') u Pečat! Možeš li bolje s istim pitanjima?';}},
+ ba:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['Toga nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Kolegica kaže da to nije u registru.','Gledala sam i u ladici. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne broji se)';},
+   hard:'Šef odsjeka',hardSub:'15 sekundi, jedan pokušaj, bez oprosta za tipfelere, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje s dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Sedmica bez bolovanja',30:'Mjesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odsjeka ne priznaje tipfelere. Mislio/la si: <b>'+w+'</b>';},
-   chal:'Izazovi raju',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
+   chal:'Izazovi raju',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+' '+bod(p)+').';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobijedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođi sutra.';},chalTie:function(a){return 'Neriješeno, '+a+' bodova. Ni kanton ne zna ko je pobijedio.';},
-   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje s istim pitanjima?';}},
- rs:{noPaper:['To nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Koleginica kaže da to nije u registru.','Gledala sam i u fioci. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+'/800 · ponovi (ne računa se)';},
-   hard:'Šef odseka',hardSub:'15 sekundi, jedan pokušaj, bez praštanja za greške u kucanju, dupli glasovi na izborima',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+' '+bod(p)+') u Pečat! Možeš li bolje s istim pitanjima?';}},
+ rs:{freeSub:'Nasumična pitanja, igraj koliko hoćeš',noPaper:['To nemamo u papirima.','Taj odgovor nije u registru.','Ne vodimo to u evidenciji.','Za to nemamo obrazac.'],noPaperSay:['Nemamo to u papirima. Probajte nešto drugo.','Koleginica kaže da to nije u registru.','Gledala sam i u fioci. Nema.'],triesLeft:function(n){return n===1?'Još jedan pokušaj, pa idemo dalje.':'Imate još '+n+' pokušaja.';},daily:'Dnevni broj',dailyN:function(n){return 'Dnevni broj #'+n;},dailySub:'Ista pitanja za sve danas',free:'Slobodna igra',done:function(p){return 'Danas: '+p+' '+bod(p)+' · ponovi (ne računa se)';},
+   hard:'Šef odseka',hardSub:'15 sekundi, jedan pokušaj, bez praštanja za greške u kucanju, zasebna ljestvica',staz:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana');},stazNone:'Radni staž počinje sa dnevnim brojem.',
    stazUp:function(n){return 'Radni staž: '+n+(n===1?' dan':' dana')+'!';},medal:{7:'Nedelja bez bolovanja',30:'Mesec dana u službi',100:'Zaslužni službenik'},
    live:function(p,n){return 'Tako je odgovorilo <b>'+p+' %</b> od '+n+' igrača.';},typo:function(w){return 'Šef odseka ne priznaje greške u kucanju. Mislio/la si: <b>'+w+'</b>';},
-   chal:'Izazovi prijatelja',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+'/800).';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
+   chal:'Izazovi prijatelja',chalCopied:'Link izazova kopiran!',chalTitle:function(n,c,p){return (n||'Neko')+' te izaziva: stigao/la do '+c+' ('+p+' '+bod(p)+').';},chalSub:'Ista pitanja, isti događaji. Vidi ko stiže dalje.',chalGo:'Prihvati izazov',
    chalWin:function(n,a,b){return 'Pobedio/la si '+(n||'izazivača')+': '+a+' prema '+b+'!';},chalLose:function(n,a,b){return (n||'Izazivač')+' je bolji/a: '+b+' prema '+a+'. Dođite sutra.';},chalTie:function(a){return 'Nerešeno, '+a+' bodova. Ni šalter ne zna ko je pobedio.';},
-   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+'/800) u Pečat! Možeš li bolje sa istim pitanjima?';}}};
+   suggest:'Predloži pitanje',chalShare:function(c,p){return 'Stigao/la sam do '+c+' ('+p+' '+bod(p)+') u Pečat! Možeš li bolje sa istim pitanjima?';}}};
 function X(){return XT[S.lang];}
 // dan po zagrebačkom vremenu; dnevni broj #1 = 1. 11. 2026.
 function zgDate(d){ try{ return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Zagreb',year:'numeric',month:'2-digit',day:'2-digit'}).format(d||new Date()); }catch(e){ return (d||new Date()).toISOString().slice(0,10); } }
@@ -807,6 +825,7 @@ function worldPool(){ return ((window.PECAT_WORLD||{})[S.lang]||[]).map(function
 function forePool(){ return (window.PECAT_FORE[S.lang]||[]).map(function(q,i){return {id:'f-'+S.lang+'-'+i,q:q};}); }
 function userPool(){ return ((window.PECAT_USERQ||{})[S.lang]||[]).map(function(q,i){return {id:'u-'+S.lang+'-'+i,q:q};}); }
 function byId(id){ var p=id.split('-'); if(p[0]==='u') return ((window.PECAT_USERQ||{})[p[1]]||[])[+p[2]]||{q:'…',a:'',o:1}; if(p[0]==='f') return window.PECAT_FORE[p[1]][+p[2]]; if(p[0]==='w') return window.PECAT_WORLD[p[1]][+p[2]]; return DATA[p[0]][+p[1]-1][+p[2]-1]; }
+window.PECAT_RERENDER=function(){ if(S.phase==='start') render(); };
 window.PECAT_Q=function(id){ try{ return byId(id); }catch(e){ return null; } };
 function curQ(){ return byId(S.ids[S.idx]); }
 function drawQuestions(rng){
@@ -876,11 +895,11 @@ function desk(html,cls){ $('desk').innerHTML='<div class="sheet '+(cls||'')+'" i
 
 var MEMO={
  hr:{l1:'REPUBLIKA HRVATSKA',l2:'MINISTARSTVO PEČATA I PRESLIKA',l3:'Ured za čekanje u redu · Zagreb',klasa:'KLASA',ur:'UR. BROJ',dat:'DATUM',foot:'Ovo je igra. Dokument nije pravi, pečat također. Nijedan službenik nije ozlijeđen.',
-   desc:'8 pitanja, za svako jedan odgovor. Što je tvoj odgovor rjeđi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'rjeđi odgovor',rules:'Pravila',go:'Uzmi broj'},
+   desc:'8 pitanja, za svako tri pokušaja. Što je tvoj odgovor rjeđi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'rjeđi odgovor',rules:'Pravila',go:'Uzmi broj'},
  ba:{l1:'BOSNA I HERCEGOVINA',l2:'MINISTARSTVO PEČATA I OVJERA',l3:'Kantonalno, entitetsko i državno · Sarajevo',klasa:'BROJ',ur:'PROTOKOL',dat:'DATUM',foot:'Ovo je igra. Dokument nije pravi, pečat također. Nijedan službenik nije povrijeđen.',
-   desc:'8 pitanja, za svako jedan odgovor. Što je tvoj odgovor rjeđi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'rjeđi odgovor',rules:'Pravila',go:'Uzmi broj'},
+   desc:'8 pitanja, za svako tri pokušaja. Što je tvoj odgovor rjeđi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'rjeđi odgovor',rules:'Pravila',go:'Uzmi broj'},
  rs:{l1:'REPUBLIKA SRBIJA',l2:'MINISTARSTVO PEČATA I OVERA',l3:'Šalter za šaltere · Novi Sad',klasa:'BROJ',ur:'DELOVODNI BR.',dat:'DATUM',foot:'Ovo je igra. Dokument nije pravi, pečat takođe. Nijedan službenik nije povređen.',
-   desc:'8 pitanja, za svako jedan odgovor. Što je tvoj odgovor ređi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'ređi odgovor',rules:'Pravila',go:'Uzmi broj'}};
+   desc:'8 pitanja, za svako tri pokušaja. Što je tvoj odgovor ređi, to dalje stigneš po karti i to bolji auto voziš.',common:'češći odgovor',rare:'ređi odgovor',rules:'Pravila',go:'Uzmi broj'}};
 // izmišljeni grb: štit s pečatom; boje trake prate verziju
 function crest(l){
   var band = l==='hr' ? '<g>'+[0,1,2,3,4].map(function(i){return '<rect x="'+(12+i*7.2)+'" y="10" width="7.2" height="7" fill="'+(i%2?'#fff':'#c8321f')+'"/><rect x="'+(12+i*7.2)+'" y="17" width="7.2" height="7" fill="'+(i%2?'#c8321f':'#fff')+'"/>';}).join('')+'</g>'
@@ -905,18 +924,21 @@ function viewStart(){
    (CHAL&&CHAL.l===S.lang?'<div class="chal"><b>'+esc(x.chalTitle(CHAL.n,CHAL.c,CHAL.p))+'</b><small>'+esc(x.chalSub)+(CHAL.h?' · '+esc(x.hard):'')+'</small><button type="button" class="btn stampy" id="b-chal">'+esc(x.chalGo)+'</button></div>':'')+
    '<ul class="tiers">'+tiers+'</ul>'+
    '<div class="scale"><i></i><span>'+esc(m.common)+'</span><span>'+esc(m.rare)+' →</span></div>'+
-   '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go" id="b-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(m.go)+'</button></div>'+
+   '<div class="cta"><div class="tk" id="tk"><small>'+esc(t.no)+'</small><b id="scr">---</b></div><button type="button" class="go" id="b-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>'+esc(dd?m.go:x.dailyN(day))+'</button></div>'+
+   '<p class="gosub">'+esc(dd?x.freeSub:x.dailySub)+'</p>'+
    '<div class="modes">'+
-     '<button type="button" class="mode'+(dd?' done':'')+'" id="b-daily"><b>'+esc(x.dailyN(day))+'</b><small>'+esc(dd?x.done(dd.score):x.dailySub)+'</small></button>'+
+     (dd?'<button type="button" class="mode done" id="b-daily"><b>'+esc(x.dailyN(day))+'</b><small>'+esc(x.done(dd.score))+'</small></button>'
+        :'<button type="button" class="mode" id="b-free"><b>'+esc(x.free)+'</b><small>'+esc(x.freeSub)+'</small></button>')+
      '<label class="hardsw"><input type="checkbox" id="hard"'+(store('pecat:hard')?' checked':'')+'><span><b>'+esc(x.hard)+'</b><small>'+esc(x.hardSub)+'</small></span></label>'+
      '<p class="staz">'+stazLine()+'</p>'+
    '</div>'+
    '<div class="acct" id="acct"></div>'+
    '<details class="rules-box"><summary>'+esc(m.rules)+'</summary><ol class="rules">'+t.rules.map(function(r,i){return '<li><b>'+(i+1)+'</b><span>'+esc(r)+'</span></li>';}).join('')+'</ol></details>'+
-   (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+'/800</b> · '+st.games+' '+esc(t.games)+'</p>':'');
+   (st.games?'<p class="best">'+esc(t.best)+': <b>'+st.best+' '+bod(st.best)+'</b> · '+st.games+' '+esc(t.games)+'</p>':'');
   hook('hero',$('acct'),S.lang);
-  $('b-go').onclick=function(){ startGame('free',this); };
-  $('b-daily').onclick=function(){ startGame('daily',$('b-go')); };
+  $('b-go').onclick=function(){ startGame(dd?'free':'daily',this); };
+  if($('b-daily')) $('b-daily').onclick=function(){ startGame('daily',$('b-go')); };
+  if($('b-free')) $('b-free').onclick=function(){ startGame('free',$('b-go')); };
   $('hard').onchange=function(){ store('pecat:hard',this.checked); SFX.paper(); };
   if($('b-chal')) $('b-chal').onclick=function(){ startGame('chal',$('b-go')); };
 }
@@ -1089,10 +1111,11 @@ function viewEv(){
 
 function save(){ var k='pecat:stats:'+S.lang, st=store(k)||{best:0,games:0}; st.games++; st.best=Math.max(st.best,total()); store(k,st); }
 function marks(){return S.results.map(function(x){return !x.ok?'🟥':(x.pct<10?'🟩':'🟨');}).join('');}
+function bod(n){ n=Math.abs(Math.round(n)); var d=n%10,h=n%100; return d===1&&h!==11?'bod':(d>=2&&d<=4&&(h<12||h>14)?'boda':'bodova'); }
 function modeLabel(){ return S.mode==='daily'?X().dailyN(S.day):(S.mode==='chal'?'⚔ Izazov':'№ '+S.ticket); }
 function shareText(){
   var t=T(), r=E.reached(total()), stop=r?C()[r-1].c:'';
-  return 'Pečat! '+L[S.lang].flag+' '+modeLabel()+(S.hard?' · '+X().hard:'')+'\n'+t.reached(stop,r)+' · '+total()+'/800\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
+  return 'Pečat! '+L[S.lang].flag+' '+modeLabel()+(S.hard?' · '+X().hard:'')+'\n'+t.reached(stop,r)+' · '+total()+' '+bod(total())+'\n🚗 '+CARNAME[S.lang][S.car===undefined?1:S.car]+' · '+kmOf(distFor(total()))+' km\n'+marks()+'\n„'+L[S.lang].end[END_IX[r]]+'”';
 }
 
 
@@ -1154,7 +1177,7 @@ async function makeShareImage(){
   x.font='400 28px '+FL; x.fillStyle='#5b6168'; x.fillText(sh.car[tier],W/2,846);
   // rezultat
   x.fillStyle='#1f252b'; x.font='700 50px '+FL; x.fillText(r?(sh.stop+': '+stop):sh.none,W/2,922);
-  x.font='500 32px '+FT; x.fillStyle='#3b37a6'; x.fillText(r+'/8 '+sh.sal+'  ·  '+kmOf(distFor(tot))+' km  ·  '+tot+'/800',W/2,972);
+  x.font='500 32px '+FT; x.fillStyle='#3b37a6'; x.fillText(r+'/8 '+sh.sal+'  ·  '+kmOf(distFor(tot))+' km  ·  '+tot+' '+bod(tot),W/2,972);
   // kvadratići
   var n=S.results.length, bw=60, gap=14, bx=W/2-(n*bw+(n-1)*gap)/2;
   S.results.forEach(function(q,i){ x.fillStyle=!q.ok?'#b3271d':(q.pct<10?'#2e6b3f':'#c99a2e'); x.fillRect(bx+i*(bw+gap),1002,bw,bw); });
@@ -1203,7 +1226,7 @@ async function viewEnd(){
     S.bonus.map(function(b){return '<tr><td><span class="dot" style="background:var(--stamp)"></span></td><td><span class="q">'+esc(t.bonusRow)+'</span>'+esc(b.label)+'</td><td>'+(b.pts>0?'+':'−')+Math.abs(b.pts)+'</td></tr>';}).join('');
   desk('<div class="decree" style="display:contents"><h1>'+esc(t.decree)+'</h1><p class="sub">'+esc(t.decreeSub(S.ticket))+'</p>'+
    '<div class="slots" id="slots">'+slots+'</div>'+
-   '<p class="score"><b id="sc">0</b>/800</p>'+
+   '<p class="score"><b id="sc">0</b> '+bod(tot)+'</p>'+
    '<div class="bigstamp'+(win?' gold':'')+'" id="bigst" style="visibility:hidden">'+esc(win?t.win:t.lose)+'</div>'+
    '<p class="endmsg">„'+esc(L[S.lang].end[END_IX[r]])+'”</p>'+
    '<div class="shbox" id="shbox"><div class="shph"></div></div>'+
@@ -1223,7 +1246,7 @@ async function viewEnd(){
   $('b-copy').onclick=function(){ var done=function(ok){$('msg').textContent=ok?t.copied:t.copyFail; if(ok)SFX.ding();};
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
   setTimeout(showShareImage,RM?0:600);
-  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,
+  if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,day:S.day,
     answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q,x.miss||[]]; })},$('vote')); }
   $('b-chal2').onclick=function(){
     var me=(window.PECAT_ME&&window.PECAT_ME())||'', stop=r?C()[r-1].c:'—';

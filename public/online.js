@@ -9,7 +9,7 @@
       ev: { prebjeg: function (e) { return e.who + ' prelazi iz stranke ' + e.from + ' u ' + e.to + '!'; }, nova: function (e) { return e.who + ' osniva stranku ' + e.to + '.'; }, koalicija: function (e) { return 'Koalicija: ' + e.from + ' + ' + e.to + '.'; }, raskid: function (e) { return e.from + ' izlazi iz koalicije.'; } },
       vlada: function (p, n) { return 'Vlada: ' + p + ' (' + n + ' mjesta)'; }, noVlada: function (n) { return 'Nitko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
-      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Točni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (×2, Šef odsjeka)',
+      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Točni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
       login: 'Prijava Googleom', board: 'Sabor i izbori', parl: 'Sabor', izb: 'Izbori', party: 'Stranka', week: 'tjedan', close: 'Zatvori',
       lastWin: 'Prošli tjedan izbore je dobio/la', lastParty: 'Vladajuća stranka prošlog tjedna', none: 'Još nitko nije glasao ovaj tjedan. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ovaj tjedan.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
@@ -25,7 +25,7 @@
       ev: { prebjeg: function (e) { return e.who + ' prelazi iz stranke ' + e.from + ' u ' + e.to + '!'; }, nova: function (e) { return e.who + ' osniva stranku ' + e.to + '.'; }, koalicija: function (e) { return 'Koalicija: ' + e.from + ' + ' + e.to + '.'; }, raskid: function (e) { return e.from + ' izlazi iz koalicije.'; } },
       vlada: function (p, n) { return 'Vijeće ministara: ' + p + ' (' + n + ' mjesta)'; }, noVlada: function (n) { return 'Niko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
-      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (×2, Šef odsjeka)',
+      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
       login: 'Prijava Googleom', board: 'Parlament i izbori', parl: 'Parlament', izb: 'Izbori', party: 'Stranka', week: 'sedmica', close: 'Zatvori',
       lastWin: 'Prošle sedmice izbore je dobio/la', lastParty: 'Vladajuća stranka prošle sedmice', none: 'Još niko nije glasao ove sedmice. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove sedmice.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
@@ -41,7 +41,7 @@
       ev: { prebjeg: function (e) { return e.who + ' prelazi iz stranke ' + e.from + ' u ' + e.to + '!'; }, nova: function (e) { return e.who + ' osniva stranku ' + e.to + '.'; }, koalicija: function (e) { return 'Koalicija: ' + e.from + ' + ' + e.to + '.'; }, raskid: function (e) { return e.from + ' izlazi iz koalicije.'; } },
       vlada: function (p, n) { return 'Vlada: ' + p + ' (' + n + ' mesta)'; }, noVlada: function (n) { return 'Niko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
-      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (bar 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (×2, Šef odseka)',
+      sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (bar 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (lestvica Šefa odseka)', sefTitle: 'Šef odseka: posebna lestvica',
       login: 'Prijava Guglom', board: 'Skupština i izbori', parl: 'Skupština', izb: 'Izbori', party: 'Stranka', week: 'nedelja', close: 'Zatvori',
       lastWin: 'Prošle nedelje izbore je dobio/la', lastParty: 'Vladajuća stranka prošle nedelje', none: 'Još niko nije glasao ove nedelje. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove nedelje.', seats: 'mesta', members: 'članova', pts: 'bodova', you: 'ti',
@@ -150,6 +150,7 @@
     }
   }
   function afterLogin() {
+    syncFromServer();
     if (PENDING) { var p = PENDING; PENDING = null; submit(p.data, p.el); }
     if (INVITE && ME && !ME.parties[LANG]) openPanel('party'); else if (dlg && dlg.open) { drawTab(); api('board?lang=' + LANG).then(function (j) { BOARD = j; drawTab(); }).catch(function () {}); }
     drawHero();
@@ -201,6 +202,7 @@
       var h = w ? '<div class="win">🏆 ' + esc(t.lastWin) + ': <b>' + esc(w.name) + '</b> (' + w.score + ')</div>' : '';
       h += BOARD.izbori.length ? '<ol class="lb">' + BOARD.izbori.map(function (p, i) { return '<li' + (p.me ? ' class="me"' : '') + '><span class="n">' + (i + 1) + '.</span><span class="nm">' + esc(p.name) + (p.me ? ' <small>(' + esc(t.you) + ')</small>' : '') + '</span><b>' + p.score + '</b></li>'; }).join('') + '</ol>' : '<p class="pmsg">' + esc(t.none) + '</p>';
       if (BOARD.me && BOARD.me.rank > BOARD.izbori.length) h += '<ol class="lb"><li class="me"><span class="n">' + BOARD.me.rank + '.</span><span class="nm">' + esc(ME ? ME.name : t.you) + '</span><b>' + BOARD.me.score + '</b></li></ol>';
+      if (BOARD.sef && BOARD.sef.length) h += '<h3 style="margin:8px 0 0">🔥 ' + esc(t.sefTitle) + '</h3><ol class="lb">' + BOARD.sef.slice(0, 10).map(function (p, i) { return '<li' + (p.me ? ' class="me"' : '') + '><span class="n">' + (i + 1) + '.</span><span class="nm">' + esc(p.name) + '</span><b>' + p.score + '</b></li>'; }).join('') + '</ol>';
       if (!ME) h += '<p class="pmsg">' + esc(t.needLogin) + '</p><div id="lgn"></div><p class="perr"></p>';
       el.innerHTML = h; if (!ME) loginBox(el.querySelector('#lgn'));
     } else {
@@ -368,6 +370,7 @@
     end: function (data, el) {
       LANG = data.lang; if (!CFG) return; var t = tx();
       if (GT && GT.lang === data.lang && data.answers) api('answers', { lang: data.lang, gt: GT.gt, a: data.answers }).catch(function () {});
+      if (ME && data.mode === 'daily' && data.day) pushDaily(data.lang, data.day, data.score);
       if (!ready() || !el) return;
       if (ME) return submit(data, el);
       if (!GT) return;
@@ -378,11 +381,26 @@
   };
   var INVITE_SHOWN = 0;
   window.PECAT_ME = function () { return ME ? ME.name : ''; };
+  // radni staž i dnevni rezultat: server je glavni za prijavljene, a mobitel pamti za neprijavljene
+  function dayDate(d) { return new Date(Date.parse('2026-11-01T00:00:00Z') + (d - 1) * 86400000).toISOString().slice(0, 10); }
+  function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function syncFromServer() {
+    if (!ME || !ME.staz) return; var ch = false, loc = lsGet('pecat:staz') || { n: 0, last: '', best: 0 }, sv = ME.staz;
+    if (sv.last) { var sl = dayDate(sv.last); if (sl > (loc.last || '') || (sl === loc.last && sv.n > loc.n)) { loc.n = sv.n; loc.last = sl; ch = true; } }
+    if ((sv.best || 0) > (loc.best || 0)) { loc.best = sv.best; ch = true; }
+    if (ch) lsSet('pecat:staz', loc);
+    Object.keys(ME.daily || {}).forEach(function (l) { var k = 'pecat:daily:' + l + ':' + ME.day; if (!lsGet(k)) { lsSet(k, { score: ME.daily[l] }); ch = true; } });
+    // odigrano na ovom mobitelu prije prijave: pošalji na server
+    ['hr', 'ba', 'rs'].forEach(function (l) { var k = lsGet('pecat:daily:' + l + ':' + ME.day); if (k && !(ME.daily || {})[l]) pushDaily(l, ME.day, k.score); });
+    if (ch && window.PECAT_RERENDER) window.PECAT_RERENDER();
+  }
+  function pushDaily(l, day, score) { return api('daily', { lang: l, day: day, score: score }).then(function (j) { if (ME) { ME.daily = ME.daily || {}; ME.daily[l] = ME.daily[l] || score; ME.staz = j.staz; } return j; }).catch(function () {}); }
 
   fetch('/api/config', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
     if (!c) return; CFG = c; window.PECAT_USERQ = window.PECAT_USERQ || {};
     ['hr', 'ba', 'rs'].forEach(function (l) { api('questions?lang=' + l).then(function (j) { window.PECAT_USERQ[l] = j.questions || []; }).catch(function () {}); });
     if (!(c.google || c.dev)) return;
-    return api('me').then(function (j) { ME = j.user; }).catch(function () {}).then(function () { drawHero(); if (INVITE && heroEl && document.body.contains(heroEl) && !INVITE_SHOWN) { INVITE_SHOWN = 1; openPanel('party'); } });
+    return api('me').then(function (j) { ME = j.user; syncFromServer(); }).catch(function () {}).then(function () { drawHero(); if (INVITE && heroEl && document.body.contains(heroEl) && !INVITE_SHOWN) { INVITE_SHOWN = 1; openPanel('party'); } });
   }).catch(function () {});
 })();

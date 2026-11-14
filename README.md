@@ -26,7 +26,7 @@ Bez tih varijabli igra radi normalno, samo se ne prikazuju prijava, izbori i Sab
 
 - **Slobodna igra**: nasumična pitanja, bez ponavljanja nedavnih.
 - **Dnevni broj**: isti set pitanja i događaja za sve na dan (broj #1 = 1. 11. 2026.). Računa se u **radni staž** (niz dana), uz pečate za 7, 30 i 100 dana.
-- **Šef odsjeka**: 15 sekundi po pitanju, tipfeleri se ne priznaju, rezultat se na izborima broji dvostruko.
+- **Šef odsjeka**: 15 sekundi po pitanju, jedan pokušaj, tipfeleri se ne priznaju. Ima svoju ljestvicu i ne ulazi u Sabor.
 - **Izazov**: poveznica `?izazov=…` nosi ista pitanja, iste događaje i rezultat izazivača.
 - **Prava rijetkost**: svaki odgovor se broji u bazi. Kad pitanje ima barem 15 igrača, postotak se miješa sa stvarnim odgovorima (do 85 % kod 250+ igrača).
 - **Prijedlozi pitanja**: prijavljeni igrači šalju pitanja, a ti ih odobravaš na `/admin.html`. Odobrena pitanja ulaze u slobodnu igru.
