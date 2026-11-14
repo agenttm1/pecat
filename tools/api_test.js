@@ -76,6 +76,13 @@ function call(method, url, body, cookie, extra) {
   const rr = (await call('GET', '/api/rarity?lang=hr&ids=hr-1-1,hr-1-2')).json.rarity;
   assert.deepEqual(rr['hr-1-1'], { n: 1, c: { 'a:susak': 1 } }); assert.equal(rr['hr-1-2'].n, 1);
   const nn = (await call('GET', '/api/nn?lang=hr')).json; assert.equal(nn.rare.a, 'Susak'); assert.equal(nn.top[0].score, 700); assert.equal(nn.prebjezi, 1);
+  const bi = (await call('GET', '/api/biser?lang=hr')).json.biser; assert.deepEqual([bi.q, bi.a, bi.auto], ['Navedi hrvatski otok', 'palagruža', true]);
+  const AK = { 'x-admin-key': 'dev-admin' };
+  const cand = (await call('GET', '/api/admin/biser?lang=hr', null, '', AK)).json.candidates; assert.equal(cand.length, 1);
+  await call('POST', '/api/admin/biser/ban', { lang: 'hr', key: cand[0].key }, '', AK);
+  assert.equal((await call('GET', '/api/biser?lang=hr')).json.biser, null);
+  await call('POST', '/api/admin/biser', { lang: 'hr', key: cand[0].key }, '', AK);
+  assert.equal((await call('GET', '/api/biser?lang=hr')).json.biser.auto, false);
   const ms = (await call('GET', '/api/admin/missing?lang=hr', null, '', { 'x-admin-key': 'dev-admin' })).json.missing;
   assert.deepEqual(ms.map((m) => [m.q, m.a, m.n]), [['Navedi hrvatski otok', 'palagruža', 1]]);
   await call('POST', '/api/admin/missing/done', { lang: 'hr', key: ms[0].key }, '', { 'x-admin-key': 'dev-admin' });

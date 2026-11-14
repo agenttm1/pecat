@@ -17,7 +17,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
       copied: 'Poveznica kopirana!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat tjedna. Mjesta u Saboru dijele se D’Hondtovom metodom, kao u pravom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ovaj tjedan.'; }, notBest: function (b) { return 'Tvoj najbolji ovaj tjedan ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. tjedan'; }, open: 'Otvori Sabor', devName: 'Testno ime', devGo: 'Testna prijava',
+      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. tjedan'; }, open: 'Otvori Sabor', devName: 'Testno ime', devGo: 'Testna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne izborna komisija.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     ba: {
       nn: 'Novine', nnTitle: 'Službene novine', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · sedmica ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vijeće ministara', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
@@ -33,7 +33,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi raju',
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat sedmice. Mjesta u Parlamentu dijele se D’Hondtovom metodom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ove sedmice.'; }, notBest: function (b) { return 'Tvoj najbolji ove sedmice ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. sedmica'; }, open: 'Otvori Parlament', devName: 'Testno ime', devGo: 'Testna prijava',
+      tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. sedmica'; }, open: 'Otvori Parlament', devName: 'Testno ime', devGo: 'Testna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne CIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polahko, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     rs: {
       nn: 'Novine', nnTitle: 'Službeni glasnik', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · nedelja ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vlada', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
@@ -49,7 +49,7 @@
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat nedelje. Mesta u Skupštini dele se D’Ontovom metodom.',
       voted: function (r, n) { return 'Glas je uračunat: ' + r + '. mesto od ' + n + ' ove nedelje.'; }, notBest: function (b) { return 'Tvoj najbolji ove nedelje ostaje ' + b + '.'; },
-      tooFast: 'Ovaj rezultat se ne računa (igra je bila prebrza).', voteLogin: 'Prijavi se Guglom i ovaj rezultat ide na izbore.', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. nedelja'; }, open: 'Otvori Skupštinu', devName: 'Probno ime', devGo: 'Probna prijava',
+      tooFast: 'Ovaj rezultat se ne računa (igra je bila prebrza).', voteLogin: 'Prijavi se Guglom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. nedelja'; }, open: 'Otvori Skupštinu', devName: 'Probno ime', devGo: 'Probna prijava',
       err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne RIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora da ima 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } }
   };
   var COLORS = ['#3b37a6', '#b3271d', '#2e6b3f', '#c99a2e', '#7a4b8c', '#2b8a99', '#d0662b', '#6b7d2a', '#a23b72', '#44546a'];
@@ -92,6 +92,14 @@
     '.glogin{display:flex;justify-content:center;width:100%;min-height:44px}',
     '.glogin .gbox{justify-content:center}',
     '.ballot .perr:empty{display:none}',
+    '.biser:empty{display:none}',
+    '.biser{width:100%;max-width:360px;align-self:center}',
+    '.biserc{display:flex;gap:12px;align-items:center;padding:12px 14px;background:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 rgba(0,0,0,.18);text-align:left;animation:shpop .4s ease both}',
+    '.biserc small{display:block;font-family:var(--f-type);font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em}',
+    '.biserc b{display:block;font-size:20px;line-height:1.2;margin:3px 0 2px;word-break:break-word}',
+    '.biserc em{display:block;font-size:13px;color:var(--ink-soft);font-style:normal}',
+    '.pearl{flex:none;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 18%,#f1ecf7 30%,#d9d1e6 60%,#b8adc9 100%);box-shadow:inset -3px -4px 8px rgba(80,60,110,.25),0 2px 4px rgba(0,0,0,.2)}',
+    '.paper-nn .biserc{box-shadow:none;margin-top:10px}',
     '.bstamp{position:absolute;right:10px;top:8px;width:40px;height:40px;border:3px solid var(--ok);border-radius:50%;color:var(--ok);display:grid;place-items:center;font-size:22px;font-weight:900;transform:rotate(-14deg);opacity:.85}',
     '#pnl{border:0;padding:0;background:transparent;max-width:min(520px,100vw);width:100%;max-height:100dvh;margin:auto}',
     '#pnl::backdrop{background:rgba(20,25,22,.6)}',
@@ -277,8 +285,9 @@
       h += '<p class="kick">' + esc(t.nnVlada) + '</p><p class="sub2">' + esc(j.vlada ? j.vlada.parties.join(' + ') + ' (' + j.vlada.seats + '/' + j.seats + ')' : t.nnNoVlada) + '</p>';
       if (j.rare) h += '<p class="kick">' + esc(t.nnRare) + '</p><p class="sub2">„' + esc(j.rare.a) + '” <small>(' + esc(j.rare.q) + ')</small></p>';
       if (j.prebjezi) h += '<p class="small">🏃 ' + esc(t.nnPx(j.prebjezi)) + '</p>';
+      h += '<div id="nnbiser"></div>';
       h += '</div><button type="button" class="obtn dark" id="o-nns">' + esc(t.nnShare) + '</button><img id="o-nni" style="width:100%;display:none">';
-      el.innerHTML = h;
+      el.innerHTML = h; showBiser(el.querySelector('#nnbiser'), LANG);
       el.querySelector('#o-nns').onclick = function () { nnImage(j).then(function (cv) { var url = cv.toDataURL('image/png'); var im = el.querySelector('#o-nni'); im.src = url; im.style.display = 'block';
         cv.toBlob(function (b) { try { var f = new File([b], 'narodne-novine.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t.nnTitle }).catch(function () {}); } catch (e) {} }); }); };
     }).catch(function () { el.innerHTML = '<p class="perr">' + esc(errText()) + '</p>'; });
@@ -360,6 +369,14 @@
     el.querySelector('#o-ren').onclick = function (e) { e.preventDefault(); var n = prompt(t.rename, ME.name); if (!n) return; api('nick', { name: n }).then(function (j) { ME = j.user; drawTab(); drawHero(); }).catch(function (er) { alert(errText(er.code === 'name_len' ? 'name_len' : er.code)); }); };
   }
 
+  /* ---------- Biser dana ---------- */
+  function biserHTML(b) {
+    var t = tx(); if (!b) return '';
+    return '<div class="biserc"><span class="pearl" aria-hidden="true"></span><div><small>' + esc(t.biser) + ' · ' + esc(t.biserSub) + '</small>' +
+      '<b>„' + esc(b.a.charAt(0).toUpperCase() + b.a.slice(1)) + '”</b><em>' + esc(t.biserQ) + ' „' + esc(b.q) + '”</em></div></div>';
+  }
+  function showBiser(el, lang) { if (!el || !CFG) return; api('biser?lang=' + lang).then(function (j) { if (document.body.contains(el)) el.innerHTML = biserHTML(j.biser); }).catch(function () {}); }
+
   /* ---------- kraj igre: glas na izbore ---------- */
   function ballot(inner, stamped) {
     var t = tx(), w = (CFG && CFG.week ? CFG.week.split('-W')[1] : '').replace(/^0/, '');
@@ -386,7 +403,9 @@
       api('rarity?lang=' + lang + '&ids=' + ids.join(',')).then(function (j) { Object.keys(j.rarity).forEach(function (id) { var q = window.PECAT_Q && window.PECAT_Q(id); if (q) q.live = j.rarity[id]; }); }).catch(function () {}); },
     end: function (data, el) {
       LANG = data.lang; if (!CFG) return; var t = tx();
-      if (GT && GT.lang === data.lang && data.answers) api('answers', { lang: data.lang, gt: GT.gt, a: data.answers }).catch(function () {});
+      var bel = document.getElementById('biser');
+      if (GT && GT.lang === data.lang && data.answers) api('answers', { lang: data.lang, gt: GT.gt, a: data.answers }).catch(function () {}).then(function () { showBiser(bel, data.lang); });
+      else showBiser(bel, data.lang);
       if (ME && data.mode === 'daily' && data.day) pushDaily(data.lang, data.day, data.score);
       if (!ready() || !el) return;
       if (ME) return submit(data, el);

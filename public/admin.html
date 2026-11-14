@@ -20,6 +20,9 @@ small{color:#5b6168} label{font-size:13px;font-weight:700} .msg{color:#2e6b3f}
 <div class="row"><input id="key" type="password" placeholder="ADMIN_KEY" style="flex:1"><select id="lang" style="width:auto"><option value="hr">HR</option><option value="ba">BiH</option><option value="rs">SRB</option></select><button id="load">Učitaj</button></div>
 <p class="msg" id="msg"></p>
 <div id="list"></div>
+<h2 style="font-size:19px">Biser dana</h2>
+<p><small>Ako ne odabereš ništa, igra sama izvuče jedan od odgovora koje je danas napisala samo jedna osoba. Ono što ne smije biti biser, makni.</small></p>
+<div id="biser"></div>
 <h2 style="font-size:19px">Odgovori kojih nema u papirima</h2>
 <p><small>Što su igrači upisali, a igra nije priznala. Ako je točno, dodaj ga u podatke pitanja i označi kao riješeno.</small></p>
 <div id="miss"></div>
@@ -50,7 +53,17 @@ function loadMiss(){ var l=$('lang').value;
     Array.prototype.forEach.call(document.querySelectorAll('#miss [data-k]'),function(b){ b.onclick=function(){ api('admin/missing/done',{lang:l,key:b.dataset.k}).then(loadMiss); }; });
   }).catch(function(){ $('miss').innerHTML=''; });
 }
-var load0=load; load=function(){ load0(); loadMiss(); };
+function loadBiser(){ var l=$('lang').value;
+  api('admin/biser?lang='+l).then(function(j){
+    var c=j.current;
+    $('biser').innerHTML='<div class="card"><small>Danas ('+esc(j.date)+')</small><div><b>'+(c?'„'+esc(c.a)+'” ('+esc(c.q)+')'+(c.auto?' · izvučen sam':' · tvoj izbor'):'još nema')+'</b></div>'+(c&&!c.auto?'<div class="row"><button class="g" id="bclr">Vrati na automatski</button></div>':'')+'</div>'+
+      j.candidates.map(function(m){ return '<div class="card" style="flex-direction:row;align-items:center;gap:8px"><div style="flex:1"><small>'+esc(m.q)+'</small><div><b>'+esc(m.a)+'</b> · '+m.n+'×</div></div><button data-set="'+esc(m.key)+'">Biser</button><button class="g" data-ban="'+esc(m.key)+'">Makni</button></div>'; }).join('');
+    if($('bclr')) $('bclr').onclick=function(){ api('admin/biser',{lang:l,clear:1}).then(loadBiser); };
+    Array.prototype.forEach.call(document.querySelectorAll('#biser [data-set]'),function(b){ b.onclick=function(){ api('admin/biser',{lang:l,key:b.dataset.set}).then(loadBiser); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#biser [data-ban]'),function(b){ b.onclick=function(){ api('admin/biser/ban',{lang:l,key:b.dataset.ban}).then(loadBiser); }; });
+  }).catch(function(){ $('biser').innerHTML=''; });
+}
+var load0=load; load=function(){ load0(); loadMiss(); loadBiser(); };
 $('load').onclick=load; $('lang').onchange=function(){ load(); };
 </script>
 </body>
