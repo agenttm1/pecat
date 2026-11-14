@@ -1183,6 +1183,7 @@ async function review(q,r,input){
 }
 
 
+var ZAKEND={hr:'Predloži zakon',ba:'Predloži zakon',rs:'Predloži zakon'};
 /* ---------- Kartoteka: album rijetkih odgovora (ispod 5 %) ---------- */
 var KT={hr:{title:'Kartoteka',btn:'Kartoteka',sub:function(n){return n?n+(n%10===1&&n%100!==11?' karton':(n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?' kartona':' kartona'))+' u ladici':'Ladica je još prazna';},
    intro:'Svaki odgovor koji je dalo manje od 5 % ljudi dobije svoj karton. Pet različitih pitanja u istoj ladici donosi zlatni pečat.',
@@ -1491,7 +1492,7 @@ async function viewEnd(){
      '<p class="msg" id="msg" role="status"></p>'+
    '</section>'+
    '<div class="vote" id="vote"></div>'+
-   '<div class="biser" id="biser"></div>'+
+   '<div class="biser" id="biser"></div>'+(window.PECAT_OPEN&&window.PECAT_OPEN()?'<button type="button" class="obtn zakend" id="b-zak">📜 '+esc(ZAKEND[S.lang])+'</button>':'')+
    '<button type="button" class="btn ghost wide" id="b-again">'+esc(t.again)+'</button>'+
    '<details class="sheetbox"><summary>'+esc(t.answers)+'</summary><table class="tbl">'+rows+'</table></details></div>','eject');
   overview(false);
@@ -1503,6 +1504,7 @@ async function viewEnd(){
   $('b-copy').onclick=function(){ var done=function(ok){$('msg').textContent=ok?t.copied:t.copyFail; if(ok)SFX.ding();};
     try{navigator.clipboard.writeText(shareText()).then(function(){done(true);},function(){done(false);});}catch(e){done(false);} };
   setTimeout(showShareImage,RM?0:600);
+  if($('b-zak')) $('b-zak').onclick=function(){ window.PECAT_OPEN('zak'); };
   if(!S.voted){ S.voted=1; hook('end',{lang:S.lang,score:tot,reached:r,hard:S.hard,mode:S.mode,day:S.day,
     answers:S.results.map(function(x){ return [x.qid,x.aid,x.base||0,x.text||'',x.q,x.miss||[]]; })},$('vote')); }
   $('b-chal2').onclick=function(){

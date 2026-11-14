@@ -10,7 +10,7 @@
       vlada: function (p, n) { return 'Vlada: ' + p + ' (' + n + ' mjesta)'; }, noVlada: function (n) { return 'Nitko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Točni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
-      login: 'Prijava Googleom', board: 'Sabor i izbori', parl: 'Sabor', izb: 'Izbori', party: 'Stranka', week: 'tjedan', close: 'Zatvori',
+      zak: 'Zakoni', zakTitle: 'Peticije građana', zakIntro: 'Predloži zakon i skupljaj potpise. Peticija s najviše potpisa u tjednu ide u Sabor i izglasava se u nedjelju.', zakPh: 'Zakon o …', zakSend: 'Predaj peticiju', zakSign: 'Potpiši', zakSigned: 'Potpisano', zakMine: 'tvoja', zakVotes: function (n) { var d = n % 10, h = n % 100; return n + (d === 1 && h !== 11 ? ' potpis' : (d >= 2 && d <= 4 && (h < 12 || h > 14) ? ' potpisa' : ' potpisa')); }, zakPassed: 'Sabor je izglasao', zakLead: 'Vodi u Saboru', zakNone: 'Još nema peticija ovaj tjedan. Budi prvi!', zakDaily: 'Danas si već predao/la peticiju. Sutra opet.', zakOk: 'Peticija predana i potpisana!', zakEnd: 'Predloži zakon', zakBy: 'predlaže', login: 'Prijava Googleom', board: 'Sabor i izbori', parl: 'Sabor', izb: 'Izbori', party: 'Stranka', week: 'tjedan', close: 'Zatvori',
       ttl: 'Titula tjedna', lastWin: 'Prošli tjedan izbore je dobio/la', lastParty: 'Vladajuća stranka prošlog tjedna', none: 'Još nitko nije glasao ovaj tjedan. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ovaj tjedan.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat broji na izborima i da se možeš učlaniti u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promijeni ime',
@@ -18,7 +18,7 @@
       copied: 'Poveznica kopirana!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat tjedna. Mjesta u Saboru dijele se D’Hondtovom metodom, kao u pravom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ovaj tjedan.'; }, notBest: function (b) { return 'Tvoj najbolji ovaj tjedan ostaje ' + b + '.'; },
       tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. tjedan'; }, open: 'Otvori Sabor', devName: 'Testno ime', devGo: 'Testna prijava',
-      err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne izborna komisija.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
+      err: { pet_len: 'Zakon mora imati 10 do 110 znakova.', pet_daily: 'Jedna peticija dnevno. Šalter za peticije radi sutra.', no_petition: 'Te peticije više nema.', name_real: 'Prave stranke ne primamo. Ovo je šalter, ne izborna komisija.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     ba: {
       nn: 'Novine', nnTitle: 'Službene novine', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · sedmica ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vijeće ministara', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
       nnRare: 'Najrjeđi odgovor sedmice', nnPx: function (n) { return n + ' prebjega ove sedmice'; }, nnVoters: function (n) { return n + ' glasača'; }, nnShare: 'Podijeli novine', nnEmpty: 'Novine još nemaju o čemu pisati. Odigraj partiju!', feed: 'Iz Parlamenta',
@@ -26,7 +26,7 @@
       vlada: function (p, n) { return 'Vijeće ministara: ' + p + ' (' + n + ' mjesta)'; }, noVlada: function (n) { return 'Niko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
-      login: 'Prijava Googleom', board: 'Parlament i izbori', parl: 'Parlament', izb: 'Izbori', party: 'Stranka', week: 'sedmica', close: 'Zatvori',
+      zak: 'Zakoni', zakTitle: 'Peticije građana', zakIntro: 'Predloži zakon i skupljaj potpise. Peticija s najviše potpisa u sedmici ide u Parlament i izglasava se u nedjelju.', zakPh: 'Zakon o …', zakSend: 'Predaj peticiju', zakSign: 'Potpiši', zakSigned: 'Potpisano', zakMine: 'tvoja', zakVotes: function (n) { var d = n % 10, h = n % 100; return n + (d === 1 && h !== 11 ? ' potpis' : ' potpisa'); }, zakPassed: 'Parlament je izglasao', zakLead: 'Vodi u Parlamentu', zakNone: 'Još nema peticija ove sedmice. Budi prvi!', zakDaily: 'Danas si već predao/la peticiju. Sutra opet.', zakOk: 'Peticija predana i potpisana!', zakEnd: 'Predloži zakon', zakBy: 'predlaže', login: 'Prijava Googleom', board: 'Parlament i izbori', parl: 'Parlament', izb: 'Izbori', party: 'Stranka', week: 'sedmica', close: 'Zatvori',
       ttl: 'Titula sedmice', lastWin: 'Prošle sedmice izbore je dobio/la', lastParty: 'Vladajuća stranka prošle sedmice', none: 'Još niko nije glasao ove sedmice. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove sedmice.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat broji na izborima i da se možeš učlaniti u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promijeni ime',
@@ -34,7 +34,7 @@
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat sedmice. Mjesta u Parlamentu dijele se D’Hondtovom metodom.',
       voted: function (r, n) { return 'Glas je ubrojen: ' + r + '. mjesto od ' + n + ' ove sedmice.'; }, notBest: function (b) { return 'Tvoj najbolji ove sedmice ostaje ' + b + '.'; },
       tooFast: 'Ovaj rezultat se ne broji (igra je bila prebrza).', voteLogin: 'Prijavi se Googleom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. sedmica'; }, open: 'Otvori Parlament', devName: 'Testno ime', devGo: 'Testna prijava',
-      err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne CIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polahko, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
+      err: { pet_len: 'Zakon mora imati 10 do 110 znakova.', pet_daily: 'Jedna peticija dnevno. Šalter za peticije radi sutra.', no_petition: 'Te peticije više nema.', name_real: 'Prave stranke ne primamo. Ovo je šalter, ne CIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora imati 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polahko, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } },
     rs: {
       nn: 'Novine', nnTitle: 'Službeni glasnik', nnSub: function (w, f) { return (f ? 'Službeno izdanje' : 'Izdanje u tisku') + ' · nedelja ' + w; }, nnWin: 'Pobjednik izbora', nnParty: 'Najjača stranka', nnVlada: 'Vlada', nnNoVlada: 'Niko nema većinu. Pregovori traju.',
       nnRare: 'Najređi odgovor nedelje', nnPx: function (n) { return n + ' prebega ove nedelje'; }, nnVoters: function (n) { return n + ' glasača'; }, nnShare: 'Podijeli novine', nnEmpty: 'Novine još nemaju o čemu pisati. Odigraj partiju!', feed: 'Iz Skupštine',
@@ -42,7 +42,7 @@
       vlada: function (p, n) { return 'Vlada: ' + p + ' (' + n + ' mesta)'; }, noVlada: function (n) { return 'Niko nema većinu (treba ' + n + ').'; }, coalition: 'koalicija',
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (bar 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (lestvica Šefa odseka)', sefTitle: 'Šef odseka: posebna lestvica',
-      login: 'Prijava Guglom', board: 'Skupština i izbori', parl: 'Skupština', izb: 'Izbori', party: 'Stranka', week: 'nedelja', close: 'Zatvori',
+      zak: 'Zakoni', zakTitle: 'Peticije građana', zakIntro: 'Predloži zakon i skupljaj potpise. Peticija sa najviše potpisa u nedelji ide u Skupštinu i izglasava se u nedelju.', zakPh: 'Zakon o …', zakSend: 'Predaj peticiju', zakSign: 'Potpiši', zakSigned: 'Potpisano', zakMine: 'tvoja', zakVotes: function (n) { var d = n % 10, h = n % 100; return n + (d === 1 && h !== 11 ? ' potpis' : ' potpisa'); }, zakPassed: 'Skupština je izglasala', zakLead: 'Vodi u Skupštini', zakNone: 'Još nema peticija ove nedelje. Budi prvi!', zakDaily: 'Danas si već predao/la peticiju. Sutra opet.', zakOk: 'Peticija predata i potpisana!', zakEnd: 'Predloži zakon', zakBy: 'predlaže', login: 'Prijava Guglom', board: 'Skupština i izbori', parl: 'Skupština', izb: 'Izbori', party: 'Stranka', week: 'nedelja', close: 'Zatvori',
       ttl: 'Titula nedelje', lastWin: 'Prošle nedelje izbore je dobio/la', lastParty: 'Vladajuća stranka prošle nedelje', none: 'Još niko nije glasao ove nedelje. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove nedelje.', seats: 'mesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat računa na izborima i da možeš da se učlaniš u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promeni ime',
@@ -50,7 +50,7 @@
       copied: 'Link kopiran!', code: 'Šifra stranke', yourParty: 'Tvoja stranka', inviteQ: 'Pozvan/a si u stranku', rules: 'Svaki član donosi svoj najbolji rezultat nedelje. Mesta u Skupštini dele se D’Ontovom metodom.',
       voted: function (r, n) { return 'Glas je uračunat: ' + r + '. mesto od ' + n + ' ove nedelje.'; }, notBest: function (b) { return 'Tvoj najbolji ove nedelje ostaje ' + b + '.'; },
       tooFast: 'Ovaj rezultat se ne računa (igra je bila prebrza).', voteLogin: 'Prijavi se Guglom i ovaj rezultat ide na izbore.', biser: 'Biser dana', biserSub: 'Najluđi odgovor kojeg nema u papirima', biserQ: 'na pitanje', ballot: 'Glasački listić', ballotSub: function (w) { return 'Izbori · ' + w + '. nedelja'; }, open: 'Otvori Skupštinu', devName: 'Probno ime', devGo: 'Probna prijava',
-      err: { name_real: 'Prave stranke ne primamo. Ovo je šalter, ne RIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora da ima 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } }
+      err: { pet_len: 'Zakon mora da ima 10 do 110 znakova.', pet_daily: 'Jedna peticija dnevno. Šalter za peticije radi sutra.', no_petition: 'Te peticije više nema.', name_real: 'Prave stranke ne primamo. Ovo je šalter, ne RIK.', name_ugly: 'To ime ne prolazi na šalteru.', name_len: 'Ime mora da ima 3 do 28 znakova.', name_chars: 'Samo slova, brojevi i razmaci.', name_taken: 'Ta stranka već postoji.', slow_down: 'Polako, šalter radi i sutra.', no_party: 'Nema takve stranke.', one_switch: 'Prebjeg je dozvoljen jednom tjedno. Pričekaj ponedjeljak.', not_manager: 'To može samo osnivač stranke.', suggest_short: 'Pitanje mora imati barem 3 odgovora.', already: 'Već ste u istoj koaliciji.', def: 'Šalter ne radi. Pokušaj kasnije.' } }
   };
   var COLORS = ['#3b37a6', '#b3271d', '#2e6b3f', '#c99a2e', '#7a4b8c', '#2b8a99', '#d0662b', '#6b7d2a', '#a23b72', '#44546a'];
 
@@ -73,6 +73,7 @@
   css.textContent = [
     '.acct{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;min-height:0}',
     '.acct:empty{display:none}',
+    '.lb.zak li{align-items:center}.lb.zak .nm{font-weight:600;white-space:normal;overflow:visible;text-overflow:clip}.lb.zak .nm small{display:block;font-weight:400;white-space:normal}.lb.zak .perr:empty{display:none}.zsig{padding:6px 10px;font-size:13px;white-space:nowrap}.zok{font-size:12px;color:var(--ok,#2e6b3f);white-space:nowrap;font-weight:700}.zakend{display:flex;margin:10px auto 0}',
     '.acct .who{font-family:var(--f-type);font-size:13px;color:var(--ink-soft);width:100%}',
     '.obtn{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:8px 12px;font-weight:700;font-size:15px;border-radius:2px;box-shadow:2px 2px 0 rgba(0,0,0,.2)}',
     '.obtn.dark{background:var(--ink);color:var(--paper)}',
@@ -204,7 +205,7 @@
   function drawShell() {
     var t = tx();
     dlg.innerHTML = '<div class="pnl"><header><h2>' + esc(t.board) + '<small id="pwk"></small></h2><button type="button" class="x" aria-label="' + esc(t.close) + '">×</button></header>' +
-      '<div class="ptabs" role="tablist">' + [['izb', t.izb], ['parl', t.parl], ['party', t.party], ['nn', t.nn]].map(function (x) { return '<button type="button" role="tab" data-t="' + x[0] + '" aria-selected="' + (TAB === x[0]) + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>' +
+      '<div class="ptabs" role="tablist">' + [['izb', t.izb], ['parl', t.parl], ['party', t.party], ['zak', t.zak], ['nn', t.nn]].map(function (x) { return '<button type="button" role="tab" data-t="' + x[0] + '" aria-selected="' + (TAB === x[0]) + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>' +
       '<div class="pbody" id="pbody"></div></div>';
     dlg.querySelector('.x').onclick = function () { dlg.close(); };
     Array.prototype.forEach.call(dlg.querySelectorAll('.ptabs button'), function (b) { b.onclick = function () { TAB = b.dataset.t; Array.prototype.forEach.call(dlg.querySelectorAll('.ptabs button'), function (c) { c.setAttribute('aria-selected', c === b); }); drawTab(); }; });
@@ -216,6 +217,7 @@
     if (TAB === 'party') return drawParty(el);
     if (TAB === 'nn') return drawNN(el);
     if (TAB === 'sug') return drawSug(el);
+    if (TAB === 'zak') return drawZak(el);
     if (!BOARD) { el.innerHTML = '<p class="pmsg">…</p>'; return; }
     if (BOARD.error) { el.innerHTML = '<p class="perr">' + esc(errText()) + '</p>'; return; }
     if (TAB === 'izb') {
@@ -284,6 +286,7 @@
       if (j.top.length > 1) h += '<p class="small">2. ' + esc(j.top[1].name) + (j.top[2] ? ' · 3. ' + esc(j.top[2].name) : '') + '</p>';
       h += '<p class="kick">' + esc(t.nnVlada) + '</p><p class="sub2">' + esc(j.vlada ? j.vlada.parties.join(' + ') + ' (' + j.vlada.seats + '/' + j.seats + ')' : t.nnNoVlada) + '</p>';
       if (j.rare) h += '<p class="kick">' + esc(t.nnRare) + '</p><p class="sub2">„' + esc(j.rare.a) + '” <small>(' + esc(j.rare.q) + ')</small></p>';
+      if (j.zakon) h += '<p class="kick">' + esc(j.final ? t.zakPassed : t.zakLead) + '</p><p class="sub2">„' + esc(j.zakon.text) + '” <small>(' + esc(t.zakVotes(j.zakon.votes)) + ')</small></p>';
       if (j.prebjezi) h += '<p class="small">🏃 ' + esc(t.nnPx(j.prebjezi)) + '</p>';
       h += '<div id="nnbiser"></div>';
       h += '</div><button type="button" class="obtn dark" id="o-nns">' + esc(t.nnShare) + '</button><img id="o-nni" style="width:100%;display:none">';
@@ -307,7 +310,8 @@
       if (j.top.length > 1) { x.font = '500 30px ' + FT; x.fillStyle = '#5b6168'; x.fillText(j.top.slice(1).map(function (p, i) { return (i + 2) + '. ' + p.name + ' ' + p.score; }).join('   '), 120, y - 45); y += 20; } }
     kick(t.nnVlada); head(j.vlada ? j.vlada.parties.join(' + ') : t.nnNoVlada, 56);
     if (j.rare) { kick(t.nnRare); head('„' + j.rare.a + '”', 60); x.font = '400 28px ' + FT; x.fillStyle = '#5b6168'; x.fillText(j.rare.q, 120, y - 45); y += 20; }
-    if (j.prebjezi) { x.font = '700 32px ' + FL; x.fillStyle = '#1f252b'; x.fillText('🏃 ' + t.nnPx(j.prebjezi), 120, y); }
+    if (j.zakon && y < H - 430) { kick(j.final ? t.zakPassed : t.zakLead); head('„' + j.zakon.text + '”', 44); }
+    if (j.prebjezi && y < H - 220) { x.font = '700 32px ' + FL; x.fillStyle = '#1f252b'; x.fillText('🏃 ' + t.nnPx(j.prebjezi), 120, y); }
     x.fillStyle = '#1f252b'; x.fillRect(110, H - 190, W - 220, 2); x.textAlign = 'center'; x.font = '700 34px ' + FL; x.fillText('Pečat! · ' + location.hostname, W / 2, H - 135);
     x.save(); x.translate(W - 250, H - 330); x.rotate(-0.25); x.strokeStyle = '#3b37a6'; x.globalAlpha = .85; x.lineWidth = 8; x.beginPath(); x.arc(0, 0, 105, 0, 7); x.stroke(); x.lineWidth = 3; x.beginPath(); x.arc(0, 0, 88, 0, 7); x.stroke();
     x.fillStyle = '#3b37a6'; x.font = '900 40px ' + FS; x.textAlign = 'center'; x.fillText('PEČAT!', 0, 14); x.restore();
@@ -315,6 +319,28 @@
   }
 
   /* ---------- prijedlog pitanja ---------- */
+  function drawZak(el) {
+    var t = tx(); el.innerHTML = '<p class="pmsg">…</p>';
+    api('petitions?lang=' + LANG).then(function (j) {
+      var h = '<h3 style="margin:0">📜 ' + esc(t.zakTitle) + '</h3><p class="pmsg" style="text-align:left">' + esc(t.zakIntro) + '</p>';
+      if (j.passed) h += '<div class="win">🏛 ' + esc(t.zakPassed) + ': <b>„' + esc(j.passed.text) + '”</b><br><small>' + esc(j.passed.who) + ' · ' + esc(t.zakVotes(j.passed.votes)) + '</small></div>';
+      if (!ME) h += '<p class="pmsg">' + esc(t.needLogin) + '</p><div id="lgn"></div>';
+      else if (j.canPost) h += '<div class="pform"><input id="ztx" class="sin" maxlength="110" placeholder="' + esc(t.zakPh) + '"><button type="button" class="obtn dark" id="o-zs">' + esc(t.zakSend) + '</button></div>';
+      else h += '<p class="pmsg">' + esc(t.zakDaily) + '</p>';
+      h += '<p class="perr" id="zerr"></p>';
+      h += j.list.length ? '<ol class="lb zak">' + j.list.map(function (p, i) {
+        return '<li><span class="n">' + (i + 1) + '.</span><span class="nm">„' + esc(p.text) + '”<small>' + esc(p.who) + ' ' + esc(t.zakBy) + (p.mine ? ' · ' + esc(t.zakMine) : '') + ' · ' + esc(t.zakVotes(p.votes)) + (i === 0 ? ' · ' + esc(t.zakLead) : '') + '</small></span>' +
+          (ME ? (p.voted ? '<span class="zok">✓ ' + esc(t.zakSigned) + '</span>' : '<button type="button" class="obtn zsig" data-id="' + esc(p.id) + '">✍ ' + esc(t.zakSign) + '</button>') : '<b>' + p.votes + '</b>') + '</li>'; }).join('') + '</ol>'
+        : '<p class="pmsg">' + esc(t.zakNone) + '</p>';
+      el.innerHTML = h;
+      if (!ME) loginBox(el.querySelector('#lgn'));
+      var err = el.querySelector('#zerr');
+      var send = el.querySelector('#o-zs'); if (send) send.onclick = function () { send.disabled = true;
+        api('petition', { lang: LANG, text: el.querySelector('#ztx').value }).then(function () { drawZak(el); }).catch(function (e) { send.disabled = false; err.style.color = ''; err.textContent = errText(e.code); }); };
+      Array.prototype.forEach.call(el.querySelectorAll('.zsig'), function (b) { b.onclick = function () { b.disabled = true;
+        api('petition/vote', { lang: LANG, id: b.dataset.id }).then(function () { drawZak(el); }).catch(function (e) { b.disabled = false; err.textContent = errText(e.code); }); }; });
+    }).catch(function () { el.innerHTML = '<p class="perr">' + esc(errText()) + '</p>'; });
+  }
   function drawSug(el) {
     var t = tx();
     if (!ME) { el.innerHTML = '<p class="pmsg">' + esc(t.needLogin) + '</p><div id="lgn"></div><p class="perr"></p>'; loginBox(el.querySelector('#lgn')); return; }
@@ -416,6 +442,7 @@
     }
   };
   var INVITE_SHOWN = 0;
+  window.PECAT_OPEN = function (tab) { if (!ready()) return false; if (tab) openPanel(tab); return true; };
   window.PECAT_ME = function () { return ME ? ME.name : ''; };
   // radni staž i dnevni rezultat: server je glavni za prijavljene, a mobitel pamti za neprijavljene
   function dayDate(d) { return new Date(Date.parse('2026-11-01T00:00:00Z') + (d - 1) * 86400000).toISOString().slice(0, 10); }

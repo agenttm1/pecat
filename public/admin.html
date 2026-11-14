@@ -20,6 +20,8 @@ small{color:#5b6168} label{font-size:13px;font-weight:700} .msg{color:#2e6b3f}
 <div class="row"><input id="key" type="password" placeholder="ADMIN_KEY" style="flex:1"><select id="lang" style="width:auto"><option value="hr">HR</option><option value="ba">BiH</option><option value="rs">SRB</option></select><button id="load">Učitaj</button></div>
 <p class="msg" id="msg"></p>
 <div id="list"></div>
+<h2 style="font-size:19px">Peticije ovaj tjedan</h2>
+<div id="pet"></div>
 <h2 style="font-size:19px">Biser dana</h2>
 <p><small>Ako ne odabereš ništa, igra sama izvuče jedan od odgovora koje je danas napisala samo jedna osoba. Ono što ne smije biti biser, makni.</small></p>
 <div id="biser"></div>
@@ -63,7 +65,13 @@ function loadBiser(){ var l=$('lang').value;
     Array.prototype.forEach.call(document.querySelectorAll('#biser [data-ban]'),function(b){ b.onclick=function(){ api('admin/biser/ban',{lang:l,key:b.dataset.ban}).then(loadBiser); }; });
   }).catch(function(){ $('biser').innerHTML=''; });
 }
-var load0=load; load=function(){ load0(); loadMiss(); loadBiser(); };
+function loadPet(){ var l=$('lang').value;
+  api('petitions?lang='+l).then(function(j){
+    $('pet').innerHTML=j.list.length?j.list.map(function(p){ return '<div class="card" style="flex-direction:row;align-items:center;gap:8px"><div style="flex:1"><small>'+esc(p.who)+' · '+p.votes+' potpisa</small><div><b>'+esc(p.text)+'</b></div></div><button data-del="'+esc(p.id)+'">Obriši</button></div>'; }).join(''):'<p>Nema peticija.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll('#pet [data-del]'),function(b){ b.onclick=function(){ if(confirm('Obrisati peticiju?')) api('admin/petition/del',{lang:l,id:b.dataset.del}).then(loadPet); }; });
+  }).catch(function(){ $('pet').innerHTML=''; });
+}
+var load0=load; load=function(){ load0(); loadMiss(); loadBiser(); loadPet(); };
 $('load').onclick=load; $('lang').onchange=function(){ load(); };
 </script>
 </body>

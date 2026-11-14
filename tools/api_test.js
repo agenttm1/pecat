@@ -106,5 +106,20 @@ function call(method, url, body, cookie, extra) {
   await call('POST', '/api/admin/approve', { lang: 'hr', id: sg[0].id, q: sg[0].q, a: 'sir;meso;krumpir;jabuka|jabuke', f: sg[0].f }, '', { 'x-admin-key': 'dev-admin' });
   assert.equal((await call('GET', '/api/questions?lang=hr')).json.questions[0].q, 'Navedi vrstu burek');
   assert.equal((await call('GET', '/api/admin/suggestions?lang=hr', null, '', { 'x-admin-key': 'dev-admin' })).json.suggestions.length, 0);
+  // peticije
+  assert.equal((await call('POST', '/api/petition', { lang: 'hr', text: 'Zakon o obaveznoj kavi na šalteru' })).code, 401);
+  assert.equal((await call('POST', '/api/petition', { lang: 'hr', text: 'kratko' }, A)).json.error, 'pet_len');
+  assert.equal((await call('POST', '/api/petition', { lang: 'hr', text: 'Zakon o zabrani riječi govno u uredu' }, A)).json.error, 'name_ugly');
+  const pt1 = (await call('POST', '/api/petition', { lang: 'hr', text: 'Zakon o obaveznoj kavi na šalteru' }, A)).json; assert(pt1.ok);
+  assert.equal((await call('POST', '/api/petition', { lang: 'hr', text: 'Zakon o drugoj kavi na šalteru' }, A)).code, 429);
+  const pt2 = (await call('POST', '/api/petition', { lang: 'hr', text: 'Zakon o šalteru koji radi poslije podne' }, B)).json; assert(pt2.ok);
+  assert.equal((await call('POST', '/api/petition/vote', { lang: 'hr', id: pt1.id }, B)).json.votes, 2);
+  assert.equal((await call('POST', '/api/petition/vote', { lang: 'hr', id: pt1.id }, B)).json.already, true);
+  assert.equal((await call('POST', '/api/petition/vote', { lang: 'hr', id: 'ffff' }, B)).code, 404);
+  let pl = (await call('GET', '/api/petitions?lang=hr', null, B)).json;
+  assert.deepEqual(pl.list.map((x) => [x.votes, x.voted, x.mine]), [[2, true, false], [1, true, true]]); assert.equal(pl.canPost, false);
+  assert.equal((await call('GET', '/api/nn?lang=hr')).json.zakon.text, 'Zakon o obaveznoj kavi na šalteru');
+  await call('POST', '/api/admin/petition/del', { lang: 'hr', id: pt2.id }, '', { 'x-admin-key': 'dev-admin' });
+  assert.equal((await call('GET', '/api/petitions?lang=hr', null, Cc)).json.list.length, 1);
   console.log('API OK');
 })().catch((e) => { console.error(e); process.exit(1); });
