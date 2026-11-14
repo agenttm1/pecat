@@ -691,7 +691,14 @@ var RT=null;
 function buildRoute(){
   var m=mapData(), pts=[], cum=[0], cityD=[0];
   m.roads.forEach(function(seg,i){ seg.forEach(function(p,j){ if(i>0&&j===0)return; if(pts.length){var q=pts[pts.length-1]; cum.push(cum[cum.length-1]+Math.hypot(p[0]-q[0],p[1]-q[1]));} pts.push(p); }); cityD.push(cum[cum.length-1]); });
-  RT={pts:pts,cum:cum,city:cityD,len:cum[cum.length-1]};
+  RT={pts:pts,cum:cum,city:cityD,len:cum[cum.length-1],zg:[]};
+  // mjesta gdje cesta prolazi kroz Zagreb (ne računa se polazak iz Zagreba)
+  var Z=null; m.cities.forEach(function(c){ if(c[0]==='Zagreb') Z=c; });
+  if(Z){ var near=false, bestD=1e9, bestAt=0; pts.forEach(function(p,i){ if(cum[i]<=cityD[1]) return;
+    var dz=Math.hypot(p[0]-Z[1],p[1]-Z[2]);
+    if(dz<12){ near=true; if(dz<bestD){bestD=dz; bestAt=cum[i];} }
+    else if(near){ RT.zg.push(bestAt); near=false; bestD=1e9; } });
+    if(near) RT.zg.push(bestAt); }
 }
 function pointAt(d){ var c=RT.cum, P=RT.pts; d=Math.max(0,Math.min(RT.len,d)); var i=1; while(i<c.length-1 && c[i]<d) i++;
   var seg=c[i]-c[i-1]||1, k=(d-c[i-1])/seg; return {x:P[i-1][0]+(P[i][0]-P[i-1][0])*k, y:P[i-1][1]+(P[i][1]-P[i-1][1])*k, dx:P[i][0]-P[i-1][0]}; }
@@ -750,12 +757,13 @@ function driveTo(target){
     var from=S.carDist||0; if(Math.abs(target-from)<.5){res();return;}
     var dist=target-from, km=kmOf(Math.abs(dist)), back=dist<0, passed={};
     showToast((back?'−':'+')+km+' km'+(back?' '+T().backward:''));
-    if(RM){S.carDist=target; placeCarAt(target); followCar(300,true); res(); return;}
+    if(RM){ if(!back) RT.zg.forEach(function(zd){ if(from<zd&&target>=zd) playClip('zagreb',.4); }); S.carDist=target; placeCarAt(target); followCar(300,true); res(); return;}
     SFX.car();
     var dur=Math.min(3600,Math.max(1100,Math.abs(dist)*10)), t0=performance.now(), mc=$('mapcard'), ar=(mc.clientWidth||360)/(mc.clientHeight||200);
     (function f(t){ var k=Math.min(1,(t-t0)/dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2, d=from+dist*e;
       S.carDist=d; placeCarAt(d);
       var ww=300+Math.min(260,Math.abs(dist)*.5)*Math.sin(Math.PI*k); camera={x:carPos.x-ww/2,y:carPos.y-ww/ar/2,w:ww,h:ww/ar}; applyCam();
+      RT.zg.forEach(function(zd){ if(!back && from<zd && d>=zd && !passed['z'+zd]){ passed['z'+zd]=1; playClip('zagreb',.4); } }); // prolaz kroz Zagreb: 0,4 s pojačavanja
       RT.city.forEach(function(cd,i){ if(i>0 && !back && from<cd-.5 && d>=cd-.5 && !passed[i]){ passed[i]=1; var g=$('city'+i); if(g){g.classList.add('done'); } SFX.ding(); showToast(i>=7&&E.reached(total())>=8?T().arrive:C()[i].q); } });
       if(k<1) requestAnimationFrame(f); else { S.carDist=target; setTimeout(res,300); } })(t0);
   });
@@ -956,7 +964,7 @@ function viewStart(){
 function stazLine(){ var z=staz(), x=X(), M=[7,30,100], h=z.n?'<b>'+esc(x.staz(z.n))+'</b>':esc(x.stazNone);
   M.forEach(function(m){ if((z.best||0)>=m) h+=' <span class="medal" title="'+esc(x.medal[m])+'">'+m+'</span>'; }); return h; }
 function startGame(mode,btn){
-  if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); if(C()[0].c==='Zagreb') loadClip('zagreb');
+  if(!btn||btn.disabled)return; btn.disabled=true; ac(); SFX.ticket(); if(S.lang==='hr') loadClip('zagreb');
   var t=T(), tk=$('tk'), scr=$('scr'), n=0; tk.classList.add('out');
   S.mode=mode; S.day=dayNo(); S.hard=mode==='chal'?!!CHAL.h:!!($('hard')&&$('hard').checked);
   if(mode==='daily') S.seed=hashStr(S.lang+'|'+S.day); else if(mode==='chal') S.seed=CHAL.s>>>0; else S.seed=(Math.random()*4294967296)>>>0;
@@ -971,7 +979,6 @@ function startGame(mode,btn){
     S.carDist=0; S.car=1; drawCar(); S.phase='q';
     hook('questions',S.lang,S.ids);
     render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
-    if(C()[0].c==='Zagreb') playClip('zagreb',.4); // dolazak u Zagreb: 0,4 s pojačavanja
   }, RM?200:1500);
 }
 
