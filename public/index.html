@@ -269,6 +269,14 @@ h2{font-size:25px}
 .chal small{color:var(--ink-soft)}
 .chalres{margin:0; text-align:center; font-weight:700; font-size:17px; padding:8px; border:2px solid}
 .chalres.win{color:var(--ok)} .chalres.lose{color:var(--alarm)} .chalres.tie{color:var(--stamp)}
+.roleta{position:absolute; left:0; right:0; top:0; height:100%; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:repeating-linear-gradient(#b9bdb4 0 9px,#a3a89e 9px 11px); border-bottom:6px solid #6d726a; transform:translateY(-102%); transition:transform .7s cubic-bezier(.5,0,.3,1.2); pointer-events:none; text-align:center}
+.roleta.down{transform:none}
+.roleta b{background:#fff8dc; border:2px solid var(--ink); padding:4px 10px; font-family:var(--f-stamp); font-size:15px; letter-spacing:.05em; transform:rotate(-3deg); box-shadow:2px 2px 0 rgba(0,0,0,.25)}
+.roleta small{font-family:var(--f-type); font-size:12px; background:rgba(255,255,255,.8); padding:1px 6px}
+.pclock{display:flex; align-items:center; gap:10px; justify-content:center}
+.pclock svg{width:46px; height:46px}
+.pclock b{font-family:var(--f-type); font-size:18px}
+.btn.knock{background:var(--alarm); border-color:var(--alarm); color:#fff; align-self:center}
 .sharecard{display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; padding:14px 12px 10px; background:var(--paper); border:2px solid var(--ink); box-shadow:4px 4px 0 rgba(0,0,0,.18)}
 .sharecard .shbox img{max-width:300px}
 .sharebtns{display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; max-width:360px}
@@ -1044,6 +1052,8 @@ function startGame(mode,btn){
     S.ids=mode==='chal'?CHAL.i.slice():drawQuestions(mode==='daily'?qr:null);
     S.idx=0; S.results=[]; S.used={}; S.streak=0; S.bonus=[]; S.mod={}; S.ev=null; S.evSeen=[]; S.pile=0;
     S.voted=0; S.ended=0; S.evAt=mode==='chal'&&Array.isArray(CHAL.e)?CHAL.e.slice():shuffle([1,2,3,4,5,6],qr).slice(0,2+(qr()<.5?1:0));
+    // pauza za marendu: jednom u partiji, na pitanju bez događaja
+    var free=[1,2,3,4,5,6].filter(function(i){return S.evAt.indexOf(i)<0;}); S.pauseAt=free.length?free[Math.floor(qr()*free.length)]:-1; S.paused=0;
     S.carDist=0; S.car=1; drawCar(); S.phase='q';
     hook('questions',S.lang,S.ids);
     render(); followCar(300); showToast(C()[0].q); say(t.called(S.ticket),'happy');
@@ -1158,6 +1168,7 @@ function viewFb(){
     if(busy)return; busy=true; await moveCar(); busy=false;
     if(last){S.phase='end'; save();}
     else if(S.evAt.indexOf(S.idx)>=0 && !S.ev){ startEvent(); }
+    else if(S.idx===S.pauseAt && !S.paused){ S.phase='pause'; }
     else {S.idx++;S.phase='q';}
     render();
   };
@@ -1194,6 +1205,41 @@ function viewEv(){
     setTimeout(function(){ SFX.stamp(); if(p>0||o2.eff.mult) setTimeout(SFX.ding,120); else if(p<0) setTimeout(SFX.bad,80); inkSplat($('st'),p<0); setTimeout(moveCar,400); },60);
     $('b-next').onclick=async function(){ if(busy)return; busy=true; await moveCar(); busy=false; S.ev=null; S.idx++; S.phase='q'; render(); };
   }
+}
+
+/* ---------- pauza za marendu: test strpljenja ---------- */
+var PAUSE={
+ hr:{sign:'PAUZA ZA MARENDU',back:'Vraćam se za 10 minuta',title:'Šalter je zatvoren',sub:'Službenica je otišla na marendu. Možeš čekati ili lupati po staklu.',knock:'Lupaj po staklu',left:function(n){return 'Do povratka: '+n+' s';},
+   angry:'Što lupate?! Vidite da je pauza! E sad ćete brže.',angryRes:'Sljedeće pitanje: samo 12 sekundi.',calm:'Hvala na strpljenju. Rijetko tko čeka kao vi.',calmRes:'Uzoran građanin',badge:'Uzoran građanin',next:'Natrag u red'},
+ ba:{sign:'PAUZA ZA DORUČAK',back:'Vraćam se za 10 minuta',title:'Šalter je zatvoren',sub:'Službenica je otišla na doručak. Možeš čekati ili lupati po staklu.',knock:'Lupaj po staklu',left:function(n){return 'Do povratka: '+n+' s';},
+   angry:'Šta lupate?! Vidite da je pauza! E sad ćete brže.',angryRes:'Sljedeće pitanje: samo 12 sekundi.',calm:'Hvala na strpljenju. Rijetko ko čeka ko vi.',calmRes:'Uzoran građanin',badge:'Uzoran građanin',next:'Nazad u red'},
+ rs:{sign:'PAUZA ZA DORUČAK',back:'Vraćam se za 10 minuta',title:'Šalter je zatvoren',sub:'Službenica je otišla na doručak. Možeš da čekaš ili da lupaš po staklu.',knock:'Lupaj po staklu',left:function(n){return 'Do povratka: '+n+' s';},
+   angry:'Što lupate?! Vidite da je pauza! E sad ćete brže.',angryRes:'Sledeće pitanje: samo 12 sekundi.',calm:'Hvala na strpljenju. Retko ko čeka kao vi.',calmRes:'Uzoran građanin',badge:'Uzoran građanin',next:'Nazad u red'}};
+var pauseT=null;
+function roleta(down){ var b=$('booth'), r=$('roleta'); if(!b) return;
+  if(!r){ r=document.createElement('div'); r.id='roleta'; r.className='roleta'; b.appendChild(r); }
+  var P=PAUSE[S.lang]; r.innerHTML='<b>'+esc(P.sign)+'</b><small>'+esc(P.back)+'</small>'; r.classList.toggle('down',!!down); }
+function viewPause(){
+  var P=PAUSE[S.lang], left=10, done=false; clearInterval(pauseT);
+  roleta(true); SFX.whoosh(); say('…','sleep');
+  desk('<p class="notice">'+esc(T().notice)+'</p><h2>'+esc(P.title)+'</h2><p class="react">'+esc(P.sub)+'</p>'+
+    '<div class="pclock"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#1f252b" stroke-width="2.5"/><circle id="pring" cx="20" cy="20" r="13" fill="none" stroke="#c99a2e" stroke-width="5" stroke-dasharray="81.7" stroke-dashoffset="0" transform="rotate(-90 20 20)"/></svg><b id="pleft">'+esc(P.left(left))+'</b></div>'+
+    '<button type="button" class="btn knock" id="b-knock">✊ '+esc(P.knock)+'</button>','yellow eject');
+  function finish(angry){ if(done) return; done=true; clearInterval(pauseT); S.paused=1; roleta(false);
+    if(angry){ S.mod={time:12}; say(P.angry,'angry'); SFX.bad(); shake($('booth')); }
+    else { S.bonus.push({label:P.badge,pts:15}); say(P.calm,'happy'); SFX.ding(); }
+    desk('<p class="notice">'+esc(T().notice)+'</p><h2>'+esc(P.title)+'</h2>'+
+      '<div class="stamp hit'+(angry?' bad':' gold')+'" id="st">'+(angry?'⏱ 12 s':'+15')+'</div>'+
+      '<p class="react">'+esc(angry?P.angryRes:P.calmRes+' · +15')+'</p>'+
+      '<button type="button" class="btn" id="b-next">'+esc(P.next)+' →</button>','yellow');
+    setTimeout(function(){ SFX.stamp(); inkSplat($('st'),angry); },60);
+    if(!angry) setTimeout(function(){ chrome(); moveCar(); },400);
+    $('b-next').onclick=async function(){ if(busy)return; busy=true; await moveCar(); busy=false; S.idx++; S.phase='q'; render(); };
+  }
+  pauseT=setInterval(function(){ if(!$('pleft')){ clearInterval(pauseT); return; } left--; $('pleft').textContent=P.left(Math.max(0,left));
+    var ring=$('pring'); if(ring) ring.setAttribute('stroke-dashoffset',(81.7*(10-left)/10).toFixed(1)); SFX.tick();
+    if(left<=0) finish(false); },RM?100:1000);
+  $('b-knock').onclick=function(){ noise(.12,.8,400); setTimeout(function(){noise(.12,.8,400);},140); shake($('booth')); finish(true); };
 }
 
 function save(){ var k='pecat:stats:'+S.lang, st=store(k)||{best:0,games:0}; st.games++; st.best=Math.max(st.best,total()); store(k,st); }
@@ -1353,12 +1399,12 @@ async function viewEnd(){
 }
 
 function render(){
-  stopTimer();
+  stopTimer(); if(S.phase!=='pause'){ clearInterval(pauseT); if($('roleta')) roleta(false); }
   if(S.phase!=='start' && !S.ids.length) S.phase='start';
   if(S.phase==='fb' && !S.results[S.idx]) S.phase='q';
   if(S.phase==='ev' && !S.ev) S.phase='q';
   chrome();
-  ({start:viewStart,q:viewQ,fb:viewFb,ev:viewEv,end:viewEnd})[S.phase]();
+  ({start:viewStart,q:viewQ,fb:viewFb,ev:viewEv,pause:viewPause,end:viewEnd})[S.phase]();
 }
 
 Array.prototype.forEach.call(document.querySelectorAll('.langs button'),function(b){
@@ -1377,7 +1423,7 @@ function start(snap){
   if(S.phase!=='start'){ placeCarAt(S.carDist||0); if(S.phase!=='end') followCar(300,true); pileDraw(S.pile||0); }
 }
 var hot=window.claude&&window.claude.hot;
-if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car,mode:S.mode,seed:S.seed,hard:S.hard,day:S.day,ended:S.ended,voted:S.voted};});
+if(hot&&hot.snapshot) hot.snapshot(function(){return {lang:S.lang,phase:S.phase==='fb'||S.phase==='ev'||S.phase==='q'?S.phase:S.phase,ids:S.ids,idx:S.idx,results:S.results,used:S.used,ticket:S.ticket,streak:S.streak,bonus:S.bonus,mod:S.mod,evAt:S.evAt,evSeen:S.evSeen,ev:S.ev,pile:S.pile,carDist:S.carDist,car:S.car,mode:S.mode,seed:S.seed,pauseAt:S.pauseAt,paused:S.paused,hard:S.hard,day:S.day,ended:S.ended,voted:S.voted};});
 if(hot&&hot.ready) hot.ready(start); else start((hot&&hot.data)||{});
 })();
 </script>
