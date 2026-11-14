@@ -368,6 +368,9 @@ body:not(.at-start) .hero{display:none}
 canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:50}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important}}
 @media (max-width:370px){h1{font-size:23px} h2{font-size:22px} .clerk{width:86px} .bubble{font-size:13px} .mapcard{height:180px}}
+.weekoff{margin:10px 0 4px;padding:8px 12px;border:2px dashed #1f252b;border-radius:6px;background:#fff8dd;text-align:left}
+.weekoff b{display:block;font-family:"Archivo Black",sans-serif;font-size:13px;letter-spacing:.04em;color:#b3271d}
+.weekoff small{display:block;font-size:12px;line-height:1.35;color:#3b3a36;margin-top:2px}
 </style>
 </head>
 <body>
@@ -416,6 +419,7 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
             <g class="face m-read"><path d="M42 41 L55 44"/><path d="M65 44 L78 41"/><path d="M54 74 Q60 72 66 74"/></g>
           </g>
           <rect x="92" y="96" width="14" height="16" rx="2" fill="#f6f3e7" stroke="#1f252b" stroke-width="2"/><path d="M106 100 Q112 104 106 108" fill="none" stroke="#1f252b" stroke-width="2"/>
+          <g id="costume"></g>
         </svg>
       </div>
       <div class="inhand" id="inhand"></div>
@@ -437,6 +441,8 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 <script src="data_hr2.js"></script>
 <script src="data_ba2.js"></script>
 <script src="data_rs2.js"></script>
+<script src="data_teme.js"></script>
+<script src="themes.js"></script>
 <script src="data_fore.js"></script>
 <script src="maps.js"></script>
 <script src="geo.js"></script>
@@ -933,7 +939,9 @@ function drawQuestions(rng){
   if(wf.length && R()<.6) fore.push(pick(wf,R).id);
   var NR=N-fore.length;
   var picked=[], usedHead={}, ADJ=/^(hrvatsk|bosansk|srpsk|domać|domac|poznat|tradicionaln|neš|nes)/i;
-  shuffle(fresh,R).forEach(function(x){ if(picked.length>=NR)return; var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); var head=(w[0]||'').toLowerCase(); if(usedHead[head])return; usedHead[head]=1; picked.push(x.id); });
+  var TH=daily&&window.PECAT_THEMES?window.PECAT_THEMES.now():null;
+  if(TH){ shuffle(fresh.filter(function(x){return window.PECAT_THEMES.match(TH,x.q);}),R).slice(0,3).forEach(function(x){ var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); usedHead[(w[0]||'').toLowerCase()]=1; picked.push(x.id); }); }
+  shuffle(fresh,R).forEach(function(x){ if(picked.length>=NR||picked.indexOf(x.id)>=0)return; var w=x.q.q.split(' ').slice(1).filter(function(z){return !ADJ.test(z);}); var head=(w[0]||'').toLowerCase(); if(usedHead[head])return; usedHead[head]=1; picked.push(x.id); });
   shuffle(fresh,R).forEach(function(x){ if(picked.length<NR && picked.indexOf(x.id)<0) picked.push(x.id); });
   picked=picked.concat(fore);
   if(!daily) store('pecat:seen:'+S.lang, seen.concat(picked).slice(-72));
@@ -942,6 +950,23 @@ function drawQuestions(rng){
 function total(){var t=S.results.reduce(function(a,r){return a+r.pts;},0)+S.bonus.reduce(function(a,b){return a+b.pts;},0); return Math.max(0,t);}
 function reached(){ return S.phase==='start'?0:E.reached(total()); }
 
+
+/* ---------- Tjedni ured: kostim, natpis i titula tjedna ---------- */
+var COSTUME={
+ zdr:'<path d="M36 30 Q38 8 60 8 Q82 8 84 30 Q60 22 36 30 Z" fill="#fbfaf4" stroke="#1f252b" stroke-width="2"/><rect x="56" y="11" width="8" height="14" fill="#c0392b"/><rect x="53" y="14" width="14" height="8" fill="#c0392b"/><path d="M40 92 Q44 108 60 110 Q76 108 80 92" fill="none" stroke="#2f3b44" stroke-width="3"/><circle cx="60" cy="111" r="4.5" fill="#9aa5ad" stroke="#2f3b44" stroke-width="2"/>',
+ kat:'<path d="M30 34 Q30 6 60 6 Q90 6 90 34 Z" fill="#f2c94c" stroke="#1f252b" stroke-width="2"/><rect x="24" y="31" width="72" height="6" rx="3" fill="#e0b437" stroke="#1f252b" stroke-width="2"/><path d="M60 6 L60 31" stroke="#c99a1e" stroke-width="5"/><rect x="88" y="78" width="6" height="30" fill="#f6f3e7" stroke="#1f252b" stroke-width="1.5" transform="rotate(-18 91 93)"/>',
+ mup:'<path d="M30 32 Q28 10 60 8 Q92 10 90 32 Z" fill="#1d3557" stroke="#1f252b" stroke-width="2"/><path d="M26 32 Q60 26 94 32 Q96 38 88 38 Q60 34 32 38 Q24 38 26 32 Z" fill="#0f1f33"/><path d="M60 13 L66 18 L64 26 L56 26 L54 18 Z" fill="#f2c94c" stroke="#1f252b" stroke-width="1.2"/><rect x="40" y="96" width="14" height="9" rx="1.5" fill="#f2c94c" stroke="#1f252b" stroke-width="1.5"/>',
+ por:'<path d="M28 34 Q60 18 92 34 L86 42 Q60 32 34 42 Z" fill="#2e8b57" fill-opacity=".85" stroke="#1f252b" stroke-width="2"/><path d="M30 33 Q60 10 90 33" fill="none" stroke="#1f252b" stroke-width="2"/><rect x="86" y="96" width="22" height="16" rx="2" fill="#efe6cf" stroke="#1f252b" stroke-width="2"/><path d="M90 101h14M90 105h14M90 109h8" stroke="#1f252b" stroke-width="1.2"/>',
+ mat:'<g stroke="#1f252b" stroke-width="1.2"><circle cx="38" cy="30" r="5" fill="#e8a0b4"/><circle cx="48" cy="22" r="5" fill="#fbfaf4"/><circle cx="60" cy="19" r="5" fill="#e8a0b4"/><circle cx="72" cy="22" r="5" fill="#fbfaf4"/><circle cx="82" cy="30" r="5" fill="#e8a0b4"/></g><g fill="#f2c94c"><circle cx="38" cy="30" r="1.6"/><circle cx="48" cy="22" r="1.6"/><circle cx="60" cy="19" r="1.6"/><circle cx="72" cy="22" r="1.6"/><circle cx="82" cy="30" r="1.6"/></g><path d="M50 92 L60 98 L70 92 L70 102 L60 98 L50 102 Z" fill="#b3271d" stroke="#1f252b" stroke-width="1.5"/>',
+ tur:'<ellipse cx="60" cy="30" rx="44" ry="8" fill="#e7c77d" stroke="#1f252b" stroke-width="2"/><path d="M38 30 Q38 6 60 6 Q82 6 82 30 Z" fill="#efd38f" stroke="#1f252b" stroke-width="2"/><path d="M38 24 Q60 30 82 24 L82 29 Q60 34 38 29 Z" fill="#2a6fb0"/><g fill="#1f252b" fill-opacity=".82"><rect x="39" y="50" width="20" height="12" rx="5"/><rect x="61" y="50" width="20" height="12" rx="5"/></g>',
+ kul:'<ellipse cx="56" cy="22" rx="32" ry="12" fill="#b3271d" stroke="#1f252b" stroke-width="2" transform="rotate(-8 56 22)"/><path d="M56 10 L57 4" stroke="#1f252b" stroke-width="3" stroke-linecap="round"/><g transform="rotate(20 98 92)"><rect x="96" y="70" width="4" height="30" fill="#c9a36b" stroke="#1f252b" stroke-width="1"/><path d="M96 70 L98 62 L100 70 Z" fill="#1f252b"/></g>',
+ spo:'<rect x="30" y="30" width="60" height="9" rx="4" fill="#fbfaf4" stroke="#1f252b" stroke-width="2"/><path d="M34 34.5 H86" stroke="#b3271d" stroke-width="3"/><path d="M56 86 Q50 96 48 104" fill="none" stroke="#b3271d" stroke-width="2"/><rect x="40" y="102" width="14" height="8" rx="3" fill="#c0c6cc" stroke="#1f252b" stroke-width="1.5"/>'};
+var WKTXT={hr:{sub:function(t){return 'Dnevni brojevi ovaj tjedan imaju više pitanja iz tog ureda. Pobjednik tjedna postaje: '+t+'.';}},
+ ba:{sub:function(t){return 'Dnevni brojevi ove sedmice imaju više pitanja iz tog ureda. Pobjednik sedmice postaje: '+t+'.';}},
+ rs:{sub:function(t){return 'Dnevni brojevi ove nedelje imaju više pitanja iz te kancelarije. Pobednik nedelje postaje: '+t+'.';}}};
+function weekTheme(){ return window.PECAT_THEMES?window.PECAT_THEMES.now():null; }
+function costume(){ var th=weekTheme(), g=$('costume'); if(g) g.innerHTML=th?(COSTUME[th.k]||''):''; if($('clerk')) $('clerk').setAttribute('data-theme',th?th.k:''); }
+function weekChip(){ var th=weekTheme(); if(!th) return ''; return '<div class="weekoff"><b>🏛 '+esc(th.sign[S.lang])+'</b><small>'+esc(WKTXT[S.lang].sub(th.title[S.lang]))+'</small></div>'; }
 function chrome(){
   var t=T(), r=reached();
   memo(); document.body.classList.toggle('at-start',S.phase==='start');
@@ -952,7 +977,8 @@ function chrome(){
   $('v-ct').textContent=r+'/8';
   countTo($('v-pts'),S.phase==='start'?0:total());
   var cur=C()[Math.min(r,7)];
-  $('sign').textContent=(S.phase==='start')?t.sign:('► '+cur.c.toUpperCase()+' · '+cur.o.toUpperCase());
+  var wth=weekTheme(); costume();
+  $('sign').textContent=(S.phase==='start')?(wth?wth.sign[S.lang]:t.sign):('► '+cur.c.toUpperCase()+' · '+cur.o.toUpperCase());
   $('sign2').textContent=S.phase==='start'||S.phase==='end'?'':(r<8?(E.toNext(total())+' '+t.toGo):'');
   $('sign2').style.display=$('sign2').textContent?'':'none';
   mapState(r, false);
@@ -1015,7 +1041,7 @@ function viewStart(){
   $('hero').innerHTML=
    '<div class="sign-stamp">PEČAT!</div>'+
    '<p class="route-line">'+esc(P[0].n)+' → '+esc(P[7].n)+' · '+kmOf(RT.len)+' km · 8 '+esc(t.ct.toLowerCase())+'a</p>'+
-   '<p class="hero-desc">'+esc(m.desc)+'</p>'+
+   '<p class="hero-desc">'+esc(m.desc)+'</p>'+weekChip()+
    (CHAL&&CHAL.l===S.lang?'<div class="chal"><b>'+esc(x.chalTitle(CHAL.n,CHAL.c,CHAL.p))+'</b><small>'+esc(x.chalSub)+(CHAL.h?' · '+esc(x.hard):'')+'</small><button type="button" class="btn stampy" id="b-chal">'+esc(x.chalGo)+'</button></div>':'')+
    '<ul class="tiers">'+tiers+'</ul>'+
    '<div class="scale"><i></i><span>'+esc(m.common)+'</span><span>'+esc(m.rare)+' →</span></div>'+

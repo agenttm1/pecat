@@ -11,7 +11,7 @@
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Točni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
       login: 'Prijava Googleom', board: 'Sabor i izbori', parl: 'Sabor', izb: 'Izbori', party: 'Stranka', week: 'tjedan', close: 'Zatvori',
-      lastWin: 'Prošli tjedan izbore je dobio/la', lastParty: 'Vladajuća stranka prošlog tjedna', none: 'Još nitko nije glasao ovaj tjedan. Budi prvi!',
+      ttl: 'Titula tjedna', lastWin: 'Prošli tjedan izbore je dobio/la', lastParty: 'Vladajuća stranka prošlog tjedna', none: 'Još nitko nije glasao ovaj tjedan. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ovaj tjedan.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat broji na izborima i da se možeš učlaniti u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promijeni ime',
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
@@ -27,7 +27,7 @@
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (barem 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (ljestvica Šefa odsjeka)', sefTitle: 'Šef odsjeka: posebna ljestvica',
       login: 'Prijava Googleom', board: 'Parlament i izbori', parl: 'Parlament', izb: 'Izbori', party: 'Stranka', week: 'sedmica', close: 'Zatvori',
-      lastWin: 'Prošle sedmice izbore je dobio/la', lastParty: 'Vladajuća stranka prošle sedmice', none: 'Još niko nije glasao ove sedmice. Budi prvi!',
+      ttl: 'Titula sedmice', lastWin: 'Prošle sedmice izbore je dobio/la', lastParty: 'Vladajuća stranka prošle sedmice', none: 'Još niko nije glasao ove sedmice. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove sedmice.', seats: 'mjesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat broji na izborima i da se možeš učlaniti u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promijeni ime',
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi raju',
@@ -43,7 +43,7 @@
       roles: ['Predsjednik stranke', 'Glasnogovornik', 'Član', 'Zamjenik za protokol'], founder: 'osnivač', inviteCo: 'Pozovi u koaliciju', invited: 'Poziv poslan.', coInv: 'Pozivi u koaliciju', accept: 'Prihvati', decline: 'Odbij', leaveCo: 'Izađi iz koalicije', inCo: 'U koaliciji',
       sug: 'Predloži pitanje', sugQ: 'Pitanje (npr. Navedi vrstu bureka)', sugA: 'Tačni odgovori, odvojeni zarezom (bar 3)', sugF: 'Fora službenice (nije obavezno)', sugSend: 'Pošalji na šalter', sugOk: 'Primljeno! Šef će pregledati u roku od 60 radnih dana. Ili sutra.', hardVote: ' (lestvica Šefa odseka)', sefTitle: 'Šef odseka: posebna lestvica',
       login: 'Prijava Guglom', board: 'Skupština i izbori', parl: 'Skupština', izb: 'Izbori', party: 'Stranka', week: 'nedelja', close: 'Zatvori',
-      lastWin: 'Prošle nedelje izbore je dobio/la', lastParty: 'Vladajuća stranka prošle nedelje', none: 'Još niko nije glasao ove nedelje. Budi prvi!',
+      ttl: 'Titula nedelje', lastWin: 'Prošle nedelje izbore je dobio/la', lastParty: 'Vladajuća stranka prošle nedelje', none: 'Još niko nije glasao ove nedelje. Budi prvi!',
       noParty: 'Nijedna stranka još nema bodove ove nedelje.', seats: 'mesta', members: 'članova', pts: 'bodova', you: 'ti',
       needLogin: 'Prijavi se da ti se rezultat računa na izborima i da možeš da se učlaniš u stranku.', as: 'Prijavljen/a kao', logout: 'Odjava', rename: 'Promeni ime',
       found: 'Osnuj stranku', name: 'Ime stranke', create: 'Osnuj', join: 'Učlani se', leave: 'Izađi iz stranke', search: 'Traži stranku…', invite: 'Pozovi ekipu',
@@ -220,7 +220,7 @@
     if (BOARD.error) { el.innerHTML = '<p class="perr">' + esc(errText()) + '</p>'; return; }
     if (TAB === 'izb') {
       var w = BOARD.last && BOARD.last.winner;
-      var h = w ? '<div class="win">🏆 ' + esc(t.lastWin) + ': <b>' + esc(w.name) + '</b> (' + w.score + ')</div>' : '';
+      var h = w ? '<div class="win">🏆 ' + esc(t.lastWin) + ': <b>' + esc(w.name) + '</b> (' + w.score + ')' + (window.PECAT_THEMES ? '<br><small>🎖 ' + esc(window.PECAT_THEMES.title(BOARD.last.week, LANG)) + '</small>' : '') + '</div>' : '';
       h += BOARD.izbori.length ? '<ol class="lb">' + BOARD.izbori.map(function (p, i) { return '<li' + (p.me ? ' class="me"' : '') + '><span class="n">' + (i + 1) + '.</span><span class="nm">' + esc(p.name) + (p.me ? ' <small>(' + esc(t.you) + ')</small>' : '') + '</span><b>' + p.score + '</b></li>'; }).join('') + '</ol>' : '<p class="pmsg">' + esc(t.none) + '</p>';
       if (BOARD.me && BOARD.me.rank > BOARD.izbori.length) h += '<ol class="lb"><li class="me"><span class="n">' + BOARD.me.rank + '.</span><span class="nm">' + esc(ME ? ME.name : t.you) + '</span><b>' + BOARD.me.score + '</b></li></ol>';
       if (BOARD.sef && BOARD.sef.length) h += '<h3 style="margin:8px 0 0">🔥 ' + esc(t.sefTitle) + '</h3><ol class="lb">' + BOARD.sef.slice(0, 10).map(function (p, i) { return '<li' + (p.me ? ' class="me"' : '') + '><span class="n">' + (i + 1) + '.</span><span class="nm">' + esc(p.name) + '</span><b>' + p.score + '</b></li>'; }).join('') + '</ol>';
@@ -280,7 +280,7 @@
     api('nn?lang=' + LANG).then(function (j) {
       NN = j; if (!j.voters) { el.innerHTML = '<p class="pmsg">' + esc(t.nnEmpty) + '</p>'; return; }
       var w = j.week.split('-W'), h = '<div class="paper-nn"><h2>' + esc(t.nnTitle) + '</h2><small>' + esc(t.nnSub(w[1] + '. · ' + w[0], j.final)) + ' · ' + esc(t.nnVoters(j.voters)) + '</small><hr>';
-      if (j.top[0]) h += '<p class="kick">' + esc(t.nnWin) + '</p><p class="head">' + esc(j.top[0].name) + ' · ' + j.top[0].score + '</p>';
+      if (j.top[0]) h += '<p class="kick">' + esc(t.nnWin) + '</p><p class="head">' + esc(j.top[0].name) + ' · ' + j.top[0].score + '</p>' + (window.PECAT_THEMES ? '<p class="small">🎖 ' + esc(t.ttl) + ': <b>' + esc(window.PECAT_THEMES.title(j.week, LANG)) + '</b></p>' : '');
       if (j.top.length > 1) h += '<p class="small">2. ' + esc(j.top[1].name) + (j.top[2] ? ' · 3. ' + esc(j.top[2].name) : '') + '</p>';
       h += '<p class="kick">' + esc(t.nnVlada) + '</p><p class="sub2">' + esc(j.vlada ? j.vlada.parties.join(' + ') + ' (' + j.vlada.seats + '/' + j.seats + ')' : t.nnNoVlada) + '</p>';
       if (j.rare) h += '<p class="kick">' + esc(t.nnRare) + '</p><p class="sub2">„' + esc(j.rare.a) + '” <small>(' + esc(j.rare.q) + ')</small></p>';
@@ -303,7 +303,7 @@
     var y = 380;
     function kick(s2) { x.textAlign = 'left'; x.fillStyle = '#b3271d'; x.font = '700 30px ' + FL; x.fillText(s2.toUpperCase(), 120, y); y += 20; }
     function head(s2, size) { x.fillStyle = '#1f252b'; x.font = '900 ' + (size || 70) + 'px ' + SER; wrap(s2, W - 240).slice(0, 2).forEach(function (l) { y += (size || 70) + 6; x.fillText(l, 120, y); }); y += 85; }
-    if (j.top[0]) { kick(t.nnWin); head(j.top[0].name + ' (' + j.top[0].score + ')', 84);
+    if (j.top[0]) { kick(t.nnWin); head(j.top[0].name + ' (' + j.top[0].score + ')', 84); if (window.PECAT_THEMES) { x.font = '700 32px ' + FL; x.fillStyle = '#3e5947'; x.fillText(t.ttl.toUpperCase() + ': ' + window.PECAT_THEMES.title(j.week, LANG), 120, y - 55); y += 25; }
       if (j.top.length > 1) { x.font = '500 30px ' + FT; x.fillStyle = '#5b6168'; x.fillText(j.top.slice(1).map(function (p, i) { return (i + 2) + '. ' + p.name + ' ' + p.score; }).join('   '), 120, y - 45); y += 20; } }
     kick(t.nnVlada); head(j.vlada ? j.vlada.parties.join(' + ') : t.nnNoVlada, 56);
     if (j.rare) { kick(t.nnRare); head('„' + j.rare.a + '”', 60); x.font = '400 28px ' + FT; x.fillStyle = '#5b6168'; x.fillText(j.rare.q, 120, y - 45); y += 20; }
