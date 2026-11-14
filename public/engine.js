@@ -109,7 +109,9 @@
     build(q);
     var key = norm(input, q.raw);
     if (key.length < (q.raw ? 1 : 2)) return { ok: false, reason: 'short' };
-    if (q._ban[key] || BAD.some(function (b) { return key.indexOf(b) >= 0; })) return { ok: false, reason: 'banned' };
+    // psovke tražimo unutar pojedinih riječi, da „nije bilo” ili „bacanje buketa” ne ispadnu psovka
+    var words = String(input || '').split(/[\s,.;:!?-]+/).map(function (w) { return norm(w, false); });
+    if (q._ban[key] || words.some(function (w) { return BAD.some(function (b) { var i = w.indexOf(b); return i >= 0 && !(b === 'jeb' && w.charAt(i - 1) === 'l'); }); })) return { ok: false, reason: 'banned' };
     var hit = find(q, key);
     var id = hit ? 'a:' + norm(hit.text, q.raw) : 'o:' + key;
     if (used && used[id]) return { ok: false, reason: 'dup' };

@@ -1,4 +1,4 @@
-global.window={};for(const l of ['hr','ba','rs'])require(require('path').join(__dirname,'../public/')+'data_'+l+'.js');
+global.window={};for(const l of ['hr','ba','rs']){require(require('path').join(__dirname,'../public/')+'data_'+l+'.js');require(require('path').join(__dirname,'../public/')+'data_'+l+'2.js');}
 const E=require(require('path').join(__dirname,'../public/')+'engine.js');const D=window.PECAT;
 // "lang dan.pitanje": odgovori koje bi obični igrač upisao
 const C={

@@ -54,7 +54,7 @@ Bez tih varijabli igra radi normalno, samo se ne prikazuju prijava, izbori i Sab
 | `api/index.js`, `lib/app.js` | API (Vercel funkcija) |
 | `lib/store.js` | Upstash Redis preko REST-a, ili memorija za razvoj |
 | `public/engine.js` | Provjera odgovora, tipfeleri, bodovanje, rijetkost |
-| `public/data_hr.js`, `data_ba.js`, `data_rs.js` | 80 pitanja po jeziku s popisima točnih odgovora |
+| `public/data_hr.js`, `data_ba.js`, `data_rs.js` + `data_*2.js` | 80 pitanja po jeziku s popisima točnih odgovora |
 | `public/data_fore.js` | Balkanska pitanja i „svijet očima naših” |
 | `public/wiki.js` | Broj pregleda članaka na Wikipediji za odgovore (2025.) |
 | `public/maps.js` | Pojednostavljene granice država za kartu (Natural Earth) |

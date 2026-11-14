@@ -1,9 +1,9 @@
 const E=require(require('path').join(__dirname,'../public/')+'engine.js');
 global.window={};
-for(const l of ['hr','ba','rs']) require(require('path').join(__dirname,'../public/')+'data_'+l+'.js');
+for(const l of ['hr','ba','rs']) {require(require('path').join(__dirname,'../public/')+'data_'+l+'.js');require(require('path').join(__dirname,'../public/')+'data_'+l+'2.js');}
 const D=window.PECAT; let bad=0, nq=0, closed=0, small=[];
 for(const l of ['hr','ba','rs']){
-  if(D[l].length!==10){console.log('DAYS',l,D[l].length);bad++}
+  if(D[l].length!==23){console.log('DAYS',l,D[l].length);bad++}
   D[l].forEach((day,di)=>{ if(day.length!==8){console.log('LEN',l,di+1,day.length);bad++}
     day.forEach((q,qi)=>{nq++; E.build(q); if(!q.o)closed++; if(!q.q||!q.f){console.log('EMPTY',l,di,qi);bad++}
       if(q._list.length<4){small.push(l+' d'+(di+1)+' q'+(qi+1)+' n='+q._list.length)} });});
@@ -26,7 +26,7 @@ const T=[
 ['rs',3,1,'raca'],['rs',3,2,'oblande'],['rs',3,3,'vruc vetar'],['rs',3,4,'prolom banja'],['rs',3,5,'milankovic'],['rs',3,6,'djevrek'],['rs',3,7,'lepa sela lepo gore'],['rs',4,1,'golubac'],['rs',4,2,'homoljski sir'],['rs',4,3,'ram'],['rs',4,4,'luke black'],['rs',4,5,'smak'],['rs',4,6,'bamija'],['rs',4,7,'pendzer'],
 ['rs',5,1,'surdulica'],['rs',5,2,'peglana kobasica'],['rs',5,3,'lazarev kanjon'],['rs',5,4,'paspalj'],['rs',5,5,'gajde'],['rs',5,7,'curka'],['rs',6,1,'karaburma'],['rs',6,2,'despot stefan lazarevic'],['rs',6,2,'цар душан'],['rs',6,3,'dunja'],['rs',6,4,'gamzigrad'],['rs',6,5,'laza kostic'],
 ['rs',7,1,'priboj'],['rs',7,3,'divcibare'],['rs',7,4,'kostic'],['rs',7,5,'smor'],['rs',7,7,'nisville'],['rs',8,1,'novi becej'],['rs',8,3,'kraljevo'],['rs',8,4,'jelek'],['rs',8,5,'albanija'],['rs',8,6,'svraka'],['rs',8,7,'fazoni i fore'],
-['rs',9,1,'kosjeric'],['rs',9,2,'dž'],['rs',9,3,'kajak'],['rs',9,4,'nes'],['rs',9,5,'toma zdravkovic'],['rs',9,7,'letnja kuhinja'],['rs',10,1,'homolje'],['rs',10,2,'zito'],['rs',10,3,'manasija'],['rs',10,7,'protekcija'],['rs',10,8,'nana'],
+['rs',9,1,'kosjeric'],['rs',9,2,'dž'],['rs',9,3,'kajak'],['rs',9,4,'nes'],['rs',9,5,'toma zdravkovic'],['rs',9,7,'letnja kuhinja'],['rs',10,1,'homolje'],['hr',11,1,'mup'],['hr',13,6,'bela'],['hr',20,1,'karlovac'],['hr',16,7,'insta'],['hr',21,8,'sahovnica'],['ba',13,7,'golf'],['ba',12,1,'bihac'],['ba',14,3,'jahorina'],['rs',13,5,'pare'],['rs',22,1,'zlatibor'],['rs',20,8,'bg'],['rs',21,3,'sitonija'],['rs',23,4,'nikoljdan'],['rs',10,2,'zito'],['rs',10,3,'manasija'],['rs',10,7,'protekcija'],['rs',10,8,'nana'],
 ];
 for(const [l,d,q,inp] of T){const r=E.check(D[l][d-1][q-1],inp,{}); if(!r.ok){bad++;console.log('FAIL',l,d,q,inp,r.reason)}}
 const neg=[['hr',1,1,'zagreb'],['hr',5,3,'prstac'],['ba',2,2,'burek'],['hr',7,8,'plava'],['hr',1,6,'ucka'],['rs',1,5,'zlatibor'],['hr',8,5,'austrija']];
