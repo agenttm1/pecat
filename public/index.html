@@ -464,6 +464,7 @@ canvas#fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none;
 <script src="data_teme.js"></script>
 <script src="themes.js"></script>
 <script src="data_fore.js"></script>
+<script src="since.js"></script>
 <script src="maps.js"></script>
 <script src="geo.js"></script>
 <script src="cars.js"></script>
@@ -967,8 +968,11 @@ function drawDaily(R,ex,TH,P,F,Wp){
 // isti izračun kod svih igrača: dan po dan od prvog dana, bez ponavljanja pitanja iz zadnjih dana
 function dailySets(day){
   var key=S.lang+'|'+day; if(DSETS[key]) return DSETS[key];
-  var P=pool(), F=forePool(), Wp=worldPool(), hist=[], res=null, T0=window.PECAT_THEMES;
+  var P0=pool(), F0=forePool(), W0=worldPool(), hist=[], res=null, T0=window.PECAT_THEMES, SN=window.PECAT_SINCE||null;
+  // novo pitanje ulazi tek od dnevnog broja upisanog u since.js (od ponoći); nepečatirano ne ulazi
+  function okDay(d){ return function(x){ if(!SN) return true; var v=SN[x.id]; return v!==undefined&&v<=d; }; }
   for(var d=1; d<=day; d++){
+    var P=P0.filter(okDay(d)), F=F0.filter(okDay(d)), Wp=W0.filter(okDay(d));
     var ex={};
     for(var k=1;k<=12&&k<=hist.length;k++) hist[hist.length-k].forEach(function(id){ var p=id.charAt(0); if(p==='f'&&k>5) return; if(p==='w'&&k>2) return; ex[id]=1; });
     var TH=T0?T0.forWeek(T0.weekId(dayDateObj(d))):null;

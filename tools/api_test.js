@@ -11,6 +11,7 @@ function call(method, url, body, cookie, extra) {
     handle(req, res);
   });
 }
+require('child_process').execFileSync(process.execPath, [require('path').join(__dirname, 'stamp.js'), '--check'], { stdio: 'inherit' });
 (async () => {
   // filtar imena
   ['HDZ ekipa', 'Za dom', 'Mi Možemo sve', 'k*rac', 'Kurčevi', 'SNSD', 'Naša Stranka', 'ustaše'].forEach((n) => assert(nameProblem(n, 3, 28), 'trebalo odbiti: ' + n));
